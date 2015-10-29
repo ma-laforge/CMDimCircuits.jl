@@ -9,7 +9,8 @@ using MDDatasets
 import MDDatasets: value
 
 include("base.jl")
-include("td_generators.jl")
+include("dt_generators.jl")
+include("ct_generators.jl")
 
 #==Warnings
 ================================================================================
