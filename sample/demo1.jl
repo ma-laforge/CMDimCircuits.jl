@@ -14,7 +14,7 @@ const vvst = axes(xlabel="Time (s)", ylabel="Amplitude (V)")
 const color1 = line(color=2)
 const color2 = line(color=3)
 
-tstart = .1
+tstart = 0
 tstep = .01
 tstop = 10
 
