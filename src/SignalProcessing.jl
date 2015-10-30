@@ -38,6 +38,8 @@ export Pole, Domain
 #Functions
 #-------------------------------------------------------------------------------
 export pulse #Gererate pulse response
+export prbs #Generate PRBS sequence
+export pattern #Generate pattern from a bit sequence
 
 #==Other interface tools (symbols not exported to avoid collisions):
 ================================================================================

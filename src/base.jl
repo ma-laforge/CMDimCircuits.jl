@@ -2,17 +2,6 @@
 #-------------------------------------------------------------------------------
 
 
-#==Useful reminders
-===============================================================================#
-#==Regarding ranges: Range{Float64}<:AbstractArray{Float64,1}
-
-UnitRange(1.0:3.0)::UnitRange{Float64}<:OrdinalRange{Float64,Int64}<:Range{Float64}<:AbstractArray{Float64,1}
-1.0:3.0::FloatRange{Float64}<:Range{Float64}
-range(start, [step], length) ::FloatRange{Float64}
-(1:3)::UnitRange{Int64}<:OrdinalRange{Int64,Int64}
-linspace(start, stop, n=100) ::LinSpace{Float64}<:Range{Float64}
-==#
-
 #==Main data structures
 ===============================================================================#
 
@@ -21,6 +10,8 @@ abstract AbstractDataDomain
 abstract Domain{Symbol} <: AbstractDataDomain
 
 #Aliases to reduce typo mistakes:
+typealias BitDomain Domain{:bit} #Bit domain (discrete time, but one sample per bit)
+#TODO: Should BitDomain <: DTDomain?  Should it not exist?
 typealias DTDomain Domain{:DT} #Discrete-time domain
 typealias CTDomain Domain{:CT} #Continuous-time domain
 typealias FDomain Domain{:f} #Frequency domain
