@@ -1,11 +1,10 @@
-#Test code
+#Demo 1: Pulse generation
 #-------------------------------------------------------------------------------
 
 using MDDatasets
 using SignalProcessing
 using EasyPlot
 
-#No real test code yet... just run demos:
 
 #==Constants
 ===============================================================================#
@@ -60,18 +59,19 @@ prad=Pole(1,:rad)
 
 #==Show results
 ===============================================================================#
-if true; eval(quote
+ncols = 1
+if !isdefined(:plotlist); plotlist = Set([:grace]); end
+if in(:grace, plotlist)
 	import EasyPlotGrace
 	const plotdefaults = GracePlot.defaults(linewidth=2.5)
 	gplot = GracePlot.new()
 		GracePlot.set(gplot, plotdefaults)
-	render(gplot, plot, ncols=2); display(gplot)
-	#render(gplot, plot, ncols=1); display(gplot)
-end); end
-if false; eval(quote
+	render(gplot, plot, ncols=ncols); display(gplot)
+end
+if in(:MPL, plotlist)
 	import EasyPlotMPL
-	display(Backend{:MPL}, plot, ncols=2);
-end); end
+	display(Backend{:MPL}, plot, ncols=ncols);
+end
 
 @show t
 @show u
