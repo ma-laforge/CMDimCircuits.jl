@@ -8,10 +8,10 @@ using EasyPlot
 
 #==Constants
 ===============================================================================#
-const tvst = axes(xlabel="Time (s)", ylabel="Time (s)")
-const vvst = axes(xlabel="Time (s)", ylabel="Amplitude (V)")
-const color1 = line(color=2)
-const color2 = line(color=3)
+tvst = axes(xlabel="Time (s)", ylabel="Time (s)")
+vvst = axes(xlabel="Time (s)", ylabel="Amplitude (V)")
+color1 = line(color=2)
+color2 = line(color=3)
 
 tstart = 0
 tstep = .01
@@ -63,7 +63,7 @@ ncols = 1
 if !isdefined(:plotlist); plotlist = Set([:grace]); end
 if in(:grace, plotlist)
 	import EasyPlotGrace
-	const plotdefaults = GracePlot.defaults(linewidth=2.5)
+	plotdefaults = GracePlot.defaults(linewidth=2.5)
 	gplot = GracePlot.new()
 		GracePlot.set(gplot, plotdefaults)
 	render(gplot, plot, ncols=ncols); display(gplot)

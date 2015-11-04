@@ -51,7 +51,7 @@ ncols = 1
 if !isdefined(:plotlist); plotlist = Set([:grace]); end
 if in(:grace, plotlist)
 	import EasyPlotGrace
-	const plotdefaults = GracePlot.defaults(linewidth=2.5)
+	plotdefaults = GracePlot.defaults(linewidth=2.5)
 	gplot = GracePlot.new()
 		GracePlot.set(gplot, plotdefaults)
 	render(gplot, plot, ncols=ncols); display(gplot)
