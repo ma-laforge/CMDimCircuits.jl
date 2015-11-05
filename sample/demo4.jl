@@ -28,6 +28,7 @@ nsamples = 20
 ===============================================================================#
 seq = 1.0*prbs(BT, reglen=5, seed=1, nsamples=nsamples)
 t = Data2D(0:(tbit/nbit):(nsamples*tbit))
+tmax = maximum(t)
 
 #Generate parameter sweeps:
 sweeplist = PSweep[
@@ -46,6 +47,12 @@ for coord in subscripts(results)
 	results.subsets[coord...] = pat
 end
 
+#Do some DataHR-level transformations:
+skew = Data2D([0, tmax],[0, 0.5])
+results = results + results + 4 + skew
+results += mean(results)
+
+#mean(results)
 
 #==Generate plot
 ===============================================================================#
