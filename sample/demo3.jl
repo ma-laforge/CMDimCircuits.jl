@@ -8,7 +8,6 @@ using EasyPlot
 
 #==Constants
 ===============================================================================#
-tvst = axes(xlabel="Time (s)", ylabel="Time (s)")
 vvst = axes(xlabel="Time (s)", ylabel="Amplitude (V)")
 dfltglyph = glyph(shape=:o)
 #color1 = line(color=2)
@@ -18,10 +17,10 @@ dfltglyph = glyph(shape=:o)
 #==Input data
 ===============================================================================#
 d1 = Data2D(1:10.0)
-d2 = Data2D(d1.x .+ 4.5, d1.y .+ 12)
-d3 = Data2D(d1.x, d1.y .+ 12)
-d4 = Data2D(d1.x, collect(10.0:-1:1))
-d9 = Data2D(d1.x .+100, d1.y)
+d2 = shift(d1, 4.5) + 12
+d3 = d1 + 12
+d4 = Data2D(d1.x, d1.y[end:-1:1])
+d9 = shift(d1, 100)
 
 r1 = d1+d2
 r2 = d1+d3

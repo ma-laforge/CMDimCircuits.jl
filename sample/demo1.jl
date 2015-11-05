@@ -8,7 +8,6 @@ using EasyPlot
 
 #==Constants
 ===============================================================================#
-tvst = axes(xlabel="Time (s)", ylabel="Time (s)")
 vvst = axes(xlabel="Time (s)", ylabel="Amplitude (V)")
 color1 = line(color=2)
 color2 = line(color=3)
@@ -29,21 +28,18 @@ p = pulse(DT, t, ndel=Index(len/7), npw=Index(len/16))
 pulsewidth = tmax/16
 u1p = step(CT, t, Pole(3/pulsewidth,:rad), tdel=tmax/4)
 p1p = pulse(CT, t, Pole(3/pulsewidth,:rad), tdel=tmax/7, tpw=pulsewidth)
-_sin = sin(t*(pi*10/tmax))
 
 #==Generate plot
 ===============================================================================#
-plot=EasyPlot.new(title="Test SignalProcessing")
-s = add(plot, tvst, title="Time Vector")
-	add(s, t, color1)
-s = add(plot, vvst, title="step response")
+plot=EasyPlot.new(title="Generating Simple Responses")
+s = add(plot, vvst, title="Step Response")
 	add(s, u, color1, id="DT")
 	add(s, u1p, color2, id="CT")
-s = add(plot, vvst, title="pulse response")
+s = add(plot, vvst, title="Pulse Response")
 	add(s, p, color1, id="DT")
 	add(s, p1p, color2, id="CT")
-s = add(plot, vvst, title="pulse response")
-	add(s, _sin, color2)
+s = add(plot, vvst, title="Sine wave")
+	add(s, sin(t*(pi*10/tmax)), color2)
 
 #==Show results
 ===============================================================================#
