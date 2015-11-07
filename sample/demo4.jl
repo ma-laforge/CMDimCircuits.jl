@@ -56,15 +56,20 @@ results += mean(results)
 
 #==Generate plot
 ===============================================================================#
-sweepnames = names(sweeps(results))
-colorlist = [color1, color2, color3]
 plot=EasyPlot.new(title="Mulit-Dataset Tests")
 s = add(plot, vvst, title="PRBS Pattern")
+	add(s, results, id="pat")
+
+#==You could manually add individual datasets:
+sweepnames = names(sweeps(results))
+colorlist = [color1, color2, color3]
 for coord in subscripts(results)
 	values = parameter(results, coord)
 	id=join(["$k=$v" for (k,v) in zip(sweepnames,values)], " / ")
 	add(s, subsets(results)[coord...], colorlist[coord[1]], id=id)
 end
+==#
+
 
 
 #==Show results
