@@ -52,11 +52,10 @@ skew = Data2D([0, tmax],[0, 0.5])
 results = results + results + 4 + skew
 results += mean(results)
 
-#mean(results)
 
 #==Generate plot
 ===============================================================================#
-plot=EasyPlot.new(title="Mulit-Dataset Tests")
+plot=EasyPlot.new(title="Mulit-Dataset Tests", displaylegend=false)
 s = add(plot, vvst, title="PRBS Pattern")
 	add(s, results, id="pat")
 
@@ -69,7 +68,6 @@ for coord in subscripts(results)
 	add(s, subsets(results)[coord...], colorlist[coord[1]], id=id)
 end
 ==#
-
 
 
 #==Show results
