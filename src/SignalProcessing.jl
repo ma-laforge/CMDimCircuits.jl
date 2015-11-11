@@ -7,10 +7,18 @@ using MDDatasets
 
 #Functions to this module will be accessing/appending:
 import MDDatasets: value
+import MDDatasets: Data2D
 
+#Type used to dispatch on a symbol & minimize namespace pollution:
+#-------------------------------------------------------------------------------
+immutable DS{Symbol}; end; #Dispatchable symbol
+
+include("vectorop.jl")
 include("base.jl")
+include("timefreq.jl")
 include("dt_generators.jl")
 include("ct_generators.jl")
+include("show.jl")
 
 #==Warnings
 ================================================================================
@@ -32,14 +40,34 @@ NOTE:
 ==#
 export Pole, Domain
 
-#Accessor functions:
-#export
+#Time/Frequency domain signals:
+export DataTime, DataFreq, DataZ
 
 #Functions
 #-------------------------------------------------------------------------------
+export timedomain, freqdomain #Performs (i)fft, if necessary
+export fspectrum #Returns sampled frequency spectrum (non-periodic signals)
+export fcoeff #Returns Fourier-series coefficients (t-periodic signals)
 export pulse #Gererate pulse response
 export prbs #Generate PRBS sequence
 export pattern #Generate pattern from a bit sequence
+export datavec #getter function
+export timespace #Generate a range representing time
+#==Implements timespace(:PRIMARY, v1, :SECONDARY, v2; tstart = tstart)
+	where PRIMARY/SECONDARY can be of the following combinations:
+	(PRIMARY is targeted value - secondary might get rounded)
+		(:ts, :tfund)
+		(:tfund, :ts)    *TODO
+		(:ts, :n)        *TODO
+		(:tfund, :n)     *TODO
+		(:tsig, :n)      *TODO
+	AND:
+		ts: sampling period
+		tfund: fundamental period of frequency-domain signal
+		tspan: actual signal time span (instead of its *fundamental* period)
+		n: number of sampling points (always exact)
+==#
+
 
 #==Other interface tools (symbols not exported to avoid collisions):
 ================================================================================
