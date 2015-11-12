@@ -7,7 +7,7 @@ using MDDatasets
 
 #Functions to this module will be accessing/appending:
 import MDDatasets: value
-import MDDatasets: Data2D
+import MDDatasets: DataF1
 
 #Type used to dispatch on a symbol & minimize namespace pollution:
 #-------------------------------------------------------------------------------

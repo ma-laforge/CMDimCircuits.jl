@@ -35,7 +35,7 @@ sweeplist = PSweep[
 ]
 
 #Generate data:
-sigSpec = DataHR{Data2D}(sweeplist) #Create empty sigSpec
+sigSpec = DataHR{DataF1}(sweeplist) #Create empty sigSpec
 for coord in subscripts(sigSpec)
 	(padding,) = parameter(sigSpec, coord)
 	tpad = 0:Δt:(Δt*((length(tvec)-1)+padding))
@@ -57,7 +57,7 @@ end
 ===============================================================================#
 plot=EasyPlot.new(title="Fourier Transform vs Padding")
 s = add(plot, vvst, title="Time Domain")
-	add(s, Data2D(sig), id="")
+	add(s, DataF1(sig), id="")
 s = add(plot, dbvsf, title="Frequency Spectrum")
 	add(s, 20*log10(sigSpec), id="")
 #throw(:Done)

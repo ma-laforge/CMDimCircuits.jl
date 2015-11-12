@@ -30,8 +30,8 @@ Base.length(d::DataFreq) = length(validatelengths(d).data.f)
 
 #==Accessors/Data converters
 ===============================================================================#
-Data2D(d::DataTime) = Data2D(collect(d.data.t), copy(d.data.xt))
-Data2D(d::DataFreq) = Data2D(collect(d.data.f), copy(d.data.Xf))
+DataF1(d::DataTime) = DataF1(collect(d.data.t), copy(d.data.xt))
+DataF1(d::DataFreq) = DataF1(collect(d.data.f), copy(d.data.Xf))
 
 datavec(::DS{:time}, d::DataTF) = d.t
 datavec(::DS{:time}, d::DataTime) = datavec(TIME, d.data)
@@ -48,14 +48,14 @@ datavec(::DS{:sig}, d::DataFreq) = d.data.Xf
 #Normalizes FFT results -> |X(f)| samples or {ak} coefficients
 function fspectrum(d::DataFreq)
 	@assert(!d.data.tperiodic, "Frequency spetrum is only valid for non-periodic signals")
-	return Data2D(collect(d.data.f), d.data.Xf)
+	return DataF1(collect(d.data.f), d.data.Xf)
 end
 
 #Returns Fourier-series coefficients (t-periodic signals)
 #Normalizes FFT results -> |X(f)| samples or {ak} coefficients
 function fcoeff(d::DataFreq)
 	@assert(d.data.tperiodic, "Fourier-series coefficients are only valid for time-periodic signals")
-	return Data2D(collect(d.data.f), d.data.Xf./length(d.data.t))
+	return DataF1(collect(d.data.f), d.data.Xf./length(d.data.t))
 end
 
 
@@ -96,7 +96,7 @@ end; end #CODEGEN---------------------------------------------------------------
 #==Fourier transforms/series
 ===============================================================================#
 #TODO: use \mscrF (ℱ)??
-#function Fourier(x::Data2D)
+#function Fourier(x::DataF1)
 
 function timedomain(d::DataFreq)
 	if !d.data.tvalid

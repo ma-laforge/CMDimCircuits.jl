@@ -27,7 +27,7 @@ nsamples = 20
 #==Computations
 ===============================================================================#
 seq = 1.0*prbs(BT, reglen=5, seed=1, nsamples=nsamples)
-t = Data2D(0:(tbit/nbit):(nsamples*tbit))
+t = DataF1(0:(tbit/nbit):(nsamples*tbit))
 tmax = maximum(t)
 
 #Generate parameter sweeps:
@@ -38,7 +38,7 @@ sweeplist = PSweep[
 ]
 
 #Generate data:
-results = DataHR{Data2D}(sweeplist) #Create empty results
+results = DataHR{DataF1}(sweeplist) #Create empty results
 for coord in subscripts(results)
 	(amp, tau, offset) = parameter(results, coord)
 	p = pulse(DT, t, Pole(1/tau,:rad), npw=Index(nbit))
@@ -48,7 +48,7 @@ for coord in subscripts(results)
 end
 
 #Do some DataHR-level transformations:
-skew = Data2D([0, tmax],[0, 0.5])
+skew = DataF1([0, tmax],[0, 0.5])
 results = results + results + 4 + skew
 results += mean(results)
 

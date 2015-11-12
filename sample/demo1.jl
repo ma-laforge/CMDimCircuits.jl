@@ -20,7 +20,7 @@ tstop = 10
 ===============================================================================#
 DT = Domain{:DT}
 CT = Domain{:CT}
-t = Data2D(tstart:tstep:tstop)
+t = DataF1(tstart:tstep:tstop)
 tmax = maximum(t.x)
 @show len = length(t)
 u = step(DT, t, ndel=Index(len/4))

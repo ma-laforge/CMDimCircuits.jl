@@ -32,8 +32,8 @@ sigSpec = abs2(fcoeff(Fsig)) #Periodic
 ===============================================================================#
 plot=EasyPlot.new(title="Fourier Transform Tests")
 s = add(plot, vvst, title="Time domain")
-	#add(s, Data2D(sig), id="", glyph(shape=:o))
-	add(s, Data2D(sig), id="")
+	#add(s, DataF1(sig), id="", glyph(shape=:o))
+	add(s, DataF1(sig), id="")
 s = add(plot, vvsf, title="")
 	add(s, sigSpec, id="", glyph(shape=:o, size=1.5, color=2), line(style=:none))
 #throw(:Done)

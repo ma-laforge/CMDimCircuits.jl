@@ -16,10 +16,10 @@ dfltglyph = glyph(shape=:o)
 
 #==Input data
 ===============================================================================#
-d1 = Data2D(1:10.0)
+d1 = DataF1(1:10.0)
 d2 = shift(d1, 4.5) + 12
 d3 = d1 + 12
-d4 = Data2D(d1.x, d1.y[end:-1:1])
+d4 = DataF1(d1.x, d1.y[end:-1:1])
 d9 = shift(d1, 100)
 
 r1 = d1+d2

@@ -49,7 +49,7 @@ const MAXLFSR_POLYNOMIAL = [
 
 #Creates step response, using time from ref.x:
 #-------------------------------------------------------------------------------
-function Base.step(::Type{DTDomain}, ref::Data2D; ndel::Index=Index(0), amp=1)
+function Base.step(::Type{DTDomain}, ref::DataF1; ndel::Index=Index(0), amp=1)
 	ndel = value(ndel)
 	@assert(ndel >= 0, "ndel must be non-negative")
 	nstart = ndel+1
@@ -60,12 +60,12 @@ function Base.step(::Type{DTDomain}, ref::Data2D; ndel::Index=Index(0), amp=1)
 			y[i] = amp
 		end
 	end
-	return Data2D(ref.x, y)
+	return DataF1(ref.x, y)
 end
 
 #Creates pulse response, using time from ref.x:
 #-------------------------------------------------------------------------------
-function pulse(D::Type{DTDomain}, ref::Data2D; ndel::Index=Index(0), amp=1,
+function pulse(D::Type{DTDomain}, ref::DataF1; ndel::Index=Index(0), amp=1,
 		npw::Index=Index(0))
 	@assert(value(npw) > 0, "npw must be positive")
 	return (step(D, ref, ndel=ndel, amp=amp) -
@@ -75,7 +75,7 @@ end
 #Creates pulse response of a single-pole system, using time from ref.x:
 # tpw: pulse width
 #-------------------------------------------------------------------------------
-function pulse(D::Type{DTDomain}, ref::Data2D, p::Pole; ndel::Index=Index(0), amp=1,
+function pulse(D::Type{DTDomain}, ref::DataF1, p::Pole; ndel::Index=Index(0), amp=1,
 		npw::Index=Index(0))
 	ndel = value(ndel); npw = value(npw)
 	@assert(npw > 0, "npw must be positive")
@@ -112,14 +112,14 @@ function prbs(D::Type{BitDomain}; reglen::Int=32, seed::Integer=11, nsamples::In
 		pat[i] = bit
 		lfsr = (lfsr << 1) | bit
 	end
-	return Data2D(collect(1:length(pat)), pat)
+	return DataF1(collect(1:length(pat)), pat)
 end
 
 #Creates a signal pattern from a sequence of data points, and a pulse response:
 #NOTE: assumes constant x step-size... Is this the way to do it??
 # seq: a binary data sequence
 # p:Pulse response
-function pattern(D::Type{DTDomain}, seq::Data2D, p::Data2D; npw::Index=Index(0))
+function pattern(D::Type{DTDomain}, seq::DataF1, p::DataF1; npw::Index=Index(0))
 	npw = value(npw)
 	@assert(npw > 0, "npw must be positive")
 	result = zeros(p)

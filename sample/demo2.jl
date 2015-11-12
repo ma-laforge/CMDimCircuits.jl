@@ -27,9 +27,9 @@ nsamples = 20
 #==Computations
 ===============================================================================#
 seq = 1.0*prbs(BT, reglen=5, seed=1, nsamples=nsamples)
-#seq = [1,0,1,1,1,0,0,0]; seq = Data2D(collect(1:length(seq)),seq)
+#seq = [1,0,1,1,1,0,0,0]; seq = DataF1(collect(1:length(seq)),seq)
 nsamples = length(seq)
-t = Data2D(0:(tbit/nbit):(nsamples*tbit))
+t = DataF1(0:(tbit/nbit):(nsamples*tbit))
 p = pulse(DT, t, Pole(3/tbit,:rad), npw=Index(nbit))
 pat = pattern(DT, seq, p, npw=Index(nbit))
 
