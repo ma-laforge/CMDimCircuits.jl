@@ -58,7 +58,7 @@ end
 plot=EasyPlot.new(title="Fourier Transform vs Padding")
 s = add(plot, vvst, title="Time Domain")
 	add(s, DataF1(sig), id="")
-s = add(plot, dbvsf, title="Frequency Spectrum")
+s = add(plot, dbvsf, title="Sampled Frequency Spectrum")
 	add(s, 20*log10(sigSpec), id="")
 #throw(:Done)
 
