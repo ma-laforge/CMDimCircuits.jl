@@ -36,7 +36,7 @@ end
 function timetofreq(t::FloatRange{DataFloat})
 	n = length(t)
 	Δt = step(t)
-	tfund = Δt*(n+1)
+	tfund = Δt*n
 	Δf = 1/tfund
 	fmax = (floor(n/2)/n)/Δt
 	return 0:Δf:fmax
