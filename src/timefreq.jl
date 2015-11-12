@@ -18,7 +18,17 @@ isteven(d::DataTF) = evenlength(d.t)
 isteven(d::DataFreq) = isteven(d.data)
 isteven(d::DataTime) = isteven(d.data)
 
-#==
+
+#==Basic DataTime/DataFreq functionality
+===============================================================================#
+Base.copy(d::DataTF) = DataTF(d.tperiodic, d.tvalid, d.fvalid, t, copy(d.xt), f, copy(d.Xf))
+Base.copy(d::DataTime) = validatelengths(DataTime(copy(d.data)))
+Base.copy(d::DataFreq) = validatelengths(DataFreq(copy(d.data)))
+
+Base.length(d::DataTime) = length(validatelengths(d).data.t)
+Base.length(d::DataFreq) = length(validatelengths(d).data.f)
+
+#==Accessors/Data converters
 ===============================================================================#
 Data2D(d::DataTime) = Data2D(collect(d.data.t), copy(d.data.xt))
 Data2D(d::DataFreq) = Data2D(collect(d.data.f), copy(d.data.Xf))
@@ -27,10 +37,12 @@ datavec(::DS{:time}, d::DataTF) = d.t
 datavec(::DS{:time}, d::DataTime) = datavec(TIME, d.data)
 datavec(::DS{:time}, d::DataFreq) = datavec(TIME, d.data)
 
-#Also normalizes FFT results -> |X(f)| samples or {ak} coefficients
 datavec(::DS{:freq}, d::DataTF) = d.f
 datavec(::DS{:freq}, d::DataTime) = datavec(FREQ, d.data)
 datavec(::DS{:freq}, d::DataFreq) = datavec(FREQ, d.data)
+
+datavec(::DS{:sig}, d::DataTime) = d.data.xt
+datavec(::DS{:sig}, d::DataFreq) = d.data.Xf
 
 #Returns sampled frequency spectrum (non-periodic signals)
 #Normalizes FFT results -> |X(f)| samples or {ak} coefficients

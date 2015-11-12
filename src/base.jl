@@ -71,10 +71,8 @@ end
 DataTime(t::Range, xt::Vector{DataFloat}; tperiodic::Bool=false) = DataTime(DataTF(TIME, t, xt, tperiodic=tperiodic))
 DataTime(t::Range; tperiodic::Bool=false) = DataTime(t, collect(t), tperiodic=tperiodic)
 #For low-level algorithms... Initializes data ranges:
-function DataTime(d::DataTF, xt::Vector{DataFloat})
-	@assert(length(xt)==length(d.t), "Lengths do not match: d.t & xt")
-	DataTime(DataTF(d.tperiodic, true, false, d.t, xt, d.f, []))
-end
+DataTime(d::DataTF, xt::Vector{DataFloat}) =
+	validatelengths(DataTime(DataTF(d.tperiodic, true, false, d.t, xt, d.f, [])))
 
 immutable DataFreq
 	data::DataTF
@@ -84,10 +82,8 @@ DataFreq(f::Range, Xf::Vector{DataComplex}; teven::Bool=true, tperiodic::Bool=fa
 DataFreq(f::Range; teven::Bool=true, tperiodic::Bool=false) =
 	DataFreq(f, collect(f), teven=teven, tperiodic=tperiodic)
 #For low-level algorithms... Initializes data ranges:
-function DataFreq(d::DataTF, Xf::Vector{DataComplex})
-	@assert(length(Xf)==length(d.f), "Lengths do not match: d.f & Xf")
-	DataFreq(DataTF(d.tperiodic, false, true, d.t, [], d.f, Xf))
-end
+DataFreq(d::DataTF, Xf::Vector{DataComplex}) =
+	validatelengths(DataFreq(DataTF(d.tperiodic, false, true, d.t, [], d.f, Xf)))
 
 #Z-domain data (discrete time, continuous frequency approximation):
 #TODO: Think about details a bit more... what about x-values, etc?
@@ -95,6 +91,20 @@ DataZ(n::Int; teven::Bool=true) =
 	DataFreq(linspace(0, 2pi, n), Xf, teven=teven, tperiodic=false)
 DataZ(Xf::Vector{DataComplex}; teven::Bool=true) =
 	DataFreq(linspace(0, 2pi, length(Xf)), Xf, teven=teven, tperiodic=false)
+
+
+#==Useful assertions
+===============================================================================#
+	
+#Validate data lengths:
+function validatelengths(d::DataTime)
+	@assert(length(d.data.t)==length(d.data.xt), "Invalid DataTime: Lengths do not match: t & x(t)")
+	return d
+end
+function validatelengths(d::DataFreq)
+	@assert(length(d.data.f)==length(d.data.Xf), "Invalid DataFreq: Lengths do not match: f & X(f)")
+	return d
+end
 
 
 #==Conversion functions
