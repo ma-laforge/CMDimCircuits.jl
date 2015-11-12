@@ -1,4 +1,4 @@
-#Demo X: Fourier Transforms
+#Demo 5: Fourier Series
 #-------------------------------------------------------------------------------
 
 using MDDatasets
