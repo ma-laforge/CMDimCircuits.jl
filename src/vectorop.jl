@@ -17,12 +17,22 @@ datavec{T<:Symbol}(::DS{T}, args...; kwargs...) = throw(ArgumentError("Unknown v
 #==Range generators
 ===============================================================================#
 
-#Creates a range practical for doing signal analyses correctly:
-#NOTE: first argument is targeted argument (will not get rounded)
+#==timespace: Generates time vector (range) from sampling period & fundamental.
+Automatically computes # of time steps, N.
+Why? Computation of N can easily be off-by-1 - if specified directly...
+NOTE:
+  -First argument is targeted argument (will minimize amount of rounding).
+  -Cannot represent tfund exactly (because maximum(timespace(...)) = tfund-ts).
+   You would therefore need to define a new "range" type to represent tfund
+   exactly. TODO??==#
+
 timespace(primary::Symbol, v1, secondary::Symbol, v2; kwargs...) =
 	timespace(DS{primary}(), DS{secondary}(), v1, v2; kwargs...)
 timespace{T1, T2}(::DS{T1}, ::DS{T2}, args...; kwargs...) =
 	throw(ArgumentError("timespace does not support combination (:$T1, :$T2)."))
+
+#Sampling period (timestep), ts is most important parameter:
+#Will throw error if "suggested" fundamental period does not land on the timestep:
 function timespace(::DS{:ts}, ::DS{:tfund}, ts, tfund; tstart=0)
 	const ABSTOL = .05
 	ns = tfund/ts
@@ -30,6 +40,19 @@ function timespace(::DS{:ts}, ::DS{:tfund}, ts, tfund; tstart=0)
 	if abs(ns-ins) > ABSTOL
 		throw("tfund must be approx. an integer multiple of ts.")
 	end
+	return tstart+FloatRange{DataFloat}(0:ts:((ins-1)*ts))
+end
+
+#Fundamental period, tfund, is most important parameter.
+#Will throw error if fundamental period does not land on the "suggested" timestep:
+function timespace(::DS{:tfund}, ::DS{:ts}, tfund, ts; tstart=0)
+	const ABSTOL = .05
+	ns = tfund/ts
+	ins = round(Int, ns)
+	if abs(ns-ins) > ABSTOL
+		throw("tfund must be approx. an integer multiple of ts.")
+	end
+	ts = tfund/ins #Re-compute most accurate possible version of timestep
 	return tstart+FloatRange{DataFloat}(0:ts:((ins-1)*ts))
 end
 
