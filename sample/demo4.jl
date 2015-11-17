@@ -83,7 +83,7 @@ if in(:grace, plotlist)
 end
 if in(:MPL, plotlist)
 	import EasyPlotMPL
-	display(Backend{:MPL}, plot, ncols=ncols);
+	display(:MPL, plot, ncols=ncols);
 end
 
 
