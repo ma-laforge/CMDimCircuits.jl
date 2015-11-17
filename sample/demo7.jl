@@ -30,10 +30,19 @@ seq = 1.0*prbs(BT, reglen=7, seed=1, nsamples=nsamples)
 t = DataF1(0:(tbit/nbit):(nsamples*tbit))
 tmax = maximum(t)
 
-tau = (tbit/1.5)
-p = pulse(DT, t, Pole(1/tau,:rad), npw=Index(nbit))
-pat = pattern(DT, seq, p, npw=Index(nbit))
-pat = (pat-0.5)*2 #Center pattern
+#Generate parameter sweeps:
+sweeplist = PSweep[
+	PSweep("tau", tbit.*[1/5, 1/2.5, 1/1.5])
+]
+
+#Generate data:
+pat = DataHR{DataF1}(sweeplist) #Create empty pattern
+for coord in subscripts(pat)
+	(tau,) = parameter(pat, coord)
+	Π = pulse(DT, t, Pole(1/tau,:rad), npw=Index(nbit))
+	_pat = pattern(DT, seq, Π, npw=Index(nbit))
+	pat.subsets[coord...] = (_pat-0.5)*2 #Center pattern
+end
 
 
 #==Generate plot
@@ -41,8 +50,8 @@ pat = (pat-0.5)*2 #Center pattern
 plot=EasyPlot.new(title="Eye Diagram Tests", displaylegend=false)
 s = add(plot, vvst, title="Pattern")
 	add(s, pat, id="pat")
-s = add(plot, vvst, title="Eye", eyeparam(tbit, teye=1.5*tbit))
-	add(s, pat, id="eye", line(color=2))
+s = add(plot, vvst, title="Eye", eyeparam(tbit, teye=1.5*tbit, tstart=-.15*tbit))
+	add(s, pat, id="eye")
 
 
 #==Show results
