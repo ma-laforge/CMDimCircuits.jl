@@ -8,10 +8,7 @@ using MDDatasets
 #Functions to this module will be accessing/appending:
 import MDDatasets: value
 import MDDatasets: DataF1
-
-#Type used to dispatch on a symbol & minimize namespace pollution:
-#-------------------------------------------------------------------------------
-immutable DS{Symbol}; end; #Dispatchable symbol
+import MDDatasets: DS #To dispatch on a symbol & minimize namespace pollution
 
 include("vectorop.jl")
 include("base.jl")
@@ -57,7 +54,7 @@ export timespace #Generate a range representing time
 	where PRIMARY/SECONDARY can be of the following combinations:
 	(PRIMARY is targeted value - secondary might get rounded)
 		(:ts, :tfund)
-		(:tfund, :ts)    *TODO
+		(:tfund, :ts)
 		(:ts, :n)        *TODO
 		(:tfund, :n)     *TODO
 		(:tsig, :n)      *TODO
