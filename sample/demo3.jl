@@ -17,10 +17,10 @@ dfltglyph = glyph(shape=:o)
 #==Input data
 ===============================================================================#
 d1 = DataF1(1:10.0)
-d2 = shift(d1, 4.5) + 12
+d2 = xshift(d1, 4.5) + 12
 d3 = d1 + 12
 d4 = DataF1(d1.x, d1.y[end:-1:1])
-d9 = shift(d1, 100)
+d9 = xshift(d1, 100)
 
 r1 = d1+d2
 r2 = d1+d3
@@ -28,8 +28,8 @@ r3 = (d2+1)+d1
 r4 = max(d1,d4)
 #r3 = d1+d9
 
-d10 = shift(d1, 4)
-d11 = shift(d1, -2)
+d10 = xshift(d1, 4)
+d11 = xshift(d1, -2)
 
 #==Generate plot
 ===============================================================================#
@@ -45,8 +45,8 @@ s = add(plot, vvst, title="Adding arbitrary datasets")
 	add(s, r4, dfltglyph, id = "max(d1,d4)")
 s = add(plot, vvst, title="Shifting datasets")
 	add(s, d1, dfltglyph, id = "d1")
-	add(s, d10, dfltglyph, id = "shift(d1, 4)")
-	add(s, d11, dfltglyph, id = "shift(d1, -2)")
+	add(s, d10, dfltglyph, id = "xshift(d1, 4)")
+	add(s, d11, dfltglyph, id = "xshift(d1, -2)")
 
 
 #==Show results

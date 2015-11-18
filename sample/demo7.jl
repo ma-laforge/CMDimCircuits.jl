@@ -19,15 +19,15 @@ CT = Domain{:CT}
 
 #==Input data
 ===============================================================================#
-nbit = 20 #samples per bit
 tbit = 1e-9 #Bit period
+osr = 20 #samples per bit
 nsamples = 127
 
 
 #==Computations
 ===============================================================================#
 seq = 1.0*prbs(BT, reglen=7, seed=1, nsamples=nsamples)
-t = DataF1(0:(tbit/nbit):(nsamples*tbit))
+t = DataF1(0:(tbit/osr):(nsamples*tbit))
 tmax = maximum(t)
 
 #Generate parameter sweeps:
@@ -39,8 +39,8 @@ sweeplist = PSweep[
 pat = DataHR{DataF1}(sweeplist) #Create empty pattern
 for coord in subscripts(pat)
 	(tau,) = parameter(pat, coord)
-	Π = pulse(DT, t, Pole(1/tau,:rad), npw=Index(nbit))
-	_pat = pattern(DT, seq, Π, npw=Index(nbit))
+	Π = pulse(DT, t, Pole(1/tau,:rad), npw=Index(osr))
+	_pat = pattern(DT, seq, Π, npw=Index(osr))
 	pat.subsets[coord...] = (_pat-0.5)*2 #Center pattern
 end
 

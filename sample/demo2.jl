@@ -19,8 +19,8 @@ CT = Domain{:CT}
 
 #==Input data
 ===============================================================================#
-nbit = 20 #samples per bit
 tbit = 1e-9 #Bit period
+osr = 20 #samples per bit
 nsamples = 20
 
 
@@ -29,9 +29,9 @@ nsamples = 20
 seq = 1.0*prbs(BT, reglen=5, seed=1, nsamples=nsamples)
 #seq = [1,0,1,1,1,0,0,0]; seq = DataF1(collect(1:length(seq)),seq)
 nsamples = length(seq)
-t = DataF1(0:(tbit/nbit):(nsamples*tbit))
-p = pulse(DT, t, Pole(3/tbit,:rad), npw=Index(nbit))
-pat = pattern(DT, seq, p, npw=Index(nbit))
+t = DataF1(0:(tbit/osr):(nsamples*tbit))
+p = pulse(DT, t, Pole(3/tbit,:rad), npw=Index(osr))
+pat = pattern(DT, seq, p, npw=Index(osr))
 
 
 #==Generate plot

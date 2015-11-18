@@ -124,7 +124,7 @@ function pattern(D::Type{DTDomain}, seq::DataF1, p::DataF1; npw::Index=Index(0))
 	@assert(npw > 0, "npw must be positive")
 	result = zeros(p)
 	for i in 1:length(seq)
-		result.y += seq.y[i]*shift(p.y, (i-1)*npw)
+		result.y += seq.y[i]*MDDatasets.shift(p.y, (i-1)*npw)
 	end
 	return result
 end
