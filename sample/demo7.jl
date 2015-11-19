@@ -9,9 +9,6 @@ using EasyPlot
 #==Constants
 ===============================================================================#
 vvst = axes(xlabel="Time (s)", ylabel="Amplitude (V)")
-color1 = line(color=2)
-color2 = line(color=3)
-color3 = line(color=4)
 BT = Domain{:bit}
 DT = Domain{:DT}
 CT = Domain{:CT}

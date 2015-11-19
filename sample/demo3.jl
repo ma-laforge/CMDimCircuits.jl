@@ -10,8 +10,6 @@ using EasyPlot
 ===============================================================================#
 vvst = axes(xlabel="Time (s)", ylabel="Amplitude (V)")
 dfltglyph = glyph(shape=:o)
-#color1 = line(color=2)
-#color2 = line(color=3)
 
 
 #==Input data

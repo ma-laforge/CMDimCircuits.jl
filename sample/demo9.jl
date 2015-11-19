@@ -10,8 +10,6 @@ using EasyPlot
 ===============================================================================#
 vvst = axes(ylabel="Amplitude (V)", xlabel="Time (s)")
 vvsf = axes(ylabel="Amplitude (V)", xlabel="Frequency (Hz)")
-color1 = line(color=2)
-color2 = line(color=3)
 
 
 #==Input data

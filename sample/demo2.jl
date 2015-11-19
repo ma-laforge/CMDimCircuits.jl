@@ -10,8 +10,8 @@ using EasyPlot
 ===============================================================================#
 tvsbit = axes(xlabel="Bit Position", ylabel="Value")
 vvst = axes(xlabel="Time (s)", ylabel="Amplitude (V)")
-color1 = line(color=2)
-color2 = line(color=3)
+color1 = line(color=:red)
+color2 = line(color=:blue)
 BT = Domain{:bit}
 DT = Domain{:DT}
 CT = Domain{:CT}

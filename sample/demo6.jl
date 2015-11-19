@@ -12,8 +12,6 @@ vvst = axes(ylabel="Amplitude (V)", xlabel="Time (s)")
 vvsf = axes(ylabel="Amplitude (V)", xlabel="Frequency (Hz)")
 dbvsf = axes(ylabel="Amplitude (dB)", xlabel="Frequency (Hz)")
 fvspad = axes(ylabel="Frequency (Hz)", xlabel="padding")
-color1 = line(color=2)
-color2 = line(color=3)
 
 
 #==Input data

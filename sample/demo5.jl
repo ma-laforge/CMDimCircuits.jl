@@ -10,8 +10,6 @@ using EasyPlot
 ===============================================================================#
 vvst = axes(ylabel="Amplitude (V)", xlabel="Time (s)")
 vvsf = axes(ylabel="Amplitude (V)", xlabel="Frequency (Hz)")
-color1 = line(color=2)
-color2 = line(color=3)
 
 
 #==Input data
@@ -35,7 +33,7 @@ s = add(plot, vvst, title="Time domain")
 	#add(s, DataF1(sig), id="", glyph(shape=:o))
 	add(s, DataF1(sig), id="")
 s = add(plot, vvsf, title="")
-	add(s, sigSpec, id="", glyph(shape=:o, size=1.5, color=2), line(style=:none))
+	add(s, sigSpec, id="", glyph(shape=:o, size=1.5), line(style=:none, color=:red, width=2))
 #throw(:Done)
 
 

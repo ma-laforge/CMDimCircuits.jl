@@ -9,8 +9,8 @@ using EasyPlot
 #==Constants
 ===============================================================================#
 vvst = axes(xlabel="Time (s)", ylabel="Amplitude (V)")
-color1 = line(color=2)
-color2 = line(color=3)
+color1 = line(color=:red)
+color2 = line(color=:blue)
 
 tstart = 0
 tstep = .01
