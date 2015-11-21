@@ -24,7 +24,7 @@ t = DataF1(0:(2pi/osr):(ncycles*(2pi)))
 y = cos(t)
 dydt = deriv(y)
 ∫ydt = iinteg(y)
-x2x=xcross1(y, ∫ydt, n=2)
+x2x=xcross1(y - ∫ydt, n=2)
 x2y=ycross1(y, ∫ydt, n=2)
 println("crossing#2: ($x2x, $x2y)")
 
