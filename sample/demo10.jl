@@ -1,4 +1,4 @@
-#Demo 7: Eye diagrams
+#Demo 10: Delay tests
 #-------------------------------------------------------------------------------
 
 using MDDatasets
@@ -10,6 +10,9 @@ using EasyPlot
 ===============================================================================#
 vvst = axes(ylabel="Amplitude (V)", xlabel="Time (s)")
 dpsvst = axes(ylabel="Delay (ps)", xlabel="Time (s)")
+dpsvsx = axes(ylabel="Delay (ps)", xlabel="Crossing")
+ldelay = line(width=3)
+gdelay = glyph(shape=:x, size=2)
 BT = Domain{:bit}
 DT = Domain{:DT}
 CT = Domain{:CT}
@@ -45,23 +48,27 @@ end
 refpat = pat.subsets[1]
 
 Δ = DataHR{DataF1}(sweeplist) #Create empty pattern
+Δxn = DataHR{DataF1}(sweeplist) #Delay vs crossing number
 for coord in subscripts(pat)
 	curpat = pat.subsets[coord...]
 	_Δ = measdelay(refpat, curpat, xing1=CrossType(:risefall), xing2=CrossType(:risefall))
 	Δ.subsets[coord...] = _Δ
+	_Δ = measdelay(Event, refpat, curpat, xing1=CrossType(:risefall), xing2=CrossType(:risefall))
+	Δxn.subsets[coord...] = _Δ
 end
 
 
 #==Generate plot
 ===============================================================================#
-plot=EasyPlot.new(title="Eye Diagram Tests", displaylegend=false)
+plot=EasyPlot.new(title="Signal Delay Tests", displaylegend=false)
 s = add(plot, vvst, title="Reference Pattern")
 	add(s, refpat)
 s = add(plot, vvst, title="Patterns")
 	add(s, pat, id="pat")
 s = add(plot, dpsvst, title="Delays")
-	add(s, Δ/1e-12, id="delays", line(width=2), glyph(shape=:x))
-
+	add(s, Δ/1e-12, id="delays", ldelay, gdelay)
+s = add(plot, dpsvsx, title="Delays vs Crossing Number")
+	add(s, Δxn/1e-12, id="delays", ldelay, gdelay)
 
 #==Show results
 ===============================================================================#

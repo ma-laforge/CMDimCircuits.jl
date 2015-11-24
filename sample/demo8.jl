@@ -8,7 +8,7 @@ using EasyPlot
 
 #==Constants
 ===============================================================================#
-vvst = axes(xlabel="Time (s)", ylabel="Amplitude (V)")
+vvst = axes(ylabel="Amplitude (V)", xlabel="Time (s)")
 noline = line(style=:none)
 BT = Domain{:bit}
 DT = Domain{:DT}

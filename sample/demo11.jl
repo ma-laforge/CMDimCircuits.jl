@@ -1,4 +1,4 @@
-#Demo 2: Data patterns
+#Demo 11: Measure frequency/period
 #-------------------------------------------------------------------------------
 
 using MDDatasets
@@ -8,40 +8,40 @@ using EasyPlot
 
 #==Constants
 ===============================================================================#
-tvsbit = axes(ylabel="Value", xlabel="Bit Position")
 vvst = axes(ylabel="Amplitude (V)", xlabel="Time (s)")
-color1 = line(color=:red)
-color2 = line(color=:blue)
-BT = Domain{:bit}
-DT = Domain{:DT}
-CT = Domain{:CT}
+Tpsvst = axes(ylabel="Period (ps)", xlabel="Time (s)")
+fvst = axes(ylabel="Frequency (Hz)", xlabel="Time (s)")
 
 
 #==Input data
 ===============================================================================#
-tbit = 1e-9 #Bit period
-osr = 20 #samples per bit
-nsamples = 20
+fnom = 1e9
+osr = 50 #(fundamental) oversampling ratio
+ncycles = 20
+fshift=0.1 #ratio
+fmod = fnom/ncycles #Frequency of modulation
+xrise = CrossType(:rise)
 
 
 #==Computations
 ===============================================================================#
-seq = 1.0*prbs(BT, reglen=5, seed=1, nsamples=nsamples)
-#seq = [1,0,1,1,1,0,0,0]; seq = DataF1(collect(1:length(seq)),seq)
-nsamples = length(seq)
-t = DataF1(0:(tbit/osr):(nsamples*tbit))
-p = pulse(DT, t, Pole(3/tbit,:rad), npw=Index(osr))
-pat = pattern(DT, seq, p, npw=Index(osr))
+T = 1/fnom
+t = DataF1(0:(T/osr):(ncycles*T))
+finst = fnom*(1+fshift*cos(2pi*fmod*t)) #instantaneous frequency
+y = cos(2pi*finst*t)
 
 
 #==Generate plot
 ===============================================================================#
-plot=EasyPlot.new(title="Generating Patterns")
-s = add(plot, tvsbit, title="PRBS Sequence")
-	add(s, seq, color2)
-s = add(plot, vvst, title="PRBS Pattern")
-	add(s, p, color1, id="Pulse")
-	add(s, pat, color2, id="Pattern")
+plot=EasyPlot.new(title="Period & Frequency Measurements")
+s = add(plot, vvst, title="Signal")
+	add(s, y, id="y(t)")
+s = add(plot, Tpsvst, title="Instantaneous Period")
+	add(s, measperiod(y, xing=xrise, shiftx=true), glyph(shape=:+), id="shift")
+	add(s, measperiod(y, xing=xrise, shiftx=false), glyph(shape=:x), id="no shift")
+s = add(plot, fvst, title="Instantaneous Frequency")
+	add(s, measfreq(y, xing=xrise, shiftx=true), glyph(shape=:+), id="shift")
+	add(s, measfreq(y, xing=xrise, shiftx=false), glyph(shape=:x), id="no shift")
 
 
 #==Show results
@@ -62,4 +62,3 @@ end
 
 
 :Test_Complete
-
