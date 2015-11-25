@@ -33,16 +33,9 @@ sweeplist = PSweep[
 	PSweep("phi", pi*[0, .25, .5, .75])
 ]
 
-#Generate data:
-yref = DataHR{DataF1}(sweeplist) #Create empty pattern
-ydel = DataHR{DataF1}(sweeplist) #Create empty pattern
-for coord in subscripts(ydel)
-	(ϕ,) = parameter(ydel, coord)
-	_y = cos(t+ϕ)
-	ydel.subsets[coord...] = _y
-	yref.subsets[coord...] = y
-end
-
+ϕ = DataHR{Float64}(sweeplist, sweeplist[1].v)
+ydel = cos(t+ϕ)
+yref = y
 
 #==Generate plot
 ===============================================================================#

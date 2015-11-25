@@ -46,17 +46,8 @@ for coord in subscripts(pat)
 end
 
 refpat = pat.subsets[1]
-
-Δ = DataHR{DataF1}(sweeplist) #Create empty pattern
-Δxn = DataHR{DataF1}(sweeplist) #Delay vs crossing number
-for coord in subscripts(pat)
-	curpat = pat.subsets[coord...]
-	_Δ = measdelay(refpat, curpat, xing1=CrossType(:risefall), xing2=CrossType(:risefall))
-	Δ.subsets[coord...] = _Δ
-	_Δ = measdelay(Event, refpat, curpat, xing1=CrossType(:risefall), xing2=CrossType(:risefall))
-	Δxn.subsets[coord...] = _Δ
-end
-
+Δ = measdelay(refpat, pat, xing1=CrossType(:risefall), xing2=CrossType(:risefall))
+Δxn = measdelay(Event, refpat, pat, xing1=CrossType(:risefall), xing2=CrossType(:risefall))
 
 #==Generate plot
 ===============================================================================#
