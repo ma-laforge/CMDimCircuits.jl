@@ -13,6 +13,7 @@ import MDDatasets: DS #To dispatch on a symbol & minimize namespace pollution
 include("vectorop.jl")
 include("base.jl")
 include("timefreq.jl")
+include("datasetop.jl")
 include("dt_generators.jl")
 include("ct_generators.jl")
 include("show.jl")

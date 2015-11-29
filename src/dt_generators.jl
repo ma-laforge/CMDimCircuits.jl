@@ -47,61 +47,64 @@ const MAXLFSR_POLYNOMIAL = [
 	_poly(32,22,2,1) #32
 ]
 
-#Creates step response, using time from ref.x:
+#Creates an ideal step response, using time from ref:
 #-------------------------------------------------------------------------------
-function Base.step(::Type{DTDomain}, ref::DataF1; ndel::Index=Index(0), amp=1)
+function Base.step(ref::DataTime; ndel::Index=Index(0), amp=1)
 	ndel = value(ndel)
-	@assert(ndel >= 0, "ndel must be non-negative")
-	nstart = ndel+1
-	y = zeros(ref.y)
+	#ASSERT INCREASING
+	t = ref.data.t
+	xt = zeros(t)
+	istart = ceil(Int, 1-(t[1]/step(t))) #succeptible to round-offs?
+	istart += ndel
+	istart = max(istart, 1)
 
-	if nstart <= length(y)
-		for i in nstart:length(y)
-			y[i] = amp
-		end
+	for i in istart:length(xt)
+		xt[i] = amp
 	end
-	return DataF1(ref.x, y)
+	return DataTime(t, xt)
 end
 
-#Creates pulse response, using time from ref.x:
+#Creates an ideal pulse response, using time from ref:
 #-------------------------------------------------------------------------------
-function pulse(D::Type{DTDomain}, ref::DataF1; ndel::Index=Index(0), amp=1,
-		npw::Index=Index(0))
+function pulse(ref::DataTime; ndel::Index=Index(0), amp=1, npw::Index=Index(0))
 	@assert(value(npw) > 0, "npw must be positive")
-	return (step(D, ref, ndel=ndel, amp=amp) -
-		step(D, ref, ndel=ndel+npw, amp=amp))
+	t = ref.data.t
+	xt = (step(ref, ndel=ndel, amp=amp).data.xt .-
+		step(ref, ndel=ndel+npw, amp=amp).data.xt)
+	return DataTime(t, xt)
 end
 
 #Creates pulse response of a single-pole system, using time from ref.x:
 # tpw: pulse width
 #-------------------------------------------------------------------------------
-function pulse(D::Type{DTDomain}, ref::DataF1, p::Pole; ndel::Index=Index(0), amp=1,
-		npw::Index=Index(0))
+function pulse(ref::DataTime, p::Pole; ndel::Index=Index(0), amp=1, npw::Index=Index(0))
 	ndel = value(ndel); npw = value(npw)
 	@assert(npw > 0, "npw must be positive")
-	tdel = ref.x[1+ndel]
-	tpw = ref.x[1+ndel+npw]-tdel
-	#Simple wrapper, for now:
-	return pulse(CTDomain, ref, p::Pole, tdel=tdel, amp=amp, tpw=tpw)
+	t = ref.data.t
+	#Simple wrapper using continuous-time algoritm, for now:
+	tdel = step(t)*ndel
+	tpw = step(t)*npw
+	Π = pulse(DataF1(t), p, tdel=tdel, amp=amp, tpw=tpw)
+	return DataTime(ref.data, Π.y)
 end
 
 #Creates PRBS sequence, using time from ref.x:
 #TODO: should the vector by of type Bool?
 #-------------------------------------------------------------------------------
-function prbs(D::Type{BitDomain}; reglen::Int=32, seed::Integer=11, nsamples::Int=0)
+function prbs(; reglen::Int=32, seed::Integer=11, nsamples::Int=0)
 	@assert(nsamples > 0, "nsamples must be positive")
 	@assert(in(reglen, 3:32), "Invalid value: 3 <= reglen <= 32")
 
 	lfsr = UInt64(seed)
 	msb = UInt64(1)<<(reglen-1)
-	pat = zeros(Bool, nsamples)
+	seq = zeros(Bool, nsamples)
 	poly = UInt64(MAXLFSR_POLYNOMIAL[reglen])
 	mask = ~poly
 	#==Since 1 XNOR A => A, we can ignore all taps that are not part of the
 	polynomial, simply by forcing all non-tap bits to 1 (OR-ing with ~poly)
 	==#
 
-	for i in 1:length(pat)
+	for i in 1:length(seq)
 		reg = lfsr | mask
 		bit = msb
 		for j in 1:reglen
@@ -109,24 +112,26 @@ function prbs(D::Type{BitDomain}; reglen::Int=32, seed::Integer=11, nsamples::In
 			reg <<= 1
 		end
 		bit = Int((bit & msb) > 0) #Convert resultant MSB to an integer
-		pat[i] = bit
+		seq[i] = bit
 		lfsr = (lfsr << 1) | bit
 	end
-	return DataF1(collect(1:length(pat)), pat)
+	return seq
 end
 
 #Creates a signal pattern from a sequence of data points, and a pulse response:
-#NOTE: assumes constant x step-size... Is this the way to do it??
 # seq: a binary data sequence
 # p:Pulse response
-function pattern(D::Type{DTDomain}, seq::DataF1, p::DataF1; npw::Index=Index(0))
-	npw = value(npw)
-	@assert(npw > 0, "npw must be positive")
-	result = zeros(p)
+# nbit: Number of sampling steps in a bit period.
+#TODO: shift x instead of y???
+#TODO: Add DataTime vectors directly once implemented
+function pattern{T<:Number}(seq::Vector{T}, p::DataTime; nbit::Index=Index(0))
+	nbit = value(nbit)
+	@assert(nbit > 0, "nbit must be positive")
+	result = zeros(p.data.xt)
 	for i in 1:length(seq)
-		result.y += seq.y[i]*MDDatasets.shift(p.y, (i-1)*npw)
+		result += seq[i]*yshift(p, Index((i-1)*nbit)).data.xt
 	end
-	return result
+	return DataTime(p.data, result)
 end
 
 

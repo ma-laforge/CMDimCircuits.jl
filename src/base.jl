@@ -73,6 +73,8 @@ DataTime(t::Range; tperiodic::Bool=false) = DataTime(t, collect(t), tperiodic=tp
 #For low-level algorithms... Initializes data ranges:
 DataTime(d::DataTF, xt::Vector{DataFloat}) =
 	validatelengths(DataTime(DataTF(d.tperiodic, true, false, d.t, xt, d.f, [])))
+DataTime(t::Range, xt::DataF1; tperiodic::Bool=false) =
+	DataTime(t, sample(xt, t).y, tperiodic=tperiodic)
 
 immutable DataFreq
 	data::DataTF
@@ -81,6 +83,8 @@ DataFreq(f::Range, Xf::Vector{DataComplex}; teven::Bool=true, tperiodic::Bool=fa
 	DataFreq(DataTF(FREQ, f, Xf, teven=teven, tperiodic=tperiodic))
 DataFreq(f::Range; teven::Bool=true, tperiodic::Bool=false) =
 	DataFreq(f, collect(f), teven=teven, tperiodic=tperiodic)
+DataFreq(f::Range, Xf::DataF1; teven::Bool=true, tperiodic::Bool=false) =
+	DataFreq(f, sample(Xf, f).y, teven=teven, tperiodic=tperiodic)
 #For low-level algorithms... Initializes data ranges:
 DataFreq(d::DataTF, Xf::Vector{DataComplex}) =
 	validatelengths(DataFreq(DataTF(d.tperiodic, false, true, d.t, [], d.f, Xf)))
