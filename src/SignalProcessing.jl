@@ -36,7 +36,7 @@ NOTE:
    In turn, the function names become more succinct, and fewer functions need to
    be exported (reduces namespace pollution).
 ==#
-export Pole, Domain
+export Pole
 
 #Time/Frequency domain signals:
 export DataTime, DataFreq, DataZ

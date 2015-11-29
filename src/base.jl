@@ -12,6 +12,7 @@ const FREQ = DS{:freq}()
 ===============================================================================#
 
 #-------------------------------------------------------------------------------
+#==TODO: Remove.  Keep around in case is still useful.
 abstract AbstractDataDomain
 abstract Domain{Symbol} <: AbstractDataDomain
 
@@ -22,6 +23,7 @@ typealias DTDomain Domain{:DT} #Discrete-time domain
 typealias CTDomain Domain{:CT} #Continuous-time domain
 typealias FDomain Domain{:f} #Frequency domain
 typealias ZDomain Domain{:Z} #Z-domain
+==#
 
 #-------------------------------------------------------------------------------
 abstract AbastractFrequency{Symbol} #Id
