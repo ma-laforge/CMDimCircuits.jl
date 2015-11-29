@@ -58,23 +58,9 @@ s = add(plot, vvst, title="Time Domain")
 	add(s, DataF1(sig), id="")
 s = add(plot, dbvsf, title="Sampled Frequency Spectrum")
 	add(s, dB20(sigSpec), id="")
-#throw(:Done)
 
 
-#==Show results
+#==Return plot to user (call evalfile(...))
 ===============================================================================#
 ncols = 1
-if !isdefined(:plotlist); plotlist = Set([:grace]); end
-if in(:grace, plotlist)
-	import EasyPlotGrace
-	plotdefaults = GracePlot.defaults(linewidth=2.5)
-	gplot = GracePlot.new()
-		GracePlot.set(gplot, plotdefaults)
-	render(gplot, plot, ncols=ncols); display(gplot)
-end
-if in(:MPL, plotlist)
-	import EasyPlotMPL
-	display(:MPL, plot, ncols=ncols);
-end
-
-:Test_Complete
+(plot, ncols)

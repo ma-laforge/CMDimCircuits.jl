@@ -33,18 +33,14 @@ sweeplist = PSweep[
 
 #Generate data:
 Π = DataHR{DataF1}(sweeplist) #Create empty results
-amp = DataHR{DataFloat}(sweeplist) #Create empty results
-offset = DataHR{DataFloat}(sweeplist) #Create empty results
 for coord in subscripts(Π)
 	(_amp, tau, _offset) = parameter(Π, coord)
 	_Π = pulse(tΠ, Pole(1/tau,:rad), tpw=tbit)
 	Π.subsets[coord...] = _Π
-	amp.subsets[coord...] = _amp
-	offset.subsets[coord...] = _offset
 end
-
-pat = pattern(seq, Π, tbit=tbit)
-pat = (pat-0.5)*amp + offset
+amp = values(sweeplist, "amp")
+offset = values(sweeplist, "offset")
+pat = (pattern(seq, Π, tbit=tbit)-0.5)*amp + offset #Centered data
 t = xval(pat)
 
 #Do some DataHR-level transformations:
@@ -62,21 +58,7 @@ s = add(plot, vvst, title="PRBS Pattern")
 	add(s, result, id="pat")
 
 
-#==Show results
+#==Return plot to user (call evalfile(...))
 ===============================================================================#
 ncols = 1
-if !isdefined(:plotlist); plotlist = Set([:grace]); end
-if in(:grace, plotlist)
-	import EasyPlotGrace
-	plotdefaults = GracePlot.defaults(linewidth=2.5)
-	gplot = GracePlot.new()
-		GracePlot.set(gplot, plotdefaults)
-	render(gplot, plot, ncols=ncols); display(gplot)
-end
-if in(:MPL, plotlist)
-	import EasyPlotMPL
-	display(:MPL, plot, ncols=ncols);
-end
-
-
-:Test_Complete
+(plot, ncols)

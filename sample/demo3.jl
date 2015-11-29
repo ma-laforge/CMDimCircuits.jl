@@ -48,20 +48,7 @@ s = add(plot, vvst, title="Clipping datasets")
 	add(s, clip(d3, xmin=5), dfltglyph, id = "clip(d3, xmin=5)")
 
 
-#==Show results
+#==Return plot to user (call evalfile(...))
 ===============================================================================#
 ncols = 1
-if !isdefined(:plotlist); plotlist = Set([:grace]); end
-if in(:grace, plotlist)
-	import EasyPlotGrace
-	plotdefaults = GracePlot.defaults(linewidth=2.5)
-	gplot = GracePlot.new()
-		GracePlot.set(gplot, plotdefaults)
-	render(gplot, plot, ncols=ncols); display(gplot)
-end
-if in(:MPL, plotlist)
-	import EasyPlotMPL
-	display(:MPL, plot, ncols=ncols);
-end
-
-:Test_Complete
+(plot, ncols)
