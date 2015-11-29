@@ -9,23 +9,19 @@ using EasyPlot
 #==Constants
 ===============================================================================#
 vvst = axes(ylabel="Amplitude (V)", xlabel="Time (s)")
-BT = Domain{:bit}
-DT = Domain{:DT}
-CT = Domain{:CT}
 
 
 #==Input data
 ===============================================================================#
 tbit = 1e-9 #Bit period
 osr = 20 #samples per bit
+nbit_Π = 5 #Π-pulse length, in number of bits
 nsamples = 127
-
 
 #==Computations
 ===============================================================================#
-seq = 1.0*prbs(BT, reglen=7, seed=1, nsamples=nsamples)
-t = DataF1(0:(tbit/osr):(nsamples*tbit))
-tmax = maximum(t)
+seq = 1.0*prbs(reglen=7, seed=1, nsamples=nsamples)
+tΠ = DataF1(0:(tbit/osr):(nbit_Π*tbit))
 
 #Generate parameter sweeps:
 sweeplist = PSweep[
@@ -33,13 +29,13 @@ sweeplist = PSweep[
 ]
 
 #Generate data:
-pat = DataHR{DataF1}(sweeplist) #Create empty pattern
-for coord in subscripts(pat)
-	(tau,) = parameter(pat, coord)
-	Π = pulse(DT, t, Pole(1/tau,:rad), npw=Index(osr))
-	_pat = pattern(DT, seq, Π, npw=Index(osr))
-	pat.subsets[coord...] = (_pat-0.5)*2 #Center pattern
+Π = DataHR{DataF1}(sweeplist) #Create empty pattern
+for coord in subscripts(Π)
+	(tau,) = parameter(Π, coord)
+	_Π = pulse(tΠ, Pole(1/tau,:rad), tpw=tbit)
+	Π.subsets[coord...] = _Π
 end
+pat = (pattern(seq, Π, tbit=tbit)-0.5)*2 #Centered pattern
 
 
 #==Generate plot

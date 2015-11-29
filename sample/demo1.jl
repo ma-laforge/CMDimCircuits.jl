@@ -12,34 +12,36 @@ vvst = axes(ylabel="Amplitude (V)", xlabel="Time (s)")
 color1 = line(color=:red)
 color2 = line(color=:blue)
 
+#==Input data
+===============================================================================#
 tstart = 0
 tstep = .01
 tstop = 10
 
-#==Input data
+#==Computations
 ===============================================================================#
-DT = Domain{:DT}
-CT = Domain{:CT}
-t = DataF1(tstart:tstep:tstop)
-tmax = maximum(t.x)
+t = tstart:tstep:tstop
+tDT = DataTime(t)
+tCT = DataF1(t)
+tmax = maximum(t)
 @show len = length(t)
-u = step(DT, t, ndel=Index(len/4))
-p = pulse(DT, t, ndel=Index(len/7), npw=Index(len/16))
+u = step(tDT, ndel=Index(len/4))
+p = pulse(tDT, ndel=Index(len/7), npw=Index(len/16))
 pulsewidth = tmax/16
-u1p = step(CT, t, Pole(3/pulsewidth,:rad), tdel=tmax/4)
-p1p = pulse(CT, t, Pole(3/pulsewidth,:rad), tdel=tmax/7, tpw=pulsewidth)
+u1p = step(tCT, Pole(3/pulsewidth,:rad), tdel=tmax/4)
+p1p = pulse(tCT, Pole(3/pulsewidth,:rad), tdel=tmax/7, tpw=pulsewidth)
 
 #==Generate plot
 ===============================================================================#
 plot=EasyPlot.new(title="Generating Simple Responses")
 s = add(plot, vvst, title="Step Response")
-	add(s, u, color1, id="DT")
+	add(s, DataF1(u), color1, id="DT")
 	add(s, u1p, color2, id="CT")
 s = add(plot, vvst, title="Pulse Response")
-	add(s, p, color1, id="DT")
+	add(s, DataF1(p), color1, id="DT")
 	add(s, p1p, color2, id="CT")
 s = add(plot, vvst, title="Sine wave")
-	add(s, sin(t*(pi*10/tmax)), color2)
+	add(s, sin(tCT*(pi*10/tmax)), color2)
 
 #==Show results
 ===============================================================================#
@@ -68,9 +70,6 @@ if in(:MPL, plotlist)
 	import EasyPlotMPL
 	display(:MPL, plot, ncols=ncols);
 end
-
-@show t
-@show u
 
 :Test_Complete
 

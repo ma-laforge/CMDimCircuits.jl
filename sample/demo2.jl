@@ -12,9 +12,6 @@ tvsbit = axes(ylabel="Value", xlabel="Bit Position")
 vvst = axes(ylabel="Amplitude (V)", xlabel="Time (s)")
 color1 = line(color=:red)
 color2 = line(color=:blue)
-BT = Domain{:bit}
-DT = Domain{:DT}
-CT = Domain{:CT}
 
 
 #==Input data
@@ -26,22 +23,22 @@ nsamples = 20
 
 #==Computations
 ===============================================================================#
-seq = 1.0*prbs(BT, reglen=5, seed=1, nsamples=nsamples)
-#seq = [1,0,1,1,1,0,0,0]; seq = DataF1(collect(1:length(seq)),seq)
+seq = 1.0*prbs(reglen=5, seed=1, nsamples=nsamples)
+#seq = [1,0,1,1,1,0,0,0]
 nsamples = length(seq)
-t = DataF1(0:(tbit/osr):(nsamples*tbit))
-p = pulse(DT, t, Pole(3/tbit,:rad), npw=Index(osr))
-pat = pattern(DT, seq, p, npw=Index(osr))
+t = DataTime(0:(tbit/osr):(nsamples*tbit))
+p = pulse(t, Pole(3/tbit,:rad), npw=Index(osr))
+pat = pattern(seq, p, nbit=Index(osr))
 
 
 #==Generate plot
 ===============================================================================#
 plot=EasyPlot.new(title="Generating Patterns")
 s = add(plot, tvsbit, title="PRBS Sequence")
-	add(s, seq, color2)
+	add(s, DataF1(collect(1:length(seq)), seq), color2)
 s = add(plot, vvst, title="PRBS Pattern")
-	add(s, p, color1, id="Pulse")
-	add(s, pat, color2, id="Pattern")
+	add(s, DataF1(p), color1, id="Pulse")
+	add(s, DataF1(pat), color2, id="Pattern")
 
 
 #==Show results

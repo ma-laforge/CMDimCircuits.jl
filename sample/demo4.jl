@@ -9,23 +9,20 @@ using EasyPlot
 #==Constants
 ===============================================================================#
 vvst = axes(ylabel="Amplitude (V)", xlabel="Time (s)")
-BT = Domain{:bit}
-DT = Domain{:DT}
-CT = Domain{:CT}
 
 
 #==Input data
 ===============================================================================#
 tbit = 1e-9 #Bit period
 osr = 20 #samples per bit
+nbit_Π = 5 #Π-pulse length, in number of bits
 nsamples = 20
 
 
 #==Computations
 ===============================================================================#
-seq = 1.0*prbs(BT, reglen=5, seed=1, nsamples=nsamples)
-t = DataF1(0:(tbit/osr):(nsamples*tbit))
-tmax = maximum(t)
+seq = 1.0*prbs(reglen=5, seed=1, nsamples=nsamples)
+tΠ = DataF1(0:(tbit/osr):(nbit_Π*tbit)) #Time of a single pulse
 
 #Generate parameter sweeps:
 sweeplist = PSweep[
@@ -35,26 +32,34 @@ sweeplist = PSweep[
 ]
 
 #Generate data:
-results = DataHR{DataF1}(sweeplist) #Create empty results
-for coord in subscripts(results)
-	(amp, tau, offset) = parameter(results, coord)
-	p = pulse(DT, t, Pole(1/tau,:rad), npw=Index(osr))
-	pat = pattern(DT, seq, p, npw=Index(osr))
-	pat = (pat-0.5)*amp + offset
-	results.subsets[coord...] = pat
+Π = DataHR{DataF1}(sweeplist) #Create empty results
+amp = DataHR{DataFloat}(sweeplist) #Create empty results
+offset = DataHR{DataFloat}(sweeplist) #Create empty results
+for coord in subscripts(Π)
+	(_amp, tau, _offset) = parameter(Π, coord)
+	_Π = pulse(tΠ, Pole(1/tau,:rad), tpw=tbit)
+	Π.subsets[coord...] = _Π
+	amp.subsets[coord...] = _amp
+	offset.subsets[coord...] = _offset
 end
 
+pat = pattern(seq, Π, tbit=tbit)
+pat = (pat-0.5)*amp + offset
+t = xval(pat)
+
 #Do some DataHR-level transformations:
+result = pat
+tmax = tbit*(nsamples+nbit_Π-1)
 skew = DataF1([0, tmax],[0, 0.5])
-results = results + results + 4 + skew
-results += mean(results)
+result = result + result + 4 + skew
+result += mean(result)
 
 
 #==Generate plot
 ===============================================================================#
 plot=EasyPlot.new(title="Mulit-Dataset Tests", displaylegend=false)
 s = add(plot, vvst, title="PRBS Pattern")
-	add(s, results, id="pat")
+	add(s, result, id="pat")
 
 
 #==Show results

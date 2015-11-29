@@ -10,9 +10,6 @@ using EasyPlot
 ===============================================================================#
 vvst = axes(ylabel="Amplitude (V)", xlabel="Time (s)")
 noline = line(style=:none)
-BT = Domain{:bit}
-DT = Domain{:DT}
-CT = Domain{:CT}
 
 
 #==Input data
@@ -25,10 +22,10 @@ tau = tbit/5
 
 #==Computations
 ===============================================================================#
-seq = 1.0*prbs(BT, reglen=5, seed=1, nsamples=nsamples)
+seq = 1.0*prbs(reglen=5, seed=1, nsamples=nsamples)
 t = DataF1(0:(tbit/osr):(nsamples*tbit))
-Π = pulse(DT, t, Pole(1/tau,:rad), npw=Index(osr))
-pat = pattern(DT, seq, Π, npw=Index(osr))
+Π = pulse(t, Pole(1/tau,:rad), tpw=tbit)
+pat = pattern(seq, Π, tbit=tbit)
 spat = sample(pat, 0:(tbit/2):maximum(t))
 _spat_ = sample(pat, -tbit:(tbit/2):(tbit+maximum(t)))
 _spat = sample(pat, -2*tbit:(tbit/2):(maximum(t)/2))
