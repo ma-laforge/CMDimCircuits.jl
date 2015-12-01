@@ -54,6 +54,12 @@ Given the multitude of optional/keyword agruments in some functions, it is curre
 
 Examples of the SignalProcessing.jl capabilities (+more) can be found under the [sample directory](sample/).
 
+### Sample Output Gallery
+
+Outputs of said examples, as generated with the EasyPlotGrace.jl module, can be viewed in the [SignalProcessing Gallery](https://github.com/ma-laforge/FileRepo/tree/master/SignalProcessing/sampleplots).
+
+Please note that the plots are likely out of date.
+
 ## Known Limitations
 
 ### Limited support
