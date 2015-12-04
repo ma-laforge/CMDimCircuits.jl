@@ -1,7 +1,7 @@
 #SignalProcessing: Time/Frequency domain signals
 #-------------------------------------------------------------------------------
 
-import MDDatasets: _operators, _basefn1, _dotop
+import MDDatasets: _operators1, _operators2, _basefn1, _dotop
 
 
 #==Helper functions
@@ -62,7 +62,18 @@ end
 #==Support basic math operations
 ===============================================================================#
 
-for op in _operators; @eval begin #CODEGEN--------------------------------------
+for op in _operators1; @eval begin #CODEGEN--------------------------------------
+
+#op DataTime:
+Base.$op(d::DataTime) = DataTime(d.data, $op(d.data.xt))
+
+#op DataFreq:
+Base.$op(d::DataFreq) = DataFreq(d.data, $op(d.data.Xf))
+
+end; end #CODEGEN---------------------------------------------------------------
+
+
+for op in _operators2; @eval begin #CODEGEN--------------------------------------
 
 #DataTime op Number:
 Base.$op(d::DataTime, n::Number) = DataTime(d.data, $(_dotop(op))(d.data.xt, n))

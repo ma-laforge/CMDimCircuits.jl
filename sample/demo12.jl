@@ -76,7 +76,6 @@ tstart = xcross1(pat[1]-0.5, tstart=tskipundef, allow=CrossType(:rise))
 #Pattern suitable for eye diagram (position start time @ t=0 & t-normalized)
 eyepat = DataHR[]
 for i in 1:nchannels
-	#TODO: unary operator does not broadcast (ex: -tstart):
 	curpat = xscale(xshift(pat[i], tbit/4-tstart), 1/tbit)
 	push!(eyepat, curpat)
 end
