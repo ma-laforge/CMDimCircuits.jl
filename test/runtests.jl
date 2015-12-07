@@ -52,7 +52,7 @@ end
 ===============================================================================#
 for i in 1:13
 	file = "../sample/demo$i.jl"
-	outfile = File{PNGFmt}(joinpath("./", splitext(basename(file))[1] * ".png"))
+	outfile = File(:png, joinpath("./", splitext(basename(file))[1] * ".png"))
 	println("\nExecuting $file...")
 	(plot, ncols) = evalfile(file)
 	DisplayDemoPlot(plotlist, plot, ncols)
