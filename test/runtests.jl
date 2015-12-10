@@ -9,12 +9,13 @@ import MDDatasets: DS
 using EasyPlot
 
 #Set plot backend to Grace, if not already specified by user:
+#plotlist = Set([:Qwt])
 if !isdefined(:plotlist); plotlist = Set([:Grace]); end
 
 #==Define plot rendering function:
 ===============================================================================#
 
-#Only import EasyPlotGrace if desired: 
+#Only import EasyPlotGrace (short load time) if desired: 
 if in(:Grace, plotlist)
 	import EasyPlotGrace
 
@@ -32,12 +33,21 @@ if in(:Grace, plotlist)
 	end
 end
 
-#Only import EasyPlotMPL (long load time) if desired: 
+#Only import EasyPlotMPL (long Python load time) if desired: 
 if in(:MPL, plotlist)
 	import EasyPlotMPL
 
 	function DisplayDemoPlot(::DS{:MPL}, plot::EasyPlot.Plot, ncols::Int, args...)
 		display(:MPL, plot, ncols=ncols);
+	end
+end
+
+#Only import EasyPlotQwt (long Python load time) if desired: 
+if in(:Qwt, plotlist)
+	import EasyPlotQwt
+
+	function DisplayDemoPlot(::DS{:Qwt}, plot::EasyPlot.Plot, ncols::Int, args...)
+		display(:Qwt, plot, ncols=ncols);
 	end
 end
 
