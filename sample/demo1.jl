@@ -1,0 +1,50 @@
+#Demo 1: Read tests
+#-------------------------------------------------------------------------------
+
+using FileIO2
+using EDAData
+using EasyPlot
+import CppSimData
+
+
+#==Constants
+===============================================================================#
+vvst = axes(ylabel="Amplitude (V)", xlabel="Time (s)")
+ratvst = axes(ylabel="Ratio (%)", xlabel="Time (s)")
+color1 = line(color=:red)
+color2 = line(color=:blue)
+
+
+#==Input data
+===============================================================================#
+testfile = "test.tr0"
+file = File(:tr0, joinpath(CppSimData.rootpath, "core/data", testfile))
+
+open(file) do data
+	global vin, div_val, out
+	@show data
+	@show names(data)
+	out = read(data, "out")
+	vin = read(data, "vin")
+	div_val = read(data, "div_val")
+end
+
+
+#==Computations
+===============================================================================#
+
+
+#==Generate plot
+===============================================================================#
+plot=EasyPlot.new(title="EDAData Tests")
+s = add(plot, vvst, title="VCO")
+	add(s, out, color2, id="Vout")
+	add(s, vin, color1, id="Vcontrol")
+s = add(plot, ratvst, title="Divide Ratio")
+	add(s, div_val, color1)
+
+
+#==Return plot to user (call evalfile(...))
+===============================================================================#
+ncols = 1
+(plot, ncols)
