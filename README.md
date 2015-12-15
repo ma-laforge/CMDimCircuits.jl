@@ -8,6 +8,7 @@ The EDAData.jl module provides a Julia interface for loading data files used by 
 At the moment, EDAData.jl supports the following data formats:
 
  - **.tr0** (SPICE format): Read only
+ - **.psf** (Parameter Storage Format): Read only
 
 ## Sample Usage
 
@@ -18,6 +19,7 @@ Examples on how to use the EDAData.jl capabilities can be found under the [sampl
 The EDAData.jl module makes use of 3rd party readers.  For more information, please visit the github pages of the respective readers:
 
  - **CppSimData.jl** (.tr0): <https://github.com/ma-laforge/CppSimData.jl>
+ - **LibPSF.jl** (.psf): <https://github.com/ma-laforge/LibPSF.jl>
 
 ## Known Limitations
 

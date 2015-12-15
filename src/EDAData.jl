@@ -3,23 +3,30 @@
 
 module EDAData
 
-import CppSimData
+import CppSimData #tr0 reader implementation
+import LibPSF #psf reader implementation
 using FileIO2
 using MDDatasets
 
 include("tr0.jl")
-
-FileIO2.File(::FileIO2.Shorthand{:tr0}, path::AbstractString) = File{Tr0Fmt}(path)
+include("psf.jl")
 
 #==Exported symbols
 ===============================================================================#
 #None
 
+#==Un-exported interface
+================================================================================
+	_open(::File{Tr0Fmt/PSFFmt})::{Tr0Reader/PSFReader} #Ensure EDAData opens file.
+==#
+
 #==Extensions to other modules
 ================================================================================
-	FileIO2.File(:tr0, [FILENAME])
-	Base.open()
-	Base.step... already part of base, so can't export it...
+	FileIO2.File(:tr0/:psf, filename::AbstractString)
+	Base.open(Tr0Reader/PSFReader, ::File{Tr0Fmt})::{Tr0Reader/PSFReader}
+	Base.read(::{Tr0Reader/PSFReader}, signame::ASCIIString)
+	Base.close(::{Tr0Reader/PSFReader})
+	Base.names(::{Tr0Reader/PSFReader}) #Returns list of signal names
 ==#
 
 

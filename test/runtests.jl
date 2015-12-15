@@ -60,7 +60,7 @@ end
 
 #==Show results
 ===============================================================================#
-for i in 1:1
+for i in 1:2
 	file = "../sample/demo$i.jl"
 	outfile = File(:png, joinpath("./", splitext(basename(file))[1] * ".png"))
 	println("\nExecuting $file...")

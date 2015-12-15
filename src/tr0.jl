@@ -1,4 +1,4 @@
-#EDAData: Base types & core functions
+#EDAData: TR0 Reader Interface
 #-------------------------------------------------------------------------------
 
 
@@ -7,6 +7,7 @@
 immutable Tr0Fmt <: FileIO2.DataFormat; end
 #Add Shorthand File constructor:
 FileIO2.File(::FileIO2.Shorthand{:tr0}, path::AbstractString) = File{Tr0Fmt}(path)
+#TODO: centralize this Tr0Fmt/Shorthand definition?
 
 type Tr0Reader <: AbstractReader{Tr0Fmt}
 	reader::CppSimData.DataReader
@@ -22,7 +23,8 @@ function Base.open(::Type{Tr0Reader}, file::File{Tr0Fmt})
 	x = CppSimData.evalsig(reader, xname)
 	return Tr0Reader(reader, x)
 end
-Base.open(file::File{Tr0Fmt}) = open(Tr0Reader, file)
+_open(file::File{Tr0Fmt}) = open(Tr0Reader, file) #Guarantee open tr0 with this module.
+_open(fn::Function, file::File{Tr0Fmt}) = open(fn, Tr0Reader, file) #For do/end method
 
 function Base.read(r::Tr0Reader, signame::ASCIIString)
 	y = CppSimData.evalsig(r.reader, signame)
