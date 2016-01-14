@@ -17,14 +17,14 @@ end
 
 #==Open/read/close functions
 ===============================================================================#
-function Base.open(::Type{Tr0Reader}, file::File{Tr0Fmt})
-	reader = CppSimData.loadsig(file.path)
+function Base.open(::Type{Tr0Reader}, path::AbstractString)
+	reader = CppSimData.loadsig(path)
 	xname = CppSimData.lssig(reader)[1]
 	x = CppSimData.evalsig(reader, xname)
 	return Tr0Reader(reader, x)
 end
-_open(file::File{Tr0Fmt}) = open(Tr0Reader, file) #Guarantee open tr0 with this module.
-_open(fn::Function, file::File{Tr0Fmt}) = open(fn, Tr0Reader, file) #For do/end method
+_open(file::File{Tr0Fmt}) = open(Tr0Reader, file.path) #Use Tr0 reader from this module.
+_open(fn::Function, file::File{Tr0Fmt}) = open(fn, Tr0Reader, file.path) #For do/end method
 
 function Base.read(r::Tr0Reader, signame::ASCIIString)
 	y = CppSimData.evalsig(r.reader, signame)

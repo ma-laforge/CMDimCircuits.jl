@@ -17,15 +17,24 @@ end
 
 #==Open/read/close functions
 ===============================================================================#
-function Base.open(::Type{PSFReader}, file::File{PSFFmt})
-	reader = LibPSF._open(file.path)
-	x = LibPSF.readsweep(reader)
+function Base.open(::Type{PSFReader}, path::AbstractString)
+	local x
+	reader = LibPSF._open(path)
+	try
+		x = LibPSF.readsweep(reader)
+	catch
+		x = Void[] #No sweep
+	end
 	return PSFReader(reader, x)
 end
-_open(file::File{PSFFmt}) = open(PSFReader, file) #Guarantee open psf with this module.
-_open(fn::Function, file::File{PSFFmt}) = open(fn, PSFReader, file) #For do/end method
+_open(file::File{PSFFmt}) = open(PSFReader, file.path) #Use PSF reader from this module.
+_open(fn::Function, file::File{PSFFmt}) = open(fn, PSFReader, file.path) #For do/end method
 
 function Base.read(r::PSFReader, signame::ASCIIString)
+#	if typeof(r.x) <: Vector{Void}
+		#Very hacky... Figure out something better
+#		return LibPSF.readscalar(r.reader, signame)
+#	end
 	y = read(r.reader, signame)
 	return DataF1(r.x, y)
 end

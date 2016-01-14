@@ -8,12 +8,29 @@ import LibPSF #psf reader implementation
 using FileIO2
 using MDDatasets
 
+#==Main data structures
+===============================================================================#
+
+#TODO: Improve, and move to a NetworkParameter module
+type NetworkParameterMatrix{T, NPTYPE} #NPTYPE: :S/:Y/:Z/...
+	ref #Port reference
+	d::Array{T}
+end
+call{T, NT}(::Type{NetworkParameterMatrix{T, NT}}, numports::Integer; ref=50) =
+	NetworkParameterMatrix{T, NT}(ref, Array(T, numports, numports))
+
+parameter_type{T, NT}(::Type{NetworkParameterMatrix{T, NT}}) = NT
+parameter_type{T, NT}(::NetworkParameterMatrix{T, NT}) = NT
+
 include("tr0.jl")
 include("psf.jl")
+include("snp_reader.jl")
+include("show.jl")
+
 
 #==Exported symbols
 ===============================================================================#
-#None
+export parameter_type
 
 #==Un-exported interface
 ================================================================================

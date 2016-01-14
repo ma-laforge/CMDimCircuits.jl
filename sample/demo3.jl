@@ -1,16 +1,15 @@
-#Demo 1: psf read tests
+#Demo 3: sNp (Touchstone) file tests
 #-------------------------------------------------------------------------------
 
 using FileIO2
+using MDDatasets
 using EDAData
 using EasyPlot
-import LibPSF
 
 
 #==Constants
 ===============================================================================#
-vvst = axes(ylabel="Amplitude (V)", xlabel="Time (s)")
-ratvst = axes(ylabel="Ratio (%)", xlabel="Time (s)")
+dbvsf = axes(ylabel="Amplitude (dB)", xlabel="Frequency (Hz)")
 color1 = line(color=:red)
 color2 = line(color=:blue)
 color3 = line(color=:green)
@@ -18,18 +17,14 @@ color3 = line(color=:green)
 
 #==Input data
 ===============================================================================#
-testfile = "timeSweep"
-file = File(:psf, joinpath(LibPSF.rootpath, "core/data", testfile))
-
-#open(file) do data #Generic open interface.
-EDAData._open(file) do data #Ensure EDAData opens file.
-	global inp, outp0, outp1
-	@show data
-#	@show names(data) #Too many
-	inp = read(data, "INP")
-	outp0 = read(data, "OUTP<0>")
-	outp1 = read(data, "OUTP<1>")
-end
+#reader = EDAData._open(File(:sNp, "samplefile.s2p"), numports=2)
+#data = readall(reader)
+#close(reader)
+#@show parameter_type(data)
+f = collect(1:1:10)*1e9
+s11 = f.*0.+0.0001
+s11 = DataF1(f, s11)
+s11 = 20*log10(s11)
 
 
 #==Computations
@@ -38,11 +33,9 @@ end
 
 #==Generate plot
 ===============================================================================#
-plot=EasyPlot.new(title="EDAData Tests: psf Format")
-s = add(plot, vvst, title="VCO")
-	add(s, inp, color1, id="Vinp")
-	add(s, outp0, color2, id="Voutp<0>")
-	add(s, outp1, color3, id="Voutp<1>")
+plot=EasyPlot.new(title="EDAData Tests: sNp (Touchstone) Format")
+s = add(plot, dbvsf, title="Reflection Coefficient")
+	add(s, s11, color1, id="S11")
 
 
 #==Return plot to user (call evalfile(...))
