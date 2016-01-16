@@ -4,11 +4,6 @@
 
 #==Main data structures
 ===============================================================================#
-immutable PSFFmt <: FileIO2.DataFormat; end
-#Add Shorthand File constructor:
-FileIO2.File(::FileIO2.Shorthand{:psf}, path::AbstractString) = File{PSFFmt}(path)
-#TODO: centralize this PSFFmt/Shorthand definition?
-
 type PSFReader <: AbstractReader{PSFFmt}
 	reader::LibPSF.DataReader
 	x::Vector

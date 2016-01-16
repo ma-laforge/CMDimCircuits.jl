@@ -8,23 +8,12 @@ import LibPSF #psf reader implementation
 using FileIO2
 using MDDatasets
 
-#==Main data structures
-===============================================================================#
 
-#TODO: Improve, and move to a NetworkParameter module
-type NetworkParameterMatrix{T, NPTYPE} #NPTYPE: :S/:Y/:Z/...
-	ref #Port reference
-	d::Array{T}
-end
-call{T, NT}(::Type{NetworkParameterMatrix{T, NT}}, numports::Integer; ref=50) =
-	NetworkParameterMatrix{T, NT}(ref, Array(T, numports, numports))
-
-parameter_type{T, NT}(::Type{NetworkParameterMatrix{T, NT}}) = NT
-parameter_type{T, NT}(::NetworkParameterMatrix{T, NT}) = NT
-
+include("base.jl")
 include("tr0.jl")
 include("psf.jl")
 include("snp_reader.jl")
+include("snp_writer.jl")
 include("show.jl")
 
 
@@ -32,18 +21,25 @@ include("show.jl")
 ===============================================================================#
 export parameter_type
 
+
 #==Un-exported interface
 ================================================================================
-	_open(::File{Tr0Fmt/PSFFmt})::{Tr0Reader/PSFReader} #Ensure EDAData opens file.
+	type: NetworkParameterMatrix{T, NPTYPE}
+
+	_open(...) #Ensures EDAData opens file.
+	_open(File(:tr0/:psf, path::AbstractString)) #Opens {Tr0Reader/PSFReader}
+
+	_read(File(:sNp, path::AbstractString), numports=X) #Returns NetworkParameterMatrix
 ==#
+
 
 #==Extensions to other modules
 ================================================================================
-	FileIO2.File(:tr0/:psf, filename::AbstractString)
-	Base.open(Tr0Reader/PSFReader, ::File{Tr0Fmt})::{Tr0Reader/PSFReader}
+	FileIO2.File(:tr0/:psf/:sNp, filename::AbstractString)
+
 	Base.read(::{Tr0Reader/PSFReader}, signame::ASCIIString)
-	Base.close(::{Tr0Reader/PSFReader})
 	Base.names(::{Tr0Reader/PSFReader}) #Returns list of signal names
+	Base.close(::{Tr0Reader/PSFReader})
 ==#
 
 

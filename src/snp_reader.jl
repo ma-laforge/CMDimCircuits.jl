@@ -14,10 +14,6 @@ const SNP_FSCALE_MAP = Dict("GHZ"=>1e9, "MHZ"=>1e6, "KHZ"=>1e3, "HZ"=>1)
 
 #==Main data structures
 ===============================================================================#
-immutable SNPFmt <: FileIO2.TextFormat{FileIO2.ASCIIEncoding}; end
-#Add Shorthand File constructor:
-FileIO2.File(::FileIO2.Shorthand{:sNp}, path::AbstractString) = File{SNPFmt}(path)
-#TODO: centralize this SNPFmt/Shorthand definition?
 
 type SNPReader <: AbstractReader{SNPFmt}
 	r::FileIO2.TextReader
@@ -43,6 +39,7 @@ const SNP_READ_MAP = Dict("MA"=>snp_read_ma, "DB"=>snp_read_db, "RI"=>snp_read_r
 
 #==Open/read/close functions
 ===============================================================================#
+#TODO: Should "open" read all header info???
 function Base.open(::Type{SNPReader}, path::AbstractString; numports=0)
 	#TODO: autodetect numports from path
 	if numports < 1
@@ -52,10 +49,21 @@ function Base.open(::Type{SNPReader}, path::AbstractString; numports=0)
 	r = open(FileIO2.TextReader, path)
 	return SNPReader(r, numports)
 end
-_open(file::File{SNPFmt}; numports=0) = #Open .sNp with this module.
-	open(SNPReader, file.path, numports=numports)
+_open(file::File{SNPFmt}, args...; kwargs...) = #Open .sNp with this module.
+	open(SNPReader, file.path, args...; kwargs...)
 
 Base.close(r::SNPReader) = close(r.r)
+
+function Base.read(::Type{SNPReader}, path::AbstractString; numports=0)
+	reader = open(SNPReader, path, numports=numports)
+	try
+		return readall(reader)
+	finally
+		close(reader)
+	end
+end
+_read(file::File{SNPFmt}, args...; kwargs...) = #read .sNp with this module.
+	read(SNPReader, file.path, args...; kwargs...)
 
 
 #==Main reader algorithm
@@ -120,6 +128,16 @@ function Base.readall(r::SNPReader)
 	result = NetworkParameterMatrix{DataF1, symbol(nptype)}(r.numports, ref=refres)
 	for row = 1:r.numports, col = 1:r.numports
 		result.d[row, col] = DataF1(x, y[row, col])
+	end
+
+	nport = size(result.d)[2]
+	istwoport = (2==nport)
+
+	if istwoport
+		#Special case: columns represent x11, x21, x12, x22... gross...
+		x21 = result.d[1,2]
+		result.d[1,2] = result.d[2,1]
+		result.d[2,1] = x21
 	end
 
 	return result

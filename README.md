@@ -9,10 +9,7 @@ At the moment, EDAData.jl supports the following data formats:
 
  - **.tr0** (SPICE format): Read only
  - **.psf** (Parameter Storage Format): Read only
-
-## Sample Usage
-
-Examples on how to use the EDAData.jl capabilities can be found under the [sample directory](sample/).
+ - **.sNp** (Touchstone, .s2p, .s3p, ...): Read/Write
 
 ## Dependencies
 
@@ -20,6 +17,34 @@ The EDAData.jl module makes use of 3rd party readers.  For more information, ple
 
  - **CppSimData.jl** (.tr0): <https://github.com/ma-laforge/CppSimData.jl>
  - **LibPSF.jl** (.psf): <https://github.com/ma-laforge/LibPSF.jl>
+
+## Sample Usage
+
+ - **File()** (exported by FileIO2): Create file reference
+
+		File([:tr0/:psf/:sNp], path::AbstractString)
+
+ - **Reading .tr0 files**
+
+		r = EDAData._open(File(:tr0, "myfile.tr0"))
+		signaldata = read(r, "signalname")
+		close(r)
+
+ - **Reading .psf files**
+
+		r = EDAData._open(File(:psf, "myfile.psf"))
+		signaldata = read(r, "signalname")
+		close(r)
+
+ - **Reading .sNp files**
+
+		r = EDAData._read(File(:sNp, "myfile.s2p"), numports=2)
+
+ - **Writing .sNp files**
+
+		r = EDAData._write(File(:sNp, "outputfile.s2p"))
+
+Further examples on how to use the EDAData.jl capabilities can be found under the [sample directory](sample/).
 
 ## Known Limitations
 

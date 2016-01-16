@@ -4,11 +4,6 @@
 
 #==Main data structures
 ===============================================================================#
-immutable Tr0Fmt <: FileIO2.DataFormat; end
-#Add Shorthand File constructor:
-FileIO2.File(::FileIO2.Shorthand{:tr0}, path::AbstractString) = File{Tr0Fmt}(path)
-#TODO: centralize this Tr0Fmt/Shorthand definition?
-
 type Tr0Reader <: AbstractReader{Tr0Fmt}
 	reader::CppSimData.DataReader
 	x::Vector
