@@ -10,9 +10,9 @@ using EasyPlot
 #==Constants
 ===============================================================================#
 dbvsf = axes(ylabel="Amplitude (dB)", xlabel="Frequency (Hz)")
-color1 = line(color=:red)
-color2 = line(color=:blue)
-color3 = line(color=:green)
+color1 = line(color=:red, width=2)
+color2 = line(color=:blue, width=2)
+color3 = line(color=:green, width=2)
 
 
 #==Input data
@@ -32,21 +32,18 @@ f = collect(1:.1:100)*1e9
 β = ω*sqrt(μ0*ϵ0)
 γ = α+im*β
 
+#Convert γ type to DataF1, function of 1 argument (leverage C-Data toolkit):
+γ = DataF1(f, γ)
+
 #ABCD matrix:
 A = cosh(γ*ℓ)      ;B = sinh(γ*ℓ)*Zc;
 C = sinh(γ*ℓ)/Zc   ;D = cosh(γ*ℓ);
 
 denom = A + B/Z0 + C*Z0 + D
-s11 = (A + B/Z0 - C*Z0 - D) ./ denom
-s12 = (2(A.*D - B.*C)) ./ denom
-s21 = 2 ./ denom
-s22 = (-A + B/Z0 - C*Z0 + D) ./ denom
-
-#Convert to type DataF1 (Function of 1 argument):
-s11 = DataF1(f, s11)
-s12 = DataF1(f, s12)
-s21 = DataF1(f, s21)
-s22 = DataF1(f, s22)
+s11 = (A + B/Z0 - C*Z0 - D) / denom
+s12 = (2(A*D - B*C)) / denom
+s21 = 2 / denom
+s22 = (-A + B/Z0 - C*Z0 + D) / denom
 
 data = EDAData.NetworkParameterMatrix{DataF1, :S}(2, ref=Z0)
 data.d = [s11 s12; s21 s22]
