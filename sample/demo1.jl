@@ -45,7 +45,7 @@ S = Network(:S, T, z0=z0)
 
 #==Generate plot
 ===============================================================================#
-plot=EasyPlot.new(title="Transmission line test")
+plot=EasyPlot.new(title="Transmission Line Test")
 s = add(plot, dbvsf, title="Reflection Coefficient")
 	add(s, dB20(s11), color1, id="s11")
 	add(s, dB20(s22), color2, id="s11")
