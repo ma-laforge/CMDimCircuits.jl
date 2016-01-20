@@ -1,4 +1,5 @@
 #NetwAnalysis: Network parameter conversion tools
+#-------------------------------------------------------------------------------
 
 
 #==Helper functions

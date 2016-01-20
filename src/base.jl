@@ -5,7 +5,7 @@
 #==Main data structures
 ===============================================================================#
 #NP::Int: # of ports
-abstract Network{NP}; #Is this too much hierarchy??
+abstract Network{NP};
 
 abstract NetworkParameters{TP, NP} <: Network{NP}
 typealias NetworkParameterMatrix{T} Array{T, 2}
@@ -28,6 +28,11 @@ type NetworkParametersNoRef{TP, NP, T} <: NetworkParameters{TP, NP}
 	m::NetworkParameterMatrix{T}
 end
 
+#Object used to provide type information to something:
+type AbstractTag{TAGID, T}
+	v::T
+end
+
 
 #==Type aliases
 ===============================================================================#
@@ -38,6 +43,12 @@ typealias TParameters{T} NetworkParametersRef{:T, 2, T}
 typealias ZParameters{NP, T} NetworkParametersNoRef{:Z, NP, T}
 typealias YParameters{NP, T} NetworkParametersNoRef{:Y, NP, T}
 typealias ABCDParameters{T} NetworkParametersNoRef{:ABCD, 2, T}
+
+#Tags:
+typealias TImpedance{T} AbstractTag{:Z, T}
+typealias TAdmittance{T} AbstractTag{:Y, T}
+typealias TInductance{T} AbstractTag{:L, T}
+typealias TCapacitance{T} AbstractTag{:C, T}
 
 
 #==Useful validations/assertions
@@ -52,6 +63,8 @@ end
 #==Constructor interfaces
 ===============================================================================#
 Base.Symbol{TP}(::NPType{TP}) = TP
+
+call{TAGID, T}(::Type{AbstractTag{TAGID}}, v::T) = AbstractTag{TAGID, T}(v)
 
 NPType{TP}(::NetworkParameters{TP}) = NPType(TP)
 
@@ -126,5 +139,20 @@ Base.$fn(d1::NetworkParameters, d2::TNetIop) = apply($fn, d1, d2)
 Base.$fn(d1::TNetIop, d2::NetworkParameters) = apply($fn, d1, d2)
 
 end; end #CODEGEN---------------------------------------------------------------
+
+
+#==Hacks
+===============================================================================#
+#TODO: Move to MDDatasets
+#Make *dot* operations work ond DataMD
+_dotop(x)=Symbol(".$x")
+_operators2 = [:*, :/, :+, :-]
+for op in _operators2; @eval begin #CODEGEN-------------------------------------
+
+Base.$(_dotop(op))(d1::DataMD, d2::Number) = Base.$op(d1, d2)
+Base.$(_dotop(op))(d1::Number, d2::DataMD) = Base.$op(d1, d2)
+
+end; end #CODEGEN---------------------------------------------------------------
+
 
 #Last line

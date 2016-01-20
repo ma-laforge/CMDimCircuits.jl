@@ -4,13 +4,14 @@
 module NetwAnalysis
 
 import MDDatasets
-import MDDatasets: DataF1
+import MDDatasets: DataMD
 
 #Types that are meant to operate on network parameters:
-typealias TNetIop Union{DataF1,Number,Array}
+typealias TNetIop Union{DataMD,Number,Array}
 
 include("base.jl")
 include("npconvert.jl")
+include("cktelements.jl")
 include("show.jl")
 
 
@@ -23,11 +24,19 @@ export NPType #Network parameter type
 
 #Functions
 #-------------------------------------------------------------------------------
+export series, shunt
 export vector_push #Vector{NwPar{Number}} => NwPar{Vector{Number}}
 export vector_pull #NwPar{Vector{Number}} => Vector{NwPar{Number}}
 export portcount
 export mx2elem #Returns 2-port matrix elements as a tuple of elements in intuitive order
 	#TODO: Find better name than mx2elem
+
+#Value tags:
+#-------------------------------------------------------------------------------
+export impedance
+export admittance
+export capacitance
+export inductance
 
 
 #==Other interface tools (symbols not exported to avoid collisions):
@@ -37,6 +46,23 @@ export mx2elem #Returns 2-port matrix elements as a tuple of elements in intuiti
 	Base.eltype(::NetworkParameters)
 	Base.size(::NetworkParameters)
 ==#
+
+#==Symbols *not* exported (useful for implementing custom functions)
+===============================================================================#
+#=
+SParameters{NP, T}
+TParameters{T}
+ZParameters{NP, T}
+YParameters{NP, T}
+ABCDParameters{T}
+
+#Tagged data types:
+TImpedance{T}
+TAdmittance{T}
+TInductance{T}
+TCapacitance{T}
+=#
+
 
 #Notation: z0: Reference impedance.  zC: Characteristic impedance
 end #module NetwAnalysis
