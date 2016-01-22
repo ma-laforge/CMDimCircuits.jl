@@ -42,6 +42,8 @@ typealias TParameters{T} NetworkParametersRef{:T, 2, T}
 
 typealias ZParameters{NP, T} NetworkParametersNoRef{:Z, NP, T}
 typealias YParameters{NP, T} NetworkParametersNoRef{:Y, NP, T}
+typealias HParameters{NP, T} NetworkParametersNoRef{:H, NP, T}
+typealias GParameters{NP, T} NetworkParametersNoRef{:G, NP, T}
 typealias ABCDParameters{T} NetworkParametersNoRef{:ABCD, 2, T}
 
 #Tags:
@@ -68,12 +70,23 @@ call{TAGID, T}(::Type{AbstractTag{TAGID}}, v::T) = AbstractTag{TAGID, T}(v)
 
 NPType{TP}(::NetworkParameters{TP}) = NPType(TP)
 
+#Construct network parameter matrices of a specific type:
 Network{TP}(::NPType{TP}, args...; kwargs...) =
-	throw(ArgumentError("Unsupported network parameter: $TP"))
+	throw(ArgumentError("Unsupported call: Network($TP, ...)"))
 Network{T}(::NPType{:S}, m::NetworkParameterMatrix{T}; z0 = 50) =
 	NetworkParametersRef{:S, portcount(m), T}(z0, m)
+Network{T}(::NPType{:T}, m::NetworkParameterMatrix{T}; z0 = 50) =
+	NetworkParametersRef{:T, 2, T}(z0, m)
+Network{T}(::NPType{:Z}, m::NetworkParameterMatrix{T}) =
+	NetworkParametersNoRef{:Z, portcount(m), T}(m)
+Network{T}(::NPType{:Y}, m::NetworkParameterMatrix{T}) =
+	NetworkParametersNoRef{:Y, portcount(m), T}(m)
 Network{T}(::NPType{:ABCD}, m::NetworkParameterMatrix{T}) =
 	NetworkParametersNoRef{:ABCD, 2, T}(m)
+Network{T}(::NPType{:G}, m::NetworkParameterMatrix{T}) =
+	NetworkParametersNoRef{:G, 2, T}(m)
+Network{T}(::NPType{:H}, m::NetworkParameterMatrix{T}) =
+	NetworkParametersNoRef{:H, 2, T}(m)
 Network(s::Symbol, args...; kwargs...) = Network(NPType(s), args...; kwargs...)
 
 
