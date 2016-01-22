@@ -50,16 +50,32 @@ T = TC1*TR*TC2
 S = Network(:S, T)
 (s11, s12, s21, s22) = mx2elem(S)
 
+#Intermediate network parameters (verify conversion routines):
+nplist = [:Y, :Z, :ABCD, :H, :G]
+
 
 #==Generate plot
 ===============================================================================#
 plot=EasyPlot.new(title="Pi Network Cascade")
-s = add(plot, axes_loglin, xrange, dbvsf, title="Reflection Coefficient")
-	add(s, dB20(s11), color1, id="s11")
-	add(s, dB20(s22), color2, id="s11")
-s = add(plot, axes_loglin, xrange, dbvsf, title="Transmission Coefficient")
-	add(s, dB20(s12), color1, id="s12")
-	add(s, dB20(s21), color2, id="s21")
+srefl = add(plot, axes_loglin, xrange, dbvsf, title="Reflection Coefficient")
+	add(srefl, dB20(s11), color1, id="s11")
+	add(srefl, dB20(s22), color2, id="s11")
+strans = add(plot, axes_loglin, xrange, dbvsf, title="Transmission Coefficient")
+	add(strans, dB20(s12), color1, id="s12")
+	add(strans, dB20(s21), color2, id="s21")
+
+Sref = S
+
+for np in nplist
+	X = Network(np, Sref)
+	S = Network(:S, X)
+	(s11, s12, s21, s22) = mx2elem(S)
+	add(srefl, dB20(s11), color1, id="s11 ($np)")
+	add(srefl, dB20(s22), color2, id="s11 ($np)")
+	add(strans, dB20(s12), color1, id="s12 ($np)")
+	add(strans, dB20(s21), color2, id="s21 ($np)")
+end
+
 
 
 #==Return plot to user (call evalfile(...))
