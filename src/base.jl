@@ -28,11 +28,6 @@ type NetworkParametersNoRef{TP, NP, T} <: NetworkParameters{TP, NP}
 	m::NetworkParameterMatrix{T}
 end
 
-#Object used to provide type information to something:
-type AbstractTag{TAGID, T}
-	v::T
-end
-
 
 #==Type aliases
 ===============================================================================#
@@ -45,12 +40,6 @@ typealias YParameters{NP, T} NetworkParametersNoRef{:Y, NP, T}
 typealias HParameters{NP, T} NetworkParametersNoRef{:H, NP, T}
 typealias GParameters{NP, T} NetworkParametersNoRef{:G, NP, T}
 typealias ABCDParameters{T} NetworkParametersNoRef{:ABCD, 2, T}
-
-#Tags:
-typealias TImpedance{T} AbstractTag{:Z, T}
-typealias TAdmittance{T} AbstractTag{:Y, T}
-typealias TInductance{T} AbstractTag{:L, T}
-typealias TCapacitance{T} AbstractTag{:C, T}
 
 
 #==Useful validations/assertions
@@ -65,8 +54,6 @@ end
 #==Constructor interfaces
 ===============================================================================#
 Base.Symbol{TP}(::NPType{TP}) = TP
-
-call{TAGID, T}(::Type{AbstractTag{TAGID}}, v::T) = AbstractTag{TAGID, T}(v)
 
 NPType{TP}(::NetworkParameters{TP}) = NPType(TP)
 

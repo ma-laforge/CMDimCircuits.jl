@@ -16,27 +16,6 @@ _zeroone(v) = (zeros(v), ones(v))
 
 #==Main functions
 ===============================================================================#
-impedance(v) = TImpedance(v)
-admittance(v) = TAdmittance(v)
-capacitance(v) = TCapacitance(v)
-inductance(v) = TInductance(v)
-
-impedance(y::TAdmittance) = impedance(1./y.v)
-admittance(z::TImpedance) = admittance(1./z.v)
-
-#Capacitor values:
-_Y(c::TCapacitance, f) = admittance((2*pi*c.v)im.*f)
-_Y(c::TCapacitance, ::Void) = throw(ArgumentError("Missing kwarg :f"))
-admittance(c::TCapacitance; f = nothing) = _Y(c, f)
-impedance(c::TCapacitance, args...; kwargs...) = impedance(admittance(c, args...; kwargs...))
-#TODO: create admittance(:L, value, f=x)??
-
-#Inductor values:
-_Z(l::TInductance, f) = admittance((2*pi*c.v)im.*f)
-_Z(l::TInductance, ::Void) = throw(ArgumentError("Missing kwarg :f"))
-impedance(l::TInductance; f = nothing) = _Z(l, f)
-admittance(l::TInductance, args...; kwargs...) = admittance(impedance(l, args...; kwargs...))
-
 
 #Create series/shunt elements:
 function shunt{T}(::NPType{:ABCD}, y::TAdmittance{T})

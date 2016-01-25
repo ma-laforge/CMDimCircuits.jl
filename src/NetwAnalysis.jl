@@ -3,6 +3,9 @@
 
 module NetwAnalysis
 
+using CircuitAnalysis
+import CircuitAnalysis: TImpedance, TAdmittance, TInductance, TCapacitance
+
 import MDDatasets
 import MDDatasets: DataMD
 
@@ -31,13 +34,6 @@ export portcount
 export mx2elem #Returns 2-port matrix elements as a tuple of elements in intuitive order
 	#TODO: Find better name than mx2elem
 
-#Value tags:
-#-------------------------------------------------------------------------------
-export impedance
-export admittance
-export capacitance
-export inductance
-
 
 #==Other interface tools (symbols not exported to avoid collisions):
 ================================================================================
@@ -55,12 +51,6 @@ TParameters{T}
 ZParameters{NP, T}
 YParameters{NP, T}
 ABCDParameters{T}
-
-#Tagged data types:
-TImpedance{T}
-TAdmittance{T}
-TInductance{T}
-TCapacitance{T}
 =#
 
 

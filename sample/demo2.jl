@@ -3,6 +3,7 @@
 
 using FileIO2
 using MDDatasets
+using CircuitAnalysis
 using NetwAnalysis
 using EasyPlot
 

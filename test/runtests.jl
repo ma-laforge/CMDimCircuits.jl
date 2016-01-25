@@ -1,6 +1,7 @@
 #Test code
 #-------------------------------------------------------------------------------
 
+using CircuitAnalysis 
 using NetwAnalysis
 
 #No real test code yet... just run demos:
@@ -10,10 +11,14 @@ using NetwAnalysis
 ===============================================================================#
 sepline = "---------------------------------------------------------------------"
 f = collect(1:3)*1e9
+c = capacitance(5e-15)
 
 
 #==Intermediate Computations
 ===============================================================================#
+ycap = admittance(c, f=1e9)
+zcap = impedance(c, f=1e9)
+ycap_vec = admittance(c, f=f)
 
 
 #==Tests
@@ -31,14 +36,6 @@ println(sepline)
 
 println("\nTest impedance operations:")
 println(sepline)
-
-@show c = capacitance(5e-15)
-try; admittance(c)
-catch e; warn(e); end
-
-@show ycap = admittance(c, f=1e9)
-@show zcap = impedance(c, f=1e9)
-
 @show shunt(:ABCD, zcap)
 @show shunt(:ABCD, ycap)
 @show series(:ABCD, zcap)
@@ -52,13 +49,9 @@ println(sepline)
 @show S*[3 4; 2 1]
 @show s21 = S[2,1]
 
-println("\nTest impedance{vector} operations:")
-println(sepline)
-@show ycap = admittance(c, f=f)
-
 println("\nTest matrix{vector} operations:")
 println(sepline)
-@show TC = shunt(:ABCD, ycap)
+@show TC = shunt(:ABCD, ycap_vec)
 @show TCpull = vector_pull(TC)
 @show TCpush = vector_push(TCpull)
 @show TC-TCpush #Take difference
