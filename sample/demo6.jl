@@ -2,6 +2,7 @@
 #-------------------------------------------------------------------------------
 
 using MDDatasets
+using CircuitAnalysis
 using SignalProcessing
 using EasyPlot
 
