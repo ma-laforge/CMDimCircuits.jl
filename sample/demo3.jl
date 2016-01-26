@@ -4,6 +4,7 @@
 using FileIO2
 using MDDatasets
 using CircuitAnalysis
+using NetwAnalysis
 using EDAData
 using EasyPlot
 
@@ -39,35 +40,41 @@ f = collect(1:.1:100)*1e9
 #ABCD matrix:
 A = cosh(γ*ℓ)      ;B = sinh(γ*ℓ)*Zc;
 C = sinh(γ*ℓ)/Zc   ;D = cosh(γ*ℓ);
+T = Network(:ABCD, [A B; C D])
 
-denom = A + B/Z0 + C*Z0 + D
-s11 = (A + B/Z0 - C*Z0 - D) / denom
-s12 = (2(A*D - B*C)) / denom
-s21 = 2 / denom
-s22 = (-A + B/Z0 - C*Z0 + D) / denom
-
-data = EDAData.NetworkParameterMatrix{DataF1, :S}(2, ref=Z0)
-data.d = [s11 s12; s21 s22]
+#Convert to S-paramters:
+data = Network(:S, T)
 
 #Save data to .s2p file:
 len_mm = ℓ/1e-3
-filepath = "line_$(len_mm)m.s2p"
-EDAData._write(File(:sNp, filepath), data)
+filepath(np::Symbol) = "line$(np)_$(len_mm)m.s2p"
+EDAData._write(File(:sNp, filepath(:S)), data)
+EDAData._write(File(:sNp, filepath(:Z)), Network(:Z, data))
 
 #Re-load data:
-data = EDAData._read(File(:sNp, filepath), numports=2)
-@show parameter_type(data)
+data = EDAData._read(File(:sNp, filepath(:S)), numports=2)
+(s11, s12, s21, s22) = mx2elem(data)
+@show Symbol(NPType(data))
 
 
 #==Generate plot
 ===============================================================================#
 plot=EasyPlot.new(title="EDAData Tests: sNp (Touchstone) Format")
-s = add(plot, dbvsf, title="Reflection Coefficient")
-	add(s, dB20(s11), color1, id="s11")
-	add(s, dB20(s22), color2, id="s11")
-s = add(plot, dbvsf, title="Transmission Coefficient")
-	add(s, dB20(s12), color1, id="s12")
-	add(s, dB20(s21), color2, id="s21")
+srefl = add(plot, dbvsf, title="Reflection Coefficient")
+	add(srefl, dB20(s11), color1, id="s11")
+	add(srefl, dB20(s22), color2, id="s11")
+strans = add(plot, dbvsf, title="Transmission Coefficient")
+	add(strans, dB20(s12), color1, id="s12")
+	add(strans, dB20(s21), color2, id="s21")
+
+#Overlay result of reading/writing Z-parameters:
+data = EDAData._read(File(:sNp, filepath(:Z)), numports=2)
+@show s = Symbol(NPType(data))
+(s11, s12, s21, s22) = mx2elem(Network(:S, data))
+	add(srefl, dB20(s11), color1, id="s11 ($(s)P)")
+	add(srefl, dB20(s22), color2, id="s11 ($(s)P)")
+	add(strans, dB20(s12), color1, id="s12 ($(s)P)")
+	add(strans, dB20(s21), color2, id="s21 ($(s)P)")
 
 
 #==Return plot to user (call evalfile(...))

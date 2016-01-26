@@ -125,22 +125,26 @@ function Base.readall(r::SNPReader)
 	end
 
 	x = x .* SNP_FSCALE_MAP[xunit]
-	result = NetworkParameterMatrix{DataF1, symbol(nptype)}(r.numports, ref=refres)
+	m = Array(DataF1, r.numports, r.numports)
 	for row = 1:r.numports, col = 1:r.numports
-		result.d[row, col] = DataF1(x, y[row, col])
+		m[row, col] = DataF1(x, y[row, col])
 	end
 
-	nport = size(result.d)[2]
-	istwoport = (2==nport)
-
+	istwoport = (2==r.numports)
 	if istwoport
 		#Special case: columns represent x11, x21, x12, x22... gross...
-		x21 = result.d[1,2]
-		result.d[1,2] = result.d[2,1]
-		result.d[2,1] = x21
+		x21 = m[1,2]
+		m[1,2] = m[2,1]
+		m[2,1] = x21
 	end
 
-	return result
+	nwkwargs = Dict()
+	nptype = symbol(nptype)
+	if :S == nptype
+		push!(nwkwargs, :z0 => refres)
+	end
+
+	return Network(nptype, m; nwkwargs...)
 end
 
 #Last line

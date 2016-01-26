@@ -6,7 +6,10 @@ module EDAData
 import CppSimData #tr0 reader implementation
 import LibPSF #psf reader implementation
 using FileIO2
+using NetwAnalysis
 using MDDatasets
+
+import NetwAnalysis: NetworkParameters, NetworkParametersRef, NetworkParametersNoRef
 
 
 include("base.jl")
@@ -19,17 +22,14 @@ include("show.jl")
 
 #==Exported symbols
 ===============================================================================#
-export parameter_type
 
 
 #==Un-exported interface
 ================================================================================
-	type: NetworkParameterMatrix{T, NPTYPE}
-
 	_open(...) #Ensures EDAData opens file.
 	_open(File(:tr0/:psf, path::AbstractString)) #Opens {Tr0Reader/PSFReader}
 
-	_read(File(:sNp, path::AbstractString), numports=X) #Returns NetworkParameterMatrix
+	_read(File(:sNp, path::AbstractString), numports=X) #Returns NetworkParameters matrix
 ==#
 
 
