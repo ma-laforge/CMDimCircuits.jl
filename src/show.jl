@@ -26,6 +26,12 @@ function Base.show(io::IO, np::SParameters)
 	println(io, "]")
 end
 
+function Base.show(io::IO, np::TParameters)
+	println(io, "TParameters{$(portcount(np))-port, z0=$(np.z0)}[")
+	_printmatrix(io, np.m)
+	println(io, "]")
+end
+
 function Base.show(io::IO, np::ZParameters)
 	println(io, "ZParameters{$(portcount(np))-port}[")
 	_printmatrix(io, np.m)

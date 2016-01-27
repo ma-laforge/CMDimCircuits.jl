@@ -112,6 +112,16 @@ end
 #==Network parameter conversions: X=>S
 ===============================================================================#
 
+#Convert T => S-parameters (equations always maintains z0):
+function Network(RT::NPType{:S}, T::TParameters)
+	(t11, t12, t21, t22) = mx2elem(T)
+	s11 = t21/t11
+	s12 = t22 - t21*t12/t11
+	s21 = 1/t11
+	s22 = -t12/t11
+	return Network(RT, [s11 s12; s21 s22], z0=T.z0)
+end
+
 #Convert ABCD => S-parameters:
 function Network(RT::NPType{:S}, ABCD::ABCDParameters; z0::Real = 50.0)
 	(A, B, C, D) = mx2elem(ABCD)
@@ -152,6 +162,16 @@ end
 
 #==Network parameter conversions: S=>X
 ===============================================================================#
+
+#Convert 2-port S-parameters => T (equations always maintains z0):
+function Network(RT::NPType{:T}, S::SParameters{2})
+	(s11, s12, s21, s22) = mx2elem(S)
+	t11 = 1/s21
+	t12 = -s22/s21
+	t21 = s11/s21
+	t22 = s12 - s11*s22/s21
+	return Network(RT, [t11 t12; t21 t22], z0=S.z0)
+end
 
 #Convert 2-port S-parameters => ABCD:
 function Network(RT::NPType{:ABCD}, S::SParameters{2})
@@ -251,16 +271,26 @@ So... indirect conversions try to use S-parameters as the intermediate.
 #Stop recursion:
 Network(::NPType{:S}, np::Network) = throw("Could not convert to S-parameters")
 
-#Relay network parameters when input already of desired type:
-#Relay S-parameter network (Resolves ambiguity):
-Network(RT::NPType{:S}, np::NetworkParameters{:S}) = np
-#Generic, RPS: Result parameter symbol:
-Network{RPS}(RT::NPType{RPS}, np::NetworkParameters{RPS}) = np
-
 #DEFAULT: Convert to S parameters, when direct conversion not implemented:
 Network(RT::NPType, np::Network) = Network(RT, Network(:S, np))
 
+
+#Relay network parameters when input already of desired type:
+#*******************************************************************************
+#Generic, RPS: Result parameter symbol:
+_Network{RPS}(RT::NPType{RPS}, np::NetworkParametersRef{RPS}, z0::Void) = np #Relay
+_Network(RT::NPType, np::Network, z0::Void) = Network(RT, Network(:S, np))
+_Network(RT::NPType, np::Network, z0::Real) =
+	Network(RT, Network(:S, Network(:Z, Network(:S, np)), z0=z0)) #HACK: Convert through Z network for arbitrary z0
+Network(RT::NPType{:S}, np::NetworkParameters{:S}; z0 = nothing) = _Network(RT, np, z0) #Resolve ambiguity
+Network(RT::NPType{:S}, np::Network; z0 = nothing) = _Network(RT, np, z0)
+Network(RT::NPType{:T}, np::NetworkParameters{:T}; z0 = nothing) = _Network(RT, np, z0) #Resolve ambiguity
+Network(RT::NPType{:T}, np::Network; z0 = nothing) = _Network(RT, np, z0)
+Network{RPS}(RT::NPType{RPS}, np::NetworkParameters{RPS}) = np #Relay
+
+
 #G/H parameters must go through Z:
+#*******************************************************************************
 Network(RT::NPType{:H}, np::NetworkParameters) = Network(RT, Network(:Z, np))
 Network(RT::NPType{:G}, np::NetworkParameters) = Network(RT, Network(:Z, np))
 Network{NT<:HParameters}(RT::NPType{:S}, np::NT) = Network(RT, Network(:Z, np))

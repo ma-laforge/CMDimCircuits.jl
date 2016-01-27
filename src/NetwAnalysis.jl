@@ -8,6 +8,7 @@ import CircuitAnalysis: TImpedance, TAdmittance, TInductance, TCapacitance
 
 import MDDatasets
 import MDDatasets: DataMD
+import MDDatasets: DS #To dispatch on a symbol & minimize namespace pollution
 
 #Types that are meant to operate on network parameters:
 typealias TNetIop Union{DataMD,Number,Array}
@@ -15,6 +16,7 @@ typealias TNetIop Union{DataMD,Number,Array}
 include("base.jl")
 include("npconvert.jl")
 include("cktelements.jl")
+include("gains.jl")
 include("show.jl")
 
 
@@ -27,6 +29,7 @@ export NPType #Network parameter type
 
 #Functions
 #-------------------------------------------------------------------------------
+export kstab, gain
 export series, shunt
 export vector_push #Vector{NwPar{Number}} => NwPar{Vector{Number}}
 export vector_pull #NwPar{Vector{Number}} => Vector{NwPar{Number}}
