@@ -43,7 +43,7 @@ end
 
 #Compute ABCD matrix of shunt capacitors:
 TC1 = shunt(:ABCD, admittance(C, f=f))
-TC2 = shunt(:ABCD, impedance(C, f=f))
+TC2 = shunt(:ABCD, impedance(2C, f=f)) #Add asymmetry
 
 #Compute Pi network:
 T = TC1*TR*TC2
@@ -52,15 +52,16 @@ S = Network(:S, T)
 (s11, s12, s21, s22) = mx2elem(S)
 
 #Intermediate network parameters (verify conversion routines):
-nplist = [:Y, :Z, :ABCD, :H, :G]
+nplist = [:Y, :Z, :ABCD, :H, :G, :T]
 
 
 #==Generate plot
 ===============================================================================#
 plot=EasyPlot.new(title="Pi Network Cascade")
-srefl = add(plot, axes_loglin, xrange, dbvsf, title="Reflection Coefficient")
-	add(srefl, dB20(s11), color1, id="s11")
-	add(srefl, dB20(s22), color2, id="s11")
+s_s11 = add(plot, axes_loglin, xrange, dbvsf, title="Reflection Coefficient, S11")
+	add(s_s11, dB20(s11), color1, id="s11")
+s_s22 = add(plot, axes_loglin, xrange, dbvsf, title="Reflection Coefficient, S22")
+	add(s_s22, dB20(s22), color1, id="s22")
 strans = add(plot, axes_loglin, xrange, dbvsf, title="Transmission Coefficient")
 	add(strans, dB20(s12), color1, id="s12")
 	add(strans, dB20(s21), color2, id="s21")
@@ -71,8 +72,8 @@ for np in nplist
 	X = Network(np, Sref)
 	S = Network(:S, X)
 	(s11, s12, s21, s22) = mx2elem(S)
-	add(srefl, dB20(s11), color1, id="s11 ($np)")
-	add(srefl, dB20(s22), color2, id="s11 ($np)")
+	add(s_s11, dB20(s11), color1, id="s11 ($np)")
+	add(s_s22, dB20(s22), color1, id="s11 ($np)")
 	add(strans, dB20(s12), color1, id="s12 ($np)")
 	add(strans, dB20(s21), color2, id="s21 ($np)")
 end
