@@ -23,8 +23,8 @@ println("\nTest impedance operations:")
 println(sepline)
 
 @show c = capacitance(5e-15)
-try; admittance(c)
-catch e; warn(e); end
+try; admittance(c); warn("Failed")
+catch e; info("Fail successful: ", e); end
 
 @show ycap = admittance(c, f=1e9)
 @show zcap = impedance(c, f=1e9)
@@ -33,7 +33,13 @@ catch e; warn(e); end
 println("\nTest impedance{vector} operations:")
 println(sepline)
 @show ycap = admittance(c, f=f)
-
+@show -ycap
+@show ycap .* 5
+@show 5 .* ycap
+@show ycap + ycap
+@show ycap ./ 5
+try; 5 ./ ycap; warn("Failed")
+catch e; info("Fail successful."); end
 
 println("\nTest unit conversion:")
 println(sepline)

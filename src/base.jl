@@ -30,6 +30,45 @@ typealias TCapacitance{T} AbstractTag{:C, T}
 call{TAGID, T}(::Type{AbstractTag{TAGID}}, v::T) = AbstractTag{TAGID, T}(v)
 
 
+#==Operations
+===============================================================================#
+
+#_dotop(x)=Symbol(".$x")
+_operators_mult = [:*, :(.*)] #Multiplying a tagged object
+_operators_div = [:/, :(./)] #Dividing a tagged object
+_operators_scale = vcat(_operators_mult, _operators_div)#Scaling a tagged object
+_operators1 = [:+, :-] #Unary operator on a tagged object
+#Can be performed between two tagged objects of same type:
+_operators_same = [:+, :-, :(.+), :(.-)]
+
+for op in _operators1; @eval begin #CODEGEN-------------------------------------
+
+Base.$op{TAGID}(d1::AbstractTag{TAGID}) = AbstractTag{TAGID}(Base.$op(d1.v))
+
+end; end #CODEGEN---------------------------------------------------------------
+
+for op in _operators_scale; @eval begin #CODEGEN--------------------------------
+
+Base.$op{TAGID}(d1::AbstractTag{TAGID}, d2::Number) =
+	AbstractTag{TAGID}(Base.$op(d1.v, d2))
+
+end; end #CODEGEN---------------------------------------------------------------
+
+for op in _operators_mult; @eval begin #CODEGEN---------------------------------
+
+Base.$op{TAGID}(d1::Number, d2::AbstractTag{TAGID}) =
+	AbstractTag{TAGID}(Base.$op(d1, d2.v))
+
+end; end #CODEGEN---------------------------------------------------------------
+
+for op in _operators_same; @eval begin #CODEGEN---------------------------------
+
+Base.$op{TAGID}(d1::AbstractTag{TAGID}, d2::AbstractTag{TAGID}) =
+	AbstractTag{TAGID}(Base.$op(d1.v, d2.v))
+
+end; end #CODEGEN---------------------------------------------------------------
+
+
 #==Main functions
 ===============================================================================#
 impedance(v) = TImpedance(v)
