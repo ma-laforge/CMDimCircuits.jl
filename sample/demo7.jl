@@ -30,10 +30,10 @@ sweeplist = PSweep[
 
 #Generate data:
 Π = DataHR{DataF1}(sweeplist) #Create empty pattern
-for coord in subscripts(Π)
-	(tau,) = parameter(Π, coord)
+for inds in subscripts(Π)
+	(tau,) = coordinates(Π, inds)
 	_Π = pulse(tΠ, Pole(1/tau,:rad), tpw=tbit)
-	Π.subsets[coord...] = _Π
+	Π.elem[inds...] = _Π
 end
 pat = (pattern(seq, Π, tbit=tbit)-0.5)*2 #Centered pattern
 

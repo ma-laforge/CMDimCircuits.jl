@@ -33,13 +33,13 @@ sweeplist = PSweep[
 
 #Generate data:
 Π = DataHR{DataF1}(sweeplist) #Create empty results
-for coord in subscripts(Π)
-	(_amp, tau, _offset) = parameter(Π, coord)
+for inds in subscripts(Π)
+	(_amp, tau, _offset) = coordinates(Π, inds)
 	_Π = pulse(tΠ, Pole(1/tau,:rad), tpw=tbit)
-	Π.subsets[coord...] = _Π
+	Π.elem[inds...] = _Π
 end
-amp = values(sweeplist, "amp")
-offset = values(sweeplist, "offset")
+amp = parameter(Π, "amp")
+offset = parameter(Π, "offset")
 pat = (pattern(seq, Π, tbit=tbit)-0.5)*amp + offset #Centered data
 t = xval(pat)
 

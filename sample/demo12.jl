@@ -40,22 +40,22 @@ sweeplist = PSweep[
 #Generate data (like a simulator would do):
 #-------------------------------------------------------------------------------
 Π = DataHR{DataF1}(sweeplist) #Create empty pattern
-for coord in subscripts(Π)
-	(tbit,) = parameter(Π, coord)
+for inds in subscripts(Π)
+	(tbit,) = coordinates(Π, inds)
 	tΠ = DataF1(0:(tbit/osr):(nbit_Π*tbit))
 	_Π = pulse(tΠ, Pole(1/tau,:rad), tpw=tbit)
-	Π.subsets[coord...] = _Π
+	Π.elem[inds...] = _Π
 end
 
 seq = DataHR[] #Broadcastable version of prbs sequence - include undefined @ start
 pat = DataHR[]
-tbit = values(sweeplist, "tbit")
+tbit = parameter(Π, "tbit")
 for i in 1:nchannels
 	curseq = DataHR{DataF1}(sweeplist)
-	for coord in subscripts(curseq)
+	for inds in subscripts(curseq)
 		undefdata = rand(0:1.0, 5) #Each test/channel gets different undefined data
 		_seq = vcat(undefdata, zeros(10), seqVec[i])
-		curseq.subsets[coord...] = DataF1(collect(1:length(_seq)), _seq)
+		curseq.elem[inds...] = DataF1(collect(1:length(_seq)), _seq)
 	end
 	push!(seq, curseq)
 	Δ = rand(-skewmax:1e-12:skewmax) #Each channel is skewed differently

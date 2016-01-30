@@ -35,20 +35,20 @@ sweeplist = PSweep[
 
 #Generate data:
 sigSpec = DataHR{DataF1}(sweeplist) #Create empty sigSpec
-for coord in subscripts(sigSpec)
-	(padding,) = parameter(sigSpec, coord)
+for inds in subscripts(sigSpec)
+	(padding,) = coordinates(sigSpec, inds)
 	tpad = 0:Δt:(Δt*((length(tvec)-1)+padding))
 	xtpad = zeros(length(tpad))
 	xtpad[1:length(sigvec)] = sigvec
 	pad = DataTime(tpad, xtpad, tperiodic=false)
 	Fpad = freqdomain(pad)
-	sigSpec.subsets[coord...] = abs2(fspectrum(Fpad))
+	sigSpec.elem[inds...] = abs2(fspectrum(Fpad))
 end
 
 fmax = maximum(xval(sigSpec))
 fstep = DataHR{DataFloat}(sweeplist) #Create empty data
-for coord in subscripts(fstep)
-	fstep.subsets[coord...] = sigSpec.subsets[coord...].x[2]
+for inds in subscripts(fstep)
+	fstep.elem[inds...] = sigSpec.elem[inds...].x[2]
 end
 
 
