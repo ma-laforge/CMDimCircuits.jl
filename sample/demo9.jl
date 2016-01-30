@@ -33,7 +33,7 @@ sweeplist = PSweep[
 	PSweep("phi", pi*[0, .25, .5, .75])
 ]
 
-ϕ = DataHR{Float64}(sweeplist, sweeplist[1].v)
+ϕ = parameter(DataHR, sweeplist, "phi")
 ydel = cos(t+ϕ)
 yref = y
 

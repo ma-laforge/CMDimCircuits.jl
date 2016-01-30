@@ -26,7 +26,6 @@ osr = 20 #(fundamental) oversampling ratio
 tvec = timespace(:ts, tfund/osr, :tfund, tfund)
 Δt = step(tvec)
 sigvec = rand(DataFloat, length(tvec))
-sig = DataTime(tvec, sigvec, tperiodic=false)
 
 #Generate parameter sweeps:
 sweeplist = PSweep[
@@ -34,29 +33,36 @@ sweeplist = PSweep[
 ]
 
 #Generate data:
-sigSpec = DataHR{DataF1}(sweeplist) #Create empty sigSpec
-for inds in subscripts(sigSpec)
-	(padding,) = coordinates(sigSpec, inds)
+sigSpec = fill(DataHR, sweeplist) do padding
+	#t-vector (+padding):
 	tpad = 0:Δt:(Δt*((length(tvec)-1)+padding))
+	#x(t)-vector:
 	xtpad = zeros(length(tpad))
 	xtpad[1:length(sigvec)] = sigvec
+	#Padded time-domain signal:
 	pad = DataTime(tpad, xtpad, tperiodic=false)
-	Fpad = freqdomain(pad)
-	sigSpec.elem[inds...] = abs2(fspectrum(Fpad))
+
+	Fpad = freqdomain(pad) #Frequency-domain signal (DataFreq)
+	return abs2(fspectrum(Fpad)) #Spectrum (DataF1)
 end
 
+#Informative:
 fmax = maximum(xval(sigSpec))
+
 fstep = DataHR{DataFloat}(sweeplist) #Create empty data
 for inds in subscripts(fstep)
 	fstep.elem[inds...] = sigSpec.elem[inds...].x[2]
 end
+
+@show fmax
+@show fstep
 
 
 #==Generate plot
 ===============================================================================#
 plot=EasyPlot.new(title="Fourier Transform vs Padding")
 s = add(plot, vvst, title="Time Domain")
-	add(s, DataF1(sig), id="")
+	add(s, DataF1(collect(tvec), sigvec), id="")
 s = add(plot, dbvsf, title="Sampled Frequency Spectrum")
 	add(s, dB20(sigSpec), id="")
 

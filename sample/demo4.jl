@@ -32,15 +32,16 @@ sweeplist = PSweep[
 ]
 
 #Generate data:
-Π = DataHR{DataF1}(sweeplist) #Create empty results
-for inds in subscripts(Π)
-	(_amp, tau, _offset) = coordinates(Π, inds)
-	_Π = pulse(tΠ, Pole(1/tau,:rad), tpw=tbit)
-	Π.elem[inds...] = _Π
+#-------------------------------------------------------------------------------
+#NOTE: verbose... trying to test DataHR & "parameter" operations.
+
+#Generate single pulse for all parametric corners:
+Π = fill(DataHR, sweeplist) do amp, tau, offset
+	return pulse(tΠ, Pole(1/tau,:rad), tpw=tbit)
 end
 amp = parameter(Π, "amp")
 offset = parameter(Π, "offset")
-pat = (pattern(seq, Π, tbit=tbit)-0.5)*amp + offset #Centered data
+pat = (pattern(seq, Π, tbit=tbit)-0.5)*amp + offset #Center data pattern
 t = xval(pat)
 
 #Do some DataHR-level transformations:

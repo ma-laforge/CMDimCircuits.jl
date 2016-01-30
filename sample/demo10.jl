@@ -34,14 +34,11 @@ sweeplist = PSweep[
 ]
 
 #Generate data:
-Π = DataHR{DataF1}(sweeplist) #Create empty pattern
-for inds in subscripts(Π)
-	(tau,) = coordinates(Π, inds)
-	_Π = pulse(t, Pole(1/tau,:rad), tpw=tbit)
-	Π.elem[inds...] = _Π
+Π = fill(DataHR, sweeplist) do tau
+	return pulse(t, Pole(1/tau,:rad), tpw=tbit)
 end
 
-pat = (pattern(seq, Π, tbit=tbit)-0.5)*2 #Centered pattern
+pat = (pattern(seq, Π, tbit=tbit)-0.5)*2 #Center data pattern
 refpat = pat.elem[1]
 Δ = measdelay(refpat, pat, xing1=CrossType(:risefall), xing2=CrossType(:risefall))
 Δxn = measdelay(Event, refpat, pat, xing1=CrossType(:risefall), xing2=CrossType(:risefall))

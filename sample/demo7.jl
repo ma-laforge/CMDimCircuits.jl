@@ -18,6 +18,7 @@ osr = 20 #samples per bit
 nbit_Π = 5 #Π-pulse length, in number of bits
 nsamples = 127
 
+
 #==Computations
 ===============================================================================#
 seq = 1.0*prbs(reglen=7, seed=1, nsamples=nsamples)
@@ -29,13 +30,10 @@ sweeplist = PSweep[
 ]
 
 #Generate data:
-Π = DataHR{DataF1}(sweeplist) #Create empty pattern
-for inds in subscripts(Π)
-	(tau,) = coordinates(Π, inds)
-	_Π = pulse(tΠ, Pole(1/tau,:rad), tpw=tbit)
-	Π.elem[inds...] = _Π
+Π = fill(DataHR, sweeplist) do tau
+	return pulse(tΠ, Pole(1/tau,:rad), tpw=tbit)
 end
-pat = (pattern(seq, Π, tbit=tbit)-0.5)*2 #Centered pattern
+pat = (pattern(seq, Π, tbit=tbit)-0.5)*2 #Center data pattern
 
 
 #==Generate plot
