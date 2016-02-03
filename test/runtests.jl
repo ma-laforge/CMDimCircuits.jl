@@ -8,9 +8,10 @@ using MDDatasets
 import MDDatasets: DS
 using EasyPlot
 
-#Set plot backend to Grace, if not already specified by user:
+#Set default plot backend to matplotlib, if not already specified by user:
 #plotlist = Set([:Qwt])
-if !isdefined(:plotlist); plotlist = Set([:Grace]); end
+#plotlist = Set([:Grace])
+if !isdefined(:plotlist); plotlist = Set([:MPL]); end
 
 #==Define plot rendering function:
 ===============================================================================#
