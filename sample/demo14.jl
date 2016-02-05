@@ -39,6 +39,8 @@ pat = (pattern(seq, Π, tbit=tbit)-0.5)*2 #Center data pattern
 
 Δ = measdelay(patref, pat, xing1=CrossType(:risefall), xing2=CrossType(:risefall))
 ck2q = measck2q(ck, pat, xing_ck=CrossType(:rise), xing_q=CrossType(:risefall))
+@show tstart_ck = xcross1(patref)-50e-12
+ck2q_ideal = measck2q(pat, tbit, tstart_ck=tstart_ck, xing_q=CrossType(:risefall))
 
 
 #==Generate plot
@@ -53,8 +55,10 @@ s = add(plot, vvst, title="Patterns", axrange)
 s = add(plot, dpsvst, title="Delays", axrange)
 	add(s, Δ/1e-12, id="measdelay", ldelay, gdelay)
 	add(s, ck2q/1e-12, id="measck2q", ldelay, gdelay)
+	add(s, ck2q_ideal/1e-12, id="measck2q (ideal ck)", ldelay, gdelay)
 s = add(plot, dpsvst, title="Difference", axrange)
 	add(s, (Δ-ck2q)/1e-12, id="measdelay-measck2q", ldelay, gdelay)
+	add(s, (Δ-ck2q_ideal)/1e-12, id="measdelay-measck2q (ideal ck)", ldelay, gdelay)
 
 
 #==Return plot to user (call evalfile(...))
