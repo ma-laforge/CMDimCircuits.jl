@@ -56,15 +56,13 @@ duty = measduty(ck)
 
 stats = measckstats(ck, tck=tck)
 kv = sort(collect(keys(stats)))
-#stats()
 for i in 1:length(stats)
 	k, v = (kv[i], stats[kv[i]])
-#TODO: maximum() is broken!
-#	if maximum(v) < 10e-9
-#		println("\n", k, "/1p: ", v/1e-12)
-#	else
+	if maximum(v) < 10e-9
+		println("\n", k, "/1p: ", v/1e-12)
+	else
 		println("\n", k, ": ", v)
-#	end
+	end
 end
 
 ϕmax = parameter(ϕ, "phimax")
