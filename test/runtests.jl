@@ -61,7 +61,7 @@ end
 
 #==Show results
 ===============================================================================#
-for i in 1:16
+for i in 1:17
 	file = "../sample/demo$i.jl"
 	sepline = "---------------------------------------------------------------------"
 	outfile = File(:png, joinpath("./", splitext(basename(file))[1] * ".png"))
