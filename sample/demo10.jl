@@ -30,11 +30,12 @@ tmax = maximum(t)
 
 #Generate parameter sweeps:
 sweeplist = PSweep[
+	PSweep("EXTRALVL", [1]) #Add extra level to test more code
 	PSweep("tau", tbit.*[1/5, 1/2.5, 1/1.5])
 ]
 
 #Generate data:
-Π = fill(DataHR, sweeplist) do tau
+Π = fill(DataHR, sweeplist) do EL, tau
 	return pulse(t, Pole(1/tau,:rad), tpw=tbit)
 end
 
@@ -42,6 +43,7 @@ pat = (pattern(seq, Π, tbit=tbit)-0.5)*2 #Center data pattern
 refpat = pat.elem[1]
 Δ = measdelay(refpat, pat, xing_ref=CrossType(:risefall), xing_main=CrossType(:risefall))
 Δxn = measdelay(Event, refpat, pat, xing_ref=CrossType(:risefall), xing_main=CrossType(:risefall))
+Δ = DataRS(Δ) #Test support for DataRS objects
 
 
 #==Generate plot

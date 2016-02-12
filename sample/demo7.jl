@@ -26,14 +26,16 @@ tΠ = DataF1(0:(tbit/osr):(nbit_Π*tbit))
 
 #Generate parameter sweeps:
 sweeplist = PSweep[
+	PSweep("EXTRALVL", [1]) #Add extra level to test more code
 	PSweep("tau", tbit.*[1/5, 1/2.5, 1/1.5])
 ]
 
 #Generate data:
-Π = fill(DataHR, sweeplist) do tau
+Π = fill(DataHR, sweeplist) do EL, tau
 	return pulse(tΠ, Pole(1/tau,:rad), tpw=tbit)
 end
 pat = (pattern(seq, Π, tbit=tbit)-0.5)*2 #Center data pattern
+patRS = DataRS(pat)
 
 
 #==Generate plot
@@ -41,8 +43,10 @@ pat = (pattern(seq, Π, tbit=tbit)-0.5)*2 #Center data pattern
 plot=EasyPlot.new(title="Eye Diagram Tests", displaylegend=false)
 s = add(plot, vvst, title="Pattern")
 	add(s, pat, id="pat")
-s = add(plot, vvst, title="Eye", eyeparam(tbit, teye=1.5*tbit, tstart=-.15*tbit))
+s = add(plot, vvst, title="Eye (DataHR)", eyeparam(tbit, teye=1.5*tbit, tstart=-.15*tbit))
 	add(s, pat, id="eye")
+s = add(plot, vvst, title="Eye (DataRS)", eyeparam(tbit, teye=1.5*tbit, tstart=-.15*tbit))
+	add(s, patRS, id="eye")
 
 
 #==Return plot to user (call evalfile(...))
