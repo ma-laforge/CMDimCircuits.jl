@@ -99,16 +99,18 @@ DataZ(Xf::Vector{DataComplex}; teven::Bool=true) =
 	DataFreq(linspace(0, 2pi, length(Xf)), Xf, teven=teven, tperiodic=false)
 
 
-#==Useful assertions
+#==Useful validations/assertions
 ===============================================================================#
 	
 #Validate data lengths:
 function validatelengths(d::DataTime)
-	@assert(length(d.data.t)==length(d.data.xt), "Invalid DataTime: Lengths do not match: t & x(t)")
+	ensure(length(d.data.t)==length(d.data.xt),
+		ArgumentError("Invalid DataTime: Lengths do not match: t & x(t)"))
 	return d
 end
 function validatelengths(d::DataFreq)
-	@assert(length(d.data.f)==length(d.data.Xf), "Invalid DataFreq: Lengths do not match: f & X(f)")
+	ensure(length(d.data.f)==length(d.data.Xf),
+		ArgumentError("Invalid DataFreq: Lengths do not match: f & X(f)"))
 	return d
 end
 

@@ -25,7 +25,7 @@ end
 # tpw: pulse width
 #-------------------------------------------------------------------------------
 function pulse(ref::DataF1, p::Pole; tdel=0, amp=1, tpw::Number=0)
-	@assert(tpw > 0, "tpw must be positive")
+	ensure(tpw > 0, ArgumentError("tpw must be positive"))
 	return (step(ref, p, tdel=tdel, amp=amp) -
 		step(ref, p, tdel=tdel+tpw, amp=amp))
 end
@@ -36,7 +36,7 @@ end
 # Π: Pulse response
 # tbit: bit period
 function pattern{T<:Number}(seq::Vector{T}, Π::DataF1; tbit::Number=0)
-	@assert(tbit > 0, "tbit must be positive")
+	ensure(tbit > 0, ArgumentError("tbit must be positive"))
 	result = 0
 	for i in 1:length(seq)
 		result += seq[i]*xshift(Π, (i-1)*tbit)

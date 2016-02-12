@@ -47,14 +47,16 @@ datavec(::DS{:sig}, d::DataFreq) = d.data.Xf
 #Returns sampled frequency spectrum (non-periodic signals)
 #Normalizes FFT results -> |X(f)| samples or {ak} coefficients
 function fspectrum(d::DataFreq)
-	@assert(!d.data.tperiodic, "Frequency spetrum is only valid for non-periodic signals")
+	ensure(!d.data.tperiodic,
+		ArgumentError("Frequency spectrum is only valid for non-periodic signals"))
 	return DataF1(collect(d.data.f), d.data.Xf)
 end
 
 #Returns Fourier-series coefficients (t-periodic signals)
 #Normalizes FFT results -> |X(f)| samples or {ak} coefficients
 function fcoeff(d::DataFreq)
-	@assert(d.data.tperiodic, "Fourier-series coefficients are only valid for time-periodic signals")
+	ensure(d.data.tperiodic,
+		ArgumentError("Fourier-series coefficients are only valid for time-periodic signals"))
 	return DataF1(collect(d.data.f), d.data.Xf./length(d.data.t))
 end
 

@@ -62,7 +62,7 @@ end
 #-------------------------------------------------------------------------------
 tskipundef = 10*tbit #Starting point for skipping over undefined data
 #Reference channel #1 for starting point:
-tstart = xcross1(pat[1]-0.5, tstart=tskipundef, allow=CrossType(:rise))
+tstart = xcross1(pat[1]-0.5, xstart=tskipundef, allow=CrossType(:rise))
 #NOTE: tstart is not really necessary. tskipundef would be sufficient.
 
 #Show that something happened

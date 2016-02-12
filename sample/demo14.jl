@@ -37,7 +37,7 @@ ck = sin(2pi*t/tbit)
 patref = (pattern(seq, Πref, tbit=tbit)-0.5)*2 #Center data pattern
 pat = (pattern(seq, Π, tbit=tbit)-0.5)*2 #Center data pattern
 
-Δ = measdelay(patref, pat, xing1=CrossType(:risefall), xing2=CrossType(:risefall))
+Δ = measdelay(patref, pat, xing_ref=CrossType(:risefall), xing_main=CrossType(:risefall))
 ck2q = measck2q(ck, pat, xing_ck=CrossType(:rise), xing_q=CrossType(:risefall))
 @show tstart_ck = xcross1(patref)-50e-12
 ck2q_ideal = measck2q(pat, tbit, tstart_ck=tstart_ck, xing_q=CrossType(:risefall))

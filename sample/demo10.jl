@@ -40,8 +40,8 @@ end
 
 pat = (pattern(seq, Π, tbit=tbit)-0.5)*2 #Center data pattern
 refpat = pat.elem[1]
-Δ = measdelay(refpat, pat, xing1=CrossType(:risefall), xing2=CrossType(:risefall))
-Δxn = measdelay(Event, refpat, pat, xing1=CrossType(:risefall), xing2=CrossType(:risefall))
+Δ = measdelay(refpat, pat, xing_ref=CrossType(:risefall), xing_main=CrossType(:risefall))
+Δxn = measdelay(Event, refpat, pat, xing_ref=CrossType(:risefall), xing_main=CrossType(:risefall))
 
 
 #==Generate plot

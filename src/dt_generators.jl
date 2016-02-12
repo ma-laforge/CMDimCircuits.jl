@@ -67,7 +67,7 @@ end
 #Creates an ideal pulse response, using time from ref:
 #-------------------------------------------------------------------------------
 function pulse(ref::DataTime; ndel::Index=Index(0), amp=1, npw::Index=Index(0))
-	@assert(value(npw) > 0, "npw must be positive")
+	ensure(value(npw) > 0, ArgumentError("npw must be positive"))
 	t = ref.data.t
 	xt = (step(ref, ndel=ndel, amp=amp).data.xt .-
 		step(ref, ndel=ndel+npw, amp=amp).data.xt)
@@ -79,7 +79,7 @@ end
 #-------------------------------------------------------------------------------
 function pulse(ref::DataTime, p::Pole; ndel::Index=Index(0), amp=1, npw::Index=Index(0))
 	ndel = value(ndel); npw = value(npw)
-	@assert(npw > 0, "npw must be positive")
+	ensure(npw > 0, ArgumentError("npw must be positive"))
 	t = ref.data.t
 	#Simple wrapper using continuous-time algoritm, for now:
 	tdel = step(t)*ndel
@@ -92,8 +92,8 @@ end
 #TODO: should the vector by of type Bool?
 #-------------------------------------------------------------------------------
 function prbs(; reglen::Int=32, seed::Integer=11, nsamples::Int=0)
-	@assert(nsamples > 0, "nsamples must be positive")
-	@assert(in(reglen, 3:32), "Invalid value: 3 <= reglen <= 32")
+	ensure(nsamples > 0, ArgumentError("nsamples must be positive"))
+	ensure(in(reglen, 3:32), ArgumentError("Invalid value: 3 <= reglen <= 32"))
 
 	lfsr = UInt64(seed)
 	msb = UInt64(1)<<(reglen-1)
@@ -126,7 +126,7 @@ end
 #TODO: Add DataTime vectors directly once implemented
 function pattern{T<:Number}(seq::Vector{T}, p::DataTime; nbit::Index=Index(0))
 	nbit = value(nbit)
-	@assert(nbit > 0, "nbit must be positive")
+	ensure(nbit > 0, ArgumentError("nbit must be positive"))
 	result = zeros(p.data.xt)
 	for i in 1:length(seq)
 		result += seq[i]*yshift(p, Index((i-1)*nbit)).data.xt
