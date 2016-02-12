@@ -5,7 +5,7 @@
 ===============================================================================#
 
 #Object used to provide type information to something:
-type AbstractTag{TAGID, T}
+type ValueTag{TAGID, T}
 	v::T
 end
 
@@ -14,10 +14,10 @@ end
 ===============================================================================#
 
 #Tags:
-typealias TImpedance{T} AbstractTag{:Z, T}
-typealias TAdmittance{T} AbstractTag{:Y, T}
-typealias TInductance{T} AbstractTag{:L, T}
-typealias TCapacitance{T} AbstractTag{:C, T}
+typealias TImpedance{T} ValueTag{:Z, T}
+typealias TAdmittance{T} ValueTag{:Y, T}
+typealias TInductance{T} ValueTag{:L, T}
+typealias TCapacitance{T} ValueTag{:C, T}
 
 
 #==Useful validations/assertions
@@ -27,7 +27,7 @@ typealias TCapacitance{T} AbstractTag{:C, T}
 #==Constructor interfaces
 ===============================================================================#
 
-call{TAGID, T}(::Type{AbstractTag{TAGID}}, v::T) = AbstractTag{TAGID, T}(v)
+call{TAGID, T}(::Type{ValueTag{TAGID}}, v::T) = ValueTag{TAGID, T}(v)
 
 
 #==Operations
@@ -43,28 +43,28 @@ _operators_same = [:+, :-, :(.+), :(.-)]
 
 for op in _operators1; @eval begin #CODEGEN-------------------------------------
 
-Base.$op{TAGID}(d1::AbstractTag{TAGID}) = AbstractTag{TAGID}(Base.$op(d1.v))
+Base.$op{TAGID}(d1::ValueTag{TAGID}) = ValueTag{TAGID}(Base.$op(d1.v))
 
 end; end #CODEGEN---------------------------------------------------------------
 
 for op in _operators_scale; @eval begin #CODEGEN--------------------------------
 
-Base.$op{TAGID}(d1::AbstractTag{TAGID}, d2::Number) =
-	AbstractTag{TAGID}(Base.$op(d1.v, d2))
+Base.$op{TAGID}(d1::ValueTag{TAGID}, d2::Number) =
+	ValueTag{TAGID}(Base.$op(d1.v, d2))
 
 end; end #CODEGEN---------------------------------------------------------------
 
 for op in _operators_mult; @eval begin #CODEGEN---------------------------------
 
-Base.$op{TAGID}(d1::Number, d2::AbstractTag{TAGID}) =
-	AbstractTag{TAGID}(Base.$op(d1, d2.v))
+Base.$op{TAGID}(d1::Number, d2::ValueTag{TAGID}) =
+	ValueTag{TAGID}(Base.$op(d1, d2.v))
 
 end; end #CODEGEN---------------------------------------------------------------
 
 for op in _operators_same; @eval begin #CODEGEN---------------------------------
 
-Base.$op{TAGID}(d1::AbstractTag{TAGID}, d2::AbstractTag{TAGID}) =
-	AbstractTag{TAGID}(Base.$op(d1.v, d2.v))
+Base.$op{TAGID}(d1::ValueTag{TAGID}, d2::ValueTag{TAGID}) =
+	ValueTag{TAGID}(Base.$op(d1.v, d2.v))
 
 end; end #CODEGEN---------------------------------------------------------------
 
