@@ -5,7 +5,7 @@
 #==Main data structures
 ===============================================================================#
 type PSFReader <: AbstractReader{PSFFmt}
-	reader::LibPSF.DataReader
+	reader::PSFReaderLib.DataReader
 	x::Vector
 end
 
@@ -14,9 +14,9 @@ end
 ===============================================================================#
 function Base.open(::Type{PSFReader}, path::AbstractString)
 	local x
-	reader = LibPSF._open(path)
+	reader = PSFReaderLib._open(path)
 	try
-		x = LibPSF.readsweep(reader)
+		x = PSFReaderLib.readsweep(reader)
 	catch
 		x = Void[] #No sweep
 	end
@@ -28,7 +28,7 @@ _open(fn::Function, file::File{PSFFmt}) = open(fn, PSFReader, file.path) #For do
 function Base.read(r::PSFReader, signame::ASCIIString)
 #	if typeof(r.x) <: Vector{Void}
 		#Very hacky... Figure out something better
-#		return LibPSF.readscalar(r.reader, signame)
+#		return PSFReaderLib.readscalar(r.reader, signame)
 #	end
 	y = read(r.reader, signame)
 	return DataF1(r.x, y)

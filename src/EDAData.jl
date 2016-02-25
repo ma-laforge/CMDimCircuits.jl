@@ -2,9 +2,14 @@
 #-------------------------------------------------------------------------------
 
 module EDAData
+const defaultPSFReader = isdefined(Main, :defaultPSFReader)? Main.defaultPSFReader: (:LibPSF2)
 
 import CppSimData #tr0 reader implementation
-import LibPSF #psf reader implementation
+
+#Import PSF reader implementation as "PSFReaderLib" (Hacky, but works):
+eval(:(using $defaultPSFReader))
+eval(:(const PSFReaderLib = $defaultPSFReader))
+
 using FileIO2
 using NetwAnalysis
 using MDDatasets
