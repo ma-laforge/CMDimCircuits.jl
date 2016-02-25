@@ -17,6 +17,7 @@ The EDAData.jl module makes use of 3rd party readers.  For more information, ple
 
  - **CppSimData.jl** (.tr0): <https://github.com/ma-laforge/CppSimData.jl>
  - **LibPSF.jl** (.psf): <https://github.com/ma-laforge/LibPSF.jl>
+ - **LibPSF2.jl** (.psf): <https://github.com/ma-laforge/LibPSF2.jl>
 
 ## Sample Usage
 
@@ -48,11 +49,17 @@ Further examples on how to use the EDAData.jl capabilities can be found under th
 
 ## Known Limitations
 
+By default, EDAData reads .psf files using the pure-Julia libpsf implementation "LibPSF2.jl".  To opt for a C++ implementation, it is possible to select the LibPSF.jl library using the following julia statement:
+
+	defaultPSFReader = :LibPSF
+
+The constant *must* be defined before the call to import the `EDAData` library.  It can therefore be placed in your ~/.juliarc.jl file.
+
 ### Compatibility
 
 Extensive compatibility testing of EDAData.jl has not been performed.  The module has been tested using the following environment(s):
 
- - Linux / Julia-0.4.0 (64-bit)
+ - Linux / Julia-0.4.2 (64-bit)
 
 ## Disclaimer
 
