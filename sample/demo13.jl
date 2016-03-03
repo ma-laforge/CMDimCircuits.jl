@@ -69,6 +69,8 @@ s = add(plot, a_yvsx, axrange, title="Slice with planes z=3 & z=60")
 s = add(plot, a_yvsx, axrange, title="Slice with planes 1 & 2")
 	add(s, slice_p1, id="plane 1", line(style=:none, width=2), glyph(shape=:o))
 	add(s, slice_p2, id="plane 1", line(style=:none, width=2), glyph(shape=:o))
+#Change color scheme:
+plot.theme.colorscheme = EasyPlot.ColorScheme(EasyPlot.colormap("Blues", 12))
 
 
 #==Return plot to user (call evalfile(...))
