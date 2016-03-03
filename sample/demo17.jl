@@ -10,7 +10,7 @@ using EasyPlot
 ===============================================================================#
 vvst = axes(ylabel="Amplitude (V)", xlabel="Time (s)")
 rfpsvst = axes(ylabel="Rise/Fall (ps)", xlabel="Time (s)")
-ldelay = line(width=3)
+ldelay = line(style=:solid, width=3)
 gdelay = glyph(shape=:x, size=2)
 
 
@@ -53,8 +53,8 @@ plot=EasyPlot.new(title="Rise/Fall Tests", displaylegend=false)
 s = add(plot, axrng, vvst, title="Patterns")
 	add(s, pat, id="pat")
 s = add(plot, axrng, rfpsvst, title="20-80 Rise/Fall Times")
-	add(s, trise/1e-12, id="", ldelay, gdelay)
-	add(s, tfall/1e-12, id="", ldelay, gdelay)
+	add(s, trise/1e-12, id="", ldelay, gdelay, line(color=:blue))
+	add(s, tfall/1e-12, id="", ldelay, gdelay, line(color=:red))
 
 
 #==Return plot to user (call evalfile(...))
