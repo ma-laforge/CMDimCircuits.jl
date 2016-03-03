@@ -11,7 +11,7 @@ using EasyPlot
 vvst = axes(ylabel="Amplitude (V)", xlabel="Time (s)")
 dpsvst = axes(ylabel="Delay (ps)", xlabel="Time (s)")
 dpsvsx = axes(ylabel="Delay (ps)", xlabel="Crossing")
-ldelay = line(width=3)
+ldelay = line(width=3, style=:solid)
 gdelay = glyph(shape=:x, size=2)
 
 

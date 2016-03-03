@@ -14,7 +14,7 @@ dutyvst = axes(ylabel="Duty Cycle (%)", xlabel="Time (s)")
 dutyoutvsmaxphi = axes(ylabel="Duty Cycle (%)", xlabel="Maximum Phase Shift")
 dpsvst = axes(ylabel="Delay (ps)", xlabel="Time (s)")
 dpsvsx = axes(ylabel="Delay (ps)", xlabel="Crossing")
-ldelay = line(width=3)
+ldelay = line(style=:solid, width=3)
 gdelay = glyph(shape=:x, size=2)
 
 

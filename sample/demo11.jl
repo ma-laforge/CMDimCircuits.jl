@@ -11,6 +11,7 @@ using EasyPlot
 vvst = axes(ylabel="Amplitude (V)", xlabel="Time (s)")
 Tpsvst = axes(ylabel="Period (ps)", xlabel="Time (s)")
 fvst = axes(ylabel="Frequency (Hz)", xlabel="Time (s)")
+solidline = line(style=:solid)
 
 
 #==Input data
@@ -37,11 +38,11 @@ plot=EasyPlot.new(title="Period & Frequency Measurements")
 s = add(plot, vvst, title="Signal")
 	add(s, y, id="y(t)")
 s = add(plot, Tpsvst, title="Instantaneous Period")
-	add(s, measperiod(y, xing=xrise, shiftx=true), glyph(shape=:+), id="shift")
-	add(s, measperiod(y, xing=xrise, shiftx=false), glyph(shape=:x), id="no shift")
+	add(s, measperiod(y, xing=xrise, shiftx=true), solidline, glyph(shape=:+), id="shift")
+	add(s, measperiod(y, xing=xrise, shiftx=false), solidline, glyph(shape=:x), id="no shift")
 s = add(plot, fvst, title="Instantaneous Frequency")
-	add(s, measfreq(y, xing=xrise, shiftx=true), glyph(shape=:+), id="shift")
-	add(s, measfreq(y, xing=xrise, shiftx=false), glyph(shape=:x), id="no shift")
+	add(s, measfreq(y, xing=xrise, shiftx=true), solidline, glyph(shape=:+), id="shift")
+	add(s, measfreq(y, xing=xrise, shiftx=false), solidline, glyph(shape=:x), id="no shift")
 
 
 #==Return plot to user (call evalfile(...))
