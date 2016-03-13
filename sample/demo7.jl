@@ -51,5 +51,5 @@ s = add(plot, vvst, title="Eye (DataRS)", eyeparam(tbit, teye=1.5*tbit, tstart=-
 
 #==Return plot to user (call evalfile(...))
 ===============================================================================#
-ncols = 1
-(plot, ncols)
+plot.ncolumns = 1
+plot

@@ -88,5 +88,5 @@ s = add(plot, dutyoutvsmaxphi, title="Duty cycle")
 
 #==Return plot to user (call evalfile(...))
 ===============================================================================#
-ncols = 2
-(plot, ncols)
+plot.ncolumns = 2
+plot

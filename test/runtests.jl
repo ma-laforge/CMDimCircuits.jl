@@ -4,72 +4,67 @@
 #No real test code yet... just run demos:
 
 using FileIO2
-using MDDatasets
-import MDDatasets: DS
 using EasyPlot
 
-#Set default plot backend to matplotlib, if not already specified by user:
-#plotlist = Set([:Qwt])
-#plotlist = Set([:Grace])
-if !isdefined(:plotlist); plotlist = Set([:MPL]); end
-
-#==Define plot rendering function:
+#==Obtain plot rendering display:
 ===============================================================================#
 
-#Only import EasyPlotGrace (short load time) if desired: 
-if in(:Grace, plotlist)
-	import EasyPlotGrace
+#NOTE: Modifies input display to improve appearance.
+function getdemodisplay(d::EasyPlot.EasyPlotDisplay)
+	getdisp(d::EasyPlot.EasyPlotDisplay) = d #Define symbol & default behaviour
 
-	function DisplayDemoPlot(::DS{:Grace}, plot::EasyPlot.Plot, ncols::Int)
-		plotdefaults = GracePlot.defaults(linewidth=2.5)
-		gplot = GracePlot.new()
-			GracePlot.set(gplot, plotdefaults)
-		render(gplot, plot, ncols=ncols); display(gplot)
-		return gplot
+	if isdefined(:EasyPlotGrace) #Only access
+		function getdisp(d::EasyPlotGrace.PlotDisplay)
+			d = deepcopy(d)
+			plotdefaults = GracePlot.defaults(linewidth=2.5)
+			d.args = tuple(plotdefaults, d.args...) #Improve appearance a bit
+			return d
+		end
 	end
 
-	function DisplayDemoPlot(ds::DS{:Grace}, plot::EasyPlot.Plot, ncols::Int, outfile)
-		gplot = DisplayDemoPlot(ds, plot, ncols)
-		if outfile != nothing; save(gplot, outfile); end
-	end
+	#TODO: Make sure EasyPlotPlots "renderingtool" is imported
+	return getdisp(d)
 end
 
-#Only import EasyPlotMPL (long Python load time) if desired: 
-if in(:MPL, plotlist)
-	import EasyPlotMPL
-
-	function DisplayDemoPlot(::DS{:MPL}, plot::EasyPlot.Plot, ncols::Int, args...)
-		display(:MPL, plot, ncols=ncols);
-	end
+function getdemodisplay(d::EasyPlot.NullDisplay) #Use MPL as default
+	eval(:(import EasyPlotMPL))
+	return getdemodisplay(EasyPlotMPL.PlotDisplay())
 end
 
-#Only import EasyPlotQwt (long Python load time) if desired: 
-if in(:Qwt, plotlist)
-	import EasyPlotQwt
-
-	function DisplayDemoPlot(::DS{:Qwt}, plot::EasyPlot.Plot, ncols::Int, args...)
-		display(:Qwt, plot, ncols=ncols);
-	end
-end
-
-function DisplayDemoPlot(plotlist::Set, plot::EasyPlot.Plot, ncols::Int, args...)
-	for plottype in plotlist
-		DisplayDemoPlot(DS(plottype), plot, ncols, args...)
+function getdemodisplay(d::EasyPlot.UninitializedDisplay)
+	if :Grace == d.dtype
+		eval(:(import EasyPlotGrace))
+		return getdemodisplay(EasyPlotGrace.PlotDisplay())
+	elseif :MPL == d.dtype
+		eval(:(import EasyPlotMPL))
+		return getdemodisplay(EasyPlotMPL.PlotDisplay())
+	elseif :Qwt == d.dtype
+		eval(:(import EasyPlotQwt))
+		return getdemodisplay(EasyPlotQwt.PlotDisplay())
+	elseif :Plots == d.dtype
+		eval(:(import EasyPlotPlots))
+		return getdemodisplay(EasyPlotPlots.PlotDisplay())
+	else
+		return getdemodisplay(EasyPlot.NullDisplay())
 	end
 end
 
 
 #==Show results
 ===============================================================================#
+pdisp = getdemodisplay(EasyPlot.defaults.maindisplay)
+
+#for i in 3
 for i in 1:17
 	file = "../sample/demo$i.jl"
 	sepline = "---------------------------------------------------------------------"
 	outfile = File(:png, joinpath("./", splitext(basename(file))[1] * ".png"))
 	println("\nExecuting $file...")
 	println(sepline)
-	(plot, ncols) = evalfile(file)
-	DisplayDemoPlot(plotlist, plot, ncols)
-#	DisplayDemoPlot(plotlist, plot, ncols, outfile)
+	plot = evalfile(file)
+	rplot = EasyPlot.render(pdisp, plot)
+	#write(outfile, rplot)
+	EasyPlot._display(rplot)
 end
 
 

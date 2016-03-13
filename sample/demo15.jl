@@ -94,5 +94,5 @@ s = add(plot, dpsvst, title="Fall Delays")
 
 #==Return plot to user (call evalfile(...))
 ===============================================================================#
-ncols = 1
-(plot, ncols)
+plot.ncolumns = 1
+plot
