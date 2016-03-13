@@ -79,5 +79,5 @@ data = EDAData._read(File(:sNp, filepath(:Z)), numports=2)
 
 #==Return plot to user (call evalfile(...))
 ===============================================================================#
-ncols = 1
-(plot, ncols)
+plot.ncolumns = 1
+plot
