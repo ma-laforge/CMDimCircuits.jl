@@ -13,11 +13,11 @@ At the moment, EDAData.jl supports the following data formats:
 
 ## Dependencies
 
-The EDAData.jl module makes use of 3rd party readers.  For more information, please visit the github pages of the respective readers:
+The EDAData.jl module provides wrappers to access file contents as `DataMD` datasets.  For more information on the readers, please visit their respective github pages:
 
- - **CppSimData.jl** (.tr0): <https://github.com/ma-laforge/CppSimData.jl>
- - **LibPSF.jl** (.psf): <https://github.com/ma-laforge/LibPSF.jl>
- - **LibPSF2.jl** (.psf): <https://github.com/ma-laforge/LibPSF2.jl>
+ - **SpiceData.jl** (.tr0): <https://github.com/ma-laforge/SpiceData.jl>
+ - **LibPSF.jl** (.psf): (Optional: 3rd party wrapper) <https://github.com/ma-laforge/LibPSF.jl>
+ - **LibPSF2.jl** (.psf): (Pure-Julia implementation) <https://github.com/ma-laforge/LibPSF2.jl>
 
 ## Sample Usage
 
