@@ -1,5 +1,7 @@
 # SignalProcessing.jl: {T&hArr;F}-Domain Analysis Tools
 
+[Sample Results](https://github.com/ma-laforge/FileRepo/tree/master/SignalProcessing/sampleplots/README.md) (might be out of date).
+
 ## Description
 
 ### Principal Types
