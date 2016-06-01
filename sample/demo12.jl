@@ -93,6 +93,7 @@ for i in 1:nchannels
 	add(s, (i-1)+(undefdata[i]-0.5)*.8, id="pat[$i]") #Re-center around channel number
 end
 s = add(plot, eyech_v_ui, title="Eye", eyeparam(1, teye=1.5))
+set(s, axes(xmin=0, xmax=1.5)) #Force limits on exact data range.
 for i in 1:nchannels
 	add(s, (i-1)+(eyepat[i]-0.5)*.8, id="pat[$i]") #Re-center around channel number
 end
