@@ -4,6 +4,7 @@
 using MDDatasets
 using SignalProcessing
 using EasyPlot
+using Colors
 
 
 #==Constants
@@ -46,19 +47,19 @@ ck2q_ideal = measck2q(pat, tbit, tstart_ck=tstart_ck, xing_q=CrossType(:risefall
 #==Generate plot
 ===============================================================================#
 axrange = axes(xmax=maximum(t)+3*tbit)
-plot=EasyPlot.new(title="Compare measdelay & measck2q", displaylegend=false)
-s = add(plot, vvst, title="Clock signal", axrange)
-	add(s, ck, id="clock")
+plot=EasyPlot.new(title="Compare measdelay & measck2q", displaylegend=true)
 s = add(plot, vvst, title="Patterns", axrange)
-	add(s, patref, id="ref")
+	wfrm = add(s, ck, id="clock")
+		set(wfrm, line(width=1, color=RGB24(.5, .5, .5)))
+	add(s, patref, id="ref", line(width=2))
 	add(s, pat, id="pat")
 s = add(plot, dpsvst, title="Delays", axrange)
-	add(s, Δ/1e-12, id="measdelay", ldelay, gdelay)
-	add(s, ck2q/1e-12, id="measck2q", ldelay, gdelay)
-	add(s, ck2q_ideal/1e-12, id="measck2q (ideal ck)", ldelay, gdelay)
-s = add(plot, dpsvst, title="Difference", axrange)
-	add(s, (Δ-ck2q)/1e-12, id="measdelay-measck2q", ldelay, gdelay)
-	add(s, (Δ-ck2q_ideal)/1e-12, id="measdelay-measck2q (ideal ck)", ldelay, gdelay)
+	add(s, Δ/1e-12, id="del=measdelay(ref,pat)", ldelay, gdelay)
+	add(s, ck2q/1e-12, id="ck2q=measck2q(ck,pat)", ldelay, gdelay)
+	add(s, ck2q_ideal/1e-12, id="ck2qI=measck2q(ideal,pat)", ldelay, gdelay)
+s = add(plot, dpsvst, title="Delay Differences", axrange)
+	add(s, (Δ-ck2q)/1e-12, id="del-ck2q", ldelay, gdelay)
+	add(s, (Δ-ck2q_ideal)/1e-12, id="del-ck2qI", ldelay, gdelay)
 
 
 #==Return plot to user (call evalfile(...))
