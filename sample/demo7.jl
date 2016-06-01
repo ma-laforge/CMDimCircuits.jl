@@ -41,15 +41,17 @@ patRS = DataRS(pat)
 #==Generate plot
 ===============================================================================#
 plot=EasyPlot.new(title="Eye Diagram Tests", displaylegend=false)
+s = add(plot, vvst, title="Eye (DataHR)", eyeparam(tbit, teye=1.5*tbit, tstart=-.15*tbit))
+set(s, axes(xmin=0, xmax=1.5*tbit)) #Force limits on exact data range.
+	add(s, pat, id="eye")
 s = add(plot, vvst, title="Pattern")
 	add(s, pat, id="pat")
-s = add(plot, vvst, title="Eye (DataHR)", eyeparam(tbit, teye=1.5*tbit, tstart=-.15*tbit))
-	add(s, pat, id="eye")
 s = add(plot, vvst, title="Eye (DataRS)", eyeparam(tbit, teye=1.5*tbit, tstart=-.15*tbit))
+set(s, axes(xmin=0, xmax=1.5*tbit)) #Force limits on exact data range.
 	add(s, patRS, id="eye")
 
 
 #==Return plot to user (call evalfile(...))
 ===============================================================================#
-plot.ncolumns = 1
+plot.ncolumns = 2
 plot
