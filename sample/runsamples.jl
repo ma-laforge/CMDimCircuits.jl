@@ -26,8 +26,8 @@ function getdemodisplay(d::EasyPlot.EasyPlotDisplay)
 end
 
 function getdemodisplay(d::EasyPlot.NullDisplay) #Use MPL as default
-	eval(:(import EasyPlotMPL))
-	return getdemodisplay(EasyPlotMPL.PlotDisplay())
+	eval(:(import EasyPlotInspect))
+	return getdemodisplay(EasyPlotInspect.PlotDisplay())
 end
 
 function getdemodisplay(d::EasyPlot.UninitializedDisplay)
@@ -43,6 +43,9 @@ function getdemodisplay(d::EasyPlot.UninitializedDisplay)
 	elseif :Plots == d.dtype
 		eval(:(import EasyPlotPlots))
 		return getdemodisplay(EasyPlotPlots.PlotDisplay())
+	elseif :Inspect == d.dtype
+		eval(:(import EasyPlotInspect))
+		return getdemodisplay(EasyPlotInspect.PlotDisplay())
 	else
 		return getdemodisplay(EasyPlot.NullDisplay())
 	end
@@ -60,9 +63,17 @@ for i in 1:2
 	println("\nExecuting $file...")
 	println(sepline)
 	plot = evalfile(file)
-	rplot = EasyPlot.render(pdisp, plot)
-	#write(outfile, rplot)
-	EasyPlot._display(rplot)
+	nosave=true
+	if nosave
+		display(pdisp, plot)
+	elseif isdefined(:EasyPlotInspect) &&
+			isa(pdisp, EasyPlotInspect.PlotDisplay) #InspectDR only
+		rplot = EasyPlot.render(pdisp, plot)
+		rplot.hplot*=.7 #Looks better with wider aspect ratio
+		InspectDR.write_png(outfile.path, rplot)
+	else
+		EasyPlot._write(outfile, plot, pdisp)
+	end
 end
 
 :SampleCode_Executed
