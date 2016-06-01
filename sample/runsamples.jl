@@ -1,10 +1,9 @@
-#Test code
+#Run sample code
 #-------------------------------------------------------------------------------
-
-#No real test code yet... just run demos:
 
 using FileIO2
 using EasyPlot
+
 
 #==Obtain plot rendering display:
 ===============================================================================#
@@ -27,8 +26,8 @@ function getdemodisplay(d::EasyPlot.EasyPlotDisplay)
 end
 
 function getdemodisplay(d::EasyPlot.NullDisplay) #Use MPL as default
-	eval(:(import EasyPlotMPL))
-	return getdemodisplay(EasyPlotMPL.PlotDisplay())
+	eval(:(import EasyPlotInspect))
+	return getdemodisplay(EasyPlotInspect.PlotDisplay())
 end
 
 function getdemodisplay(d::EasyPlot.UninitializedDisplay)
@@ -44,6 +43,9 @@ function getdemodisplay(d::EasyPlot.UninitializedDisplay)
 	elseif :Plots == d.dtype
 		eval(:(import EasyPlotPlots))
 		return getdemodisplay(EasyPlotPlots.PlotDisplay())
+	elseif :Inspect == d.dtype
+		eval(:(import EasyPlotInspect))
+		return getdemodisplay(EasyPlotInspect.PlotDisplay())
 	else
 		return getdemodisplay(EasyPlot.NullDisplay())
 	end
@@ -54,18 +56,27 @@ end
 ===============================================================================#
 pdisp = getdemodisplay(EasyPlot.defaults.maindisplay)
 
-#for i in 3
+#tic()
 for i in 1:17
-	file = "../sample/demo$i.jl"
+#if 13==i; continue; end #Some plot engines fail here (has 0-length data).
+	file = "./demo$i.jl"
 	sepline = "---------------------------------------------------------------------"
 	outfile = File(:png, joinpath("./", splitext(basename(file))[1] * ".png"))
 	println("\nExecuting $file...")
 	println(sepline)
 	plot = evalfile(file)
-	rplot = EasyPlot.render(pdisp, plot)
-	#write(outfile, rplot)
-	EasyPlot._display(rplot)
+	nosave=true
+	if nosave
+		display(pdisp, plot)
+	elseif isdefined(:EasyPlotInspect) &&
+			isa(pdisp, EasyPlotInspect.PlotDisplay) #InspectDR only
+		rplot = EasyPlot.render(pdisp, plot)
+		rplot.hplot*=.7 #Looks better with wider aspect ratio
+		InspectDR.write_png(outfile.path, rplot)
+	else
+		EasyPlot._write(outfile, plot, pdisp)
+	end
 end
+#toc()
 
-
-:Test_Complete
+:SampleCode_Executed
