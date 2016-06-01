@@ -30,7 +30,7 @@ tmax = maximum(t)
 
 #Generate parameter sweeps:
 sweeplist = PSweep[
-	PSweep("EXTRALVL", [1]) #Add extra level to test more code
+	PSweep("L", [1]) #Add extra level to test more code
 	PSweep("tau", tbit.*[1/5, 1/2.5, 1/1.5])
 ]
 
@@ -48,15 +48,15 @@ refpat = pat.elem[1]
 
 #==Generate plot
 ===============================================================================#
-plot=EasyPlot.new(title="Signal Delay Tests", displaylegend=false)
-s = add(plot, vvst, title="Reference Pattern")
-	add(s, refpat)
+plot=EasyPlot.new(title="Signal Delay Tests", displaylegend=true)
 s = add(plot, vvst, title="Patterns")
+	wfrm = add(s, refpat, id="Ref")
+		set(wfrm, line(width=5, color=:black))
 	add(s, pat, id="pat")
 s = add(plot, dpsvst, title="Delays")
-	add(s, Δ/1e-12, id="delays", ldelay, gdelay)
+	add(s, Δ/1e-12, id="D", ldelay, gdelay)
 s = add(plot, dpsvsx, title="Delays vs Crossing Number")
-	add(s, Δxn/1e-12, id="delays", ldelay, gdelay)
+	add(s, Δxn/1e-12, id="D", ldelay, gdelay)
 
 
 #==Return plot to user (call evalfile(...))
