@@ -4,7 +4,7 @@
 using FileIO2
 using EDAData
 using EasyPlot
-import LibPSF
+import LibPSFC
 
 
 #==Constants
@@ -19,7 +19,7 @@ color3 = line(color=:green)
 #==Input data
 ===============================================================================#
 testfile = "timeSweep"
-file = File(:psf, joinpath(LibPSF.rootpath, "core/data", testfile))
+file = File(:psf, joinpath(LibPSFC.rootpath, "core/data", testfile))
 
 #open(file) do data #Generic open interface.
 EDAData._open(file) do data #Ensure EDAData opens file.

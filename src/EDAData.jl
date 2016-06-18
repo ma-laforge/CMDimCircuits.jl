@@ -2,7 +2,7 @@
 #-------------------------------------------------------------------------------
 
 module EDAData
-const defaultPSFReader = isdefined(Main, :defaultPSFReader)? Main.defaultPSFReader: (:LibPSF2)
+const defaultPSFReader = isdefined(Main, :defaultPSFReader)? Main.defaultPSFReader: (:LibPSF)
 
 import SpiceData #SPICE data reader
 

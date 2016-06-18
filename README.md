@@ -16,8 +16,8 @@ At the moment, EDAData.jl supports the following data formats:
 The EDAData.jl module provides wrappers to access file contents as `DataMD` datasets.  For more information on the readers, please visit their respective github pages:
 
  - **SpiceData.jl** (.tr0): <https://github.com/ma-laforge/SpiceData.jl>
- - **LibPSF.jl** (.psf): (Optional: 3rd party wrapper) <https://github.com/ma-laforge/LibPSF.jl>
- - **LibPSF2.jl** (.psf): (Pure-Julia implementation) <https://github.com/ma-laforge/LibPSF2.jl>
+ - **LibPSFC.jl** (.psf): (Optional: 3rd party wrapper) <https://github.com/ma-laforge/LibPSFC.jl>
+ - **LibPSF.jl** (.psf): (Pure-Julia implementation) <https://github.com/ma-laforge/LibPSF.jl>
 
 ## Sample Usage
 
@@ -49,9 +49,9 @@ Further examples on how to use the EDAData.jl capabilities can be found under th
 
 ## Known Limitations
 
-By default, EDAData reads .psf files using the pure-Julia libpsf implementation "LibPSF2.jl".  To opt for a C++ implementation, it is possible to select the LibPSF.jl library using the following julia statement:
+By default, EDAData reads .psf files using the pure-Julia libpsf implementation "LibPSF.jl".  To opt for a C++ implementation, it is possible to select the LibPSFC.jl library using the following julia statement:
 
-	defaultPSFReader = :LibPSF
+	defaultPSFReader = :LibPSFC
 
 The constant *must* be defined before the call to import the `EDAData` library.  It can therefore be placed in your ~/.juliarc.jl file.
 
