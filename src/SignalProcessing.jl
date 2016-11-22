@@ -1,12 +1,14 @@
 #SignalProcessing: 
 #-------------------------------------------------------------------------------
 
+#__precompile__()
+
 module SignalProcessing
 
 using MDDatasets
 
 #Functions to this module will be accessing/appending:
-import Base: broadcast
+import MDDatasets: broadcastMD
 import MDDatasets: value
 import MDDatasets: DataF1
 import MDDatasets: DS #To dispatch on a symbol & minimize namespace pollution

@@ -47,7 +47,7 @@ pattern(seq::DataF1, Π::DataF1; tbit::Number=0) = pattern(seq.y, Π, tbit = tbi
 
 #Broadcast 1-arguent function with reference DataF1 @ 2nd arg.
 pattern(d1, d2::DataMD, args...; kwargs...) =
-	broadcast(CastType(DataF1,2), pattern, d1, d2, args...; kwargs...)
+	broadcastMD(CastType(DataF1,2), pattern, d1, d2, args...; kwargs...)
 
 
 #==HACK: Find a way to register these functions differently.
