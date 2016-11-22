@@ -27,7 +27,7 @@ typealias TCapacitance{T} ValueTag{:C, T}
 #==Constructor interfaces
 ===============================================================================#
 
-call{TAGID, T}(::Type{ValueTag{TAGID}}, v::T) = ValueTag{TAGID, T}(v)
+(::Type{ValueTag{TAGID}}){TAGID, T}(v::T) = ValueTag{TAGID, T}(v)
 
 
 #==Operations
