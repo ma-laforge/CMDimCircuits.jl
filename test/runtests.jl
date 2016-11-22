@@ -76,12 +76,14 @@ println(sepline)
 @show T = Network(:T, S)
 
 println("\nRef values:")
+println(sepline)
 @show _S50 = Network(:S, [1 2; 3 4])
 @show _S75 = Network(:S, _S50, z0=75)
 @show _T50 = Network(:T, _S50)
 @show _T75 = Network(:T, _S75)
 
 println("\nLook at conversion error:")
+println(sepline)
 @show Network(:T, _S75) - _T75
 @show Network(:T, _S75, z0=50) - _T50
 @show Network(:T, _S50, z0=75) - _T75

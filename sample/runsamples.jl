@@ -8,45 +8,31 @@ using EasyPlot
 #==Obtain plot rendering display:
 ===============================================================================#
 
-#NOTE: Modifies input display to improve appearance.
-function getdemodisplay(d::EasyPlot.EasyPlotDisplay)
-	getdisp(d::EasyPlot.EasyPlotDisplay) = d #Define symbol & default behaviour
-
-	if isdefined(:EasyPlotGrace) #Only access
-		function getdisp(d::EasyPlotGrace.PlotDisplay)
-			d = deepcopy(d)
-			plotdefaults = GracePlot.defaults(linewidth=2.5)
-			d.args = tuple(plotdefaults, d.args...) #Improve appearance a bit
-			return d
-		end
-	end
-
-	#TODO: Make sure EasyPlotPlots "renderingtool" is imported
-	return getdisp(d)
-end
-
-function getdemodisplay(d::EasyPlot.NullDisplay) #Use MPL as default
+function getdemodisplay(d::EasyPlot.NullDisplay) #Use InspectDR as default
 	eval(:(import EasyPlotInspect))
-	return getdemodisplay(EasyPlotInspect.PlotDisplay())
+	return EasyPlotInspect.PlotDisplay()
 end
 
 function getdemodisplay(d::EasyPlot.UninitializedDisplay)
 	if :Grace == d.dtype
 		eval(:(import EasyPlotGrace))
-		return getdemodisplay(EasyPlotGrace.PlotDisplay())
+		d = EasyPlotGrace.PlotDisplay()
+		plotdefaults = GracePlot.defaults(linewidth=2.5)
+		d.args = tuple(plotdefaults, d.args...) #Improve appearance a bit
+		return d
 	elseif :MPL == d.dtype
 		eval(:(import EasyPlotMPL))
-		return getdemodisplay(EasyPlotMPL.PlotDisplay())
+		return EasyPlotMPL.PlotDisplay()
 	elseif :Qwt == d.dtype
 		eval(:(import EasyPlotQwt))
-		return getdemodisplay(EasyPlotQwt.PlotDisplay())
+		return EasyPlotQwt.PlotDisplay()
 	elseif :Plots == d.dtype
 		eval(:(import EasyPlotPlots))
-		return getdemodisplay(EasyPlotPlots.PlotDisplay())
+		return EasyPlotPlots.PlotDisplay()
 	elseif :Inspect == d.dtype
 		eval(:(import EasyPlotInspect))
-		return getdemodisplay(EasyPlotInspect.PlotDisplay())
-	else
+		return EasyPlotInspect.PlotDisplay()
+	else #Don't recognize requested display... use default:
 		return getdemodisplay(EasyPlot.NullDisplay())
 	end
 end

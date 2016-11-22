@@ -1,6 +1,52 @@
 #NetwAnalysis: Network parameter conversion tools
 #-------------------------------------------------------------------------------
 
+#=Comments
+
+1) All passive 2-port networks are guaranteed to have S-parameters.  Most others
+   cannot represent all passive networks.
+
+   So... indirect conversions should try to use S-parameters as the intermediate.
+
+2) "Default" network parameter conversions are trapped using ::NPT_SConv/NP_SConv
+   instead of ::NPType/NetworkParameters.  This allows un-expected conversions
+	to be detected, and should avoid infinite recursion issues (ex: continuously
+   trying to convert S-parameters -> S-parameters).
+
+3) Network(RT::NPType, np::Network; z0 = nothing) is only a thin interface.
+   --> Core algorithm implemented as "_Network" to avoid ambiguity/cyclical issues.
+=#
+
+
+#==Constants
+===============================================================================#
+const default_z0 = 50.0
+
+
+#==Convenience types
+===============================================================================#
+
+#Network parameter convenience unions:
+typealias NP_SConv Union{ #Those with S-parameter intermediaries
+	ZParameters, YParameters,
+	ABCDParameters,
+	TParameters
+}
+typealias NP_ZConv Union{ #Those with Z-parameter intermediaries
+	HParameters, GParameters,
+}
+
+#Network parameter >>type<< convenience unions:
+#TODO: auto-calculate from NP_SConv??
+typealias NPT_SConv Union{ #Those with S-parameter intermediaries
+	NPType{:Z}, NPType{:Y},
+	NPType{:ABCD},
+	NPType{:T}
+}
+typealias NPT_ZConv Union{ #Those with Z-parameter intermediaries
+	NPType{:H}, NPType{:G},
+}
+
 
 #==Helper functions
 ===============================================================================#
@@ -61,11 +107,9 @@ function _vector_pull(ET::DataType, np::NetworkParameters, z0=nothing)
 		end
 	end
 
-	if z0 != nothing
-		newelem() = ET(z0, NetworkParameterMatrix{eltype(ET)}(nports, nports))
-	else
-		newelem() = ET(NetworkParameterMatrix{eltype(ET)}(nports, nports))
-	end
+	newelem_z0() = ET(z0, NetworkParameterMatrix{eltype(ET)}(nports, nports))
+	newelem_noref() = ET(NetworkParameterMatrix{eltype(ET)}(nports, nports))
+	newelem = z0 != nothing ? newelem_z0 : newelem_noref
 
 	for i in 1:vlen
 		inner = newelem() #Inner matrix
@@ -103,7 +147,7 @@ function Base.sub{PT<:Integer}(np::NetworkParameters, ports::Vector{PT}=Int[])
 	if typeof(np)<:NetworkParametersRef
 		return Network(NPType(np), result_m, z0=np.z0)
 	else
-		return Network(NPType(np))
+		return Network(NPType(np), result_m)
 	end
 
 end
@@ -113,7 +157,7 @@ end
 ===============================================================================#
 
 #Convert T => S-parameters (equations always maintains z0):
-function Network(RT::NPType{:S}, T::TParameters)
+function _Network(RT::NPType{:S}, T::TParameters)
 	(t11, t12, t21, t22) = mx2elem(T)
 	s11 = t21/t11
 	s12 = t22 - t21*t12/t11
@@ -123,7 +167,7 @@ function Network(RT::NPType{:S}, T::TParameters)
 end
 
 #Convert ABCD => S-parameters:
-function Network(RT::NPType{:S}, ABCD::ABCDParameters; z0::Real = 50.0)
+function _Network(RT::NPType{:S}, ABCD::ABCDParameters, z0::Float64)
 	(A, B, C, D) = mx2elem(ABCD)
 	B_z0 = B / z0; Cxz0 = C * z0
 	denom = A + B_z0 + Cxz0 + D
@@ -135,7 +179,7 @@ function Network(RT::NPType{:S}, ABCD::ABCDParameters; z0::Real = 50.0)
 end
 
 #Convert Z => S-parameters:
-function Network(RT::NPType{:S}, Z::ZParameters; z0::Real = 50.0)
+function _Network(RT::NPType{:S}, Z::ZParameters, z0::Float64)
 	(z11, z12, z21, z22) = mx2elem(Z)
 	z12z21 = z12*z21
 	denom = (z11+z0)*(z22+z0)-z12z21
@@ -147,7 +191,7 @@ function Network(RT::NPType{:S}, Z::ZParameters; z0::Real = 50.0)
 end
 
 #Convert Y => S-parameters:
-function Network(RT::NPType{:S}, Y::YParameters; z0::Real = 50.0)
+function _Network(RT::NPType{:S}, Y::YParameters, z0::Float64)
 	(y11, y12, y21, y22) = mx2elem(Y)
 	y0 = 1/z0
 	y12y21 = y12*y21
@@ -164,7 +208,7 @@ end
 ===============================================================================#
 
 #Convert 2-port S-parameters => T (equations always maintains z0):
-function Network(RT::NPType{:T}, S::SParameters{2})
+function _Network(RT::NPType{:T}, S::SParameters{2})
 	(s11, s12, s21, s22) = mx2elem(S)
 	t11 = 1/s21
 	t12 = -s22/s21
@@ -174,7 +218,7 @@ function Network(RT::NPType{:T}, S::SParameters{2})
 end
 
 #Convert 2-port S-parameters => ABCD:
-function Network(RT::NPType{:ABCD}, S::SParameters{2})
+function _Network(RT::NPType{:ABCD}, S::SParameters{2})
 	(s11, s12, s21, s22) = mx2elem(S)
 	z0 = S.z0
 	s12_2 = s12 / 2
@@ -188,7 +232,7 @@ end
 
 #Convert 2-port S-parameters => Z:
 #TODO: Arbitrary number of ports
-function Network(RT::NPType{:Z}, S::SParameters{2})
+function _Network(RT::NPType{:Z}, S::SParameters{2})
 	(s11, s12, s21, s22) = mx2elem(S)
 	z0 = S.z0
 	s12s21 = s12*s21
@@ -202,7 +246,7 @@ end
 
 #Convert 2-port S-parameters => Y:
 #TODO: Arbitrary number of ports
-function Network(RT::NPType{:Y}, S::SParameters{2})
+function _Network(RT::NPType{:Y}, S::SParameters{2})
 	(s11, s12, s21, s22) = mx2elem(S)
 	z0 = S.z0
 	s12s21 = s12*s21
@@ -219,7 +263,7 @@ end
 ===============================================================================#
 
 #Convert H-parameters => Z:
-function Network(RT::NPType{:Z}, H::HParameters)
+function _Network(RT::NPType{:Z}, H::HParameters)
 	(h11, h12, h21, h22) = mx2elem(H)
 	z11 = (h11*h22 - h12*h21) / h22
 	z12 = h12 / h22
@@ -229,7 +273,7 @@ function Network(RT::NPType{:Z}, H::HParameters)
 end
 
 #Convert G-parameters => Z:
-function Network(RT::NPType{:Z}, G::GParameters)
+function _Network(RT::NPType{:Z}, G::GParameters)
 	(g11, g12, g21, g22) = mx2elem(G)
 	z11 = 1 / g11
 	z12 = -g12 / g11
@@ -239,7 +283,7 @@ function Network(RT::NPType{:Z}, G::GParameters)
 end
 
 #Convert 2-port Z-parameters => H:
-function Network(RT::NPType{:H}, Z::ZParameters{2})
+function _Network(RT::NPType{:H}, Z::ZParameters{2})
 	(z11, z12, z21, z22) = mx2elem(Z)
 	h11 = (z11*z22 - z12*z21) / z22
 	h12 = z12 / z22
@@ -249,7 +293,7 @@ function Network(RT::NPType{:H}, Z::ZParameters{2})
 end
 
 #Convert 2-port Z-parameters => G:
-function Network(RT::NPType{:G}, Z::ZParameters{2})
+function _Network(RT::NPType{:G}, Z::ZParameters{2})
 	(z11, z12, z21, z22) = mx2elem(Z)
 	g11 = 1 / z11
 	g12 = -z12 / z11
@@ -259,44 +303,66 @@ function Network(RT::NPType{:G}, Z::ZParameters{2})
 end
 
 
-#==Network parameter conversions: Indirect converstions
+#==Basic traps for _Network()
 ===============================================================================#
-#=NOTE:
-All passive 2-port networks are guaranteed to have S-parameters.  Most others
-cannot represent all passive networks.
+#Catch-all:
+_Network{TP}(RT::NPType{TP}, np::Network) =
+	error("Unable to convert to $(typeof(np)) -> $TP.")
+_Network{TP}(RT::NPType{TP}, np::Network, z0::Float64) =
+	error("Unable to convert to $(typeof(np)) -> $TP, z0=$z0.")
 
-So... indirect conversions try to use S-parameters as the intermediate.
-=#
+#Define default reference impedance with scattering-type parameters:
+_Network(RT::NPType{:S}, np::Network) = _Network(RT, np, default_z0)
+_Network(RT::NPType{:T}, np::Network) = _Network(RT, np, default_z0)
 
-#Stop recursion:
-Network(::NPType{:S}, np::Network) = throw("Could not convert to S-parameters")
-
-#DEFAULT: Convert to S parameters, when direct conversion not implemented:
-Network(RT::NPType, np::Network) = Network(RT, Network(:S, np))
-
-
-#Relay network parameters when input already of desired type:
-#*******************************************************************************
-#Generic, RPS: Result parameter symbol:
-_Network{RPS}(RT::NPType{RPS}, np::NetworkParametersRef{RPS}, z0::Void) = np #Relay
-_Network(RT::NPType, np::Network, z0::Void) = Network(RT, Network(:S, np))
-_Network(RT::NPType, np::Network, z0::Real) =
-	Network(RT, Network(:S, Network(:Z, Network(:S, np)), z0=z0)) #HACK: Convert through Z network for arbitrary z0
-Network(RT::NPType{:S}, np::NetworkParameters{:S}; z0 = nothing) = _Network(RT, np, z0) #Resolve ambiguity
-Network(RT::NPType{:S}, np::Network; z0 = nothing) = _Network(RT, np, z0)
-Network(RT::NPType{:T}, np::NetworkParameters{:T}; z0 = nothing) = _Network(RT, np, z0) #Resolve ambiguity
-Network(RT::NPType{:T}, np::Network; z0 = nothing) = _Network(RT, np, z0)
-Network{RPS}(RT::NPType{RPS}, np::NetworkParameters{RPS}) = np #Relay
+#Deal with z0::Void/Real (default S-parameter impedance, ...):
+_Network(RT::NPType, np::Network, ::Void) = _Network(RT, np)
+_Network(RT::NPType, np::Network, z0::Real) = _Network(RT, np, Float64(z0))
 
 
-#G/H parameters must go through Z:
-#*******************************************************************************
-Network(RT::NPType{:H}, np::NetworkParameters) = Network(RT, Network(:Z, np))
-Network(RT::NPType{:G}, np::NetworkParameters) = Network(RT, Network(:Z, np))
-Network{NT<:HParameters}(RT::NPType{:S}, np::NT) = Network(RT, Network(:Z, np))
-Network{NT<:HParameters}(RT::NPType, np::NT) = Network(RT, Network(:Z, np))
-Network{NT<:GParameters}(RT::NPType{:S}, np::NT) = Network(RT, Network(:Z, np))
-Network{NT<:GParameters}(RT::NPType, np::NT) = Network(RT, Network(:Z, np))
+#==Reference impedance transformation/passthrough
+===============================================================================#
+z0xfrm{TP}(RT::NPType{TP}, np::Network, z0::Float64) =
+	error("Unable to perform z0 transformation for $(typeof(np)) -> $TP.")
+#S-parameter impedance transformation:
+z0xfrm(RT::NPType{:S}, np::SParameters, z0::Float64) =
+	_Network(RT, _Network(NPType(:Z), np), z0) #TODO: implement directly
+#T-parameter impedance transformation:
+z0xfrm(RT::NPType{:T}, np::TParameters, z0::Float64) =
+	_Network(RT, _Network(NPType(:S), np, z0)) #TODO: implement directly
+
+#Traps to z0 transformation/leaving parameters untouched:
+#TODO: copy(np)????
+_Network{TP,NP}(::NPType{TP}, np::NetworkParameters{TP,NP}) = np #Already correct format
+_Network{TP,NP}(RT::NPType{TP}, np::NetworkParameters{TP,NP}, z0::Float64) =
+	((z0 != np.z0)? z0xfrm(RT, np, z0): np) #Might require impedance transformation.
+
+#S -> T WITH z0 conversion - TODO: implement directly
+_Network(RT::NPType{:T}, np::SParameters, z0::Float64) =
+	_Network(RT, _Network(NPType(:S), np, z0))
+#T -> S WITH z0 conversion - TODO: implement directly
+_Network(RT::NPType{:S}, np::TParameters, z0::Float64) =
+	_Network(RT, _Network(NPType(:S), np), z0)
+
+
+#==Indirect network parameter conversions
+===============================================================================#
+
+#Needing Z-parameter intermediaries:
+_Network(RT::NPT_ZConv, np::Network) = _Network(RT, _Network(NPType(:Z), np))
+
+#Needing S-parameter intermediaries:
+_Network(RT::NPT_SConv, np::Network)              = _Network(RT, _Network(NPType(:S), np))
+_Network(RT::NPT_SConv, np::Network, z0::Float64) = _Network(RT, _Network(NPType(:S), np, z0), z0)
+
+#Bridging between Z/S parameter intermediaries:
+_Network(RT::NPType{:Z}, np::NP_SConv)              = _Network(RT, _Network(NPType(:S), np))
+_Network(RT::NPType{:S}, np::NP_ZConv, z0::Float64) = _Network(RT, _Network(NPType(:Z), np), z0)
+
+
+#==High-level interface (z0 optional parameter:
+===============================================================================#
+Network(RT::NPType, np::Network; z0 = nothing) = _Network(RT, np, z0)
 
 
 #Last line

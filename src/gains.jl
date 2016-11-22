@@ -10,8 +10,6 @@ mag2(x) = abs2(x)
 
 #==Main functions
 ===============================================================================#
-shunt(t::NPType{:ABCD}, z::TImpedance) = shunt(t, admittance(z))
-shunt(t::NPType{:ABCD}, args...; kwargs...) = throw("series: Parameter list not supported")
 
 #Compute k stability factor:
 function kstab(S::SParameters{2})
