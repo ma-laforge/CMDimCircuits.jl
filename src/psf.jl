@@ -12,7 +12,7 @@ end
 
 #==Open/read/close functions
 ===============================================================================#
-function Base.open(::Type{PSFReader}, path::AbstractString)
+function Base.open(::Type{PSFReader}, path::String)
 	local x
 	reader = PSFReaderLib._open(path)
 	try
@@ -25,7 +25,7 @@ end
 _open(file::File{PSFFmt}) = open(PSFReader, file.path) #Use PSF reader from this module.
 _open(fn::Function, file::File{PSFFmt}) = open(fn, PSFReader, file.path) #For do/end method
 
-function Base.read(r::PSFReader, signame::ASCIIString)
+function Base.read(r::PSFReader, signame::String)
 #	if typeof(r.x) <: Vector{Void}
 		#Very hacky... Figure out something better
 #		return PSFReaderLib.readscalar(r.reader, signame)

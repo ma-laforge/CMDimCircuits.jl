@@ -23,7 +23,7 @@ end
 
 #==Helper functions
 ===============================================================================#
-iscomment(line::AbstractString) = length(line) < 1 || '!' == line[1]
+iscomment(line::String) = length(line) < 1 || '!' == line[1]
 
 #Read mangitude/angle data
 snp_read_ma(r::SNPReader) = read(r.r, DataFloat) * e^(im*read(r.r, DataFloat))
@@ -40,7 +40,7 @@ const SNP_READ_MAP = Dict("MA"=>snp_read_ma, "DB"=>snp_read_db, "RI"=>snp_read_r
 #==Open/read/close functions
 ===============================================================================#
 #TODO: Should "open" read all header info???
-function Base.open(::Type{SNPReader}, path::AbstractString; numports=0)
+function Base.open(::Type{SNPReader}, path::String; numports=0)
 	#TODO: autodetect numports from path
 	if numports < 1
 		error("Must specify number of ports > 0")
@@ -54,7 +54,7 @@ _open(file::File{SNPFmt}, args...; kwargs...) = #Open .sNp with this module.
 
 Base.close(r::SNPReader) = close(r.r)
 
-function Base.read(::Type{SNPReader}, path::AbstractString; numports=0)
+function Base.read(::Type{SNPReader}, path::String; numports=0)
 	reader = open(SNPReader, path, numports=numports)
 	try
 		return readall(reader)
@@ -70,7 +70,7 @@ _read(file::File{SNPFmt}, args...; kwargs...) = #read .sNp with this module.
 ===============================================================================#
 #Returns DataF1 instead of DataFreq... in case step size is not constant.
 function Base.readall(r::SNPReader)
-	const str = AbstractString
+	const str = String
 	x = DataFloat[]
 	y = Array(Vector{Complex{DataFloat}}, r.numports,r.numports)
 
@@ -139,7 +139,7 @@ function Base.readall(r::SNPReader)
 	end
 
 	nwkwargs = Dict()
-	nptype = symbol(nptype)
+	nptype = Symbol(nptype)
 	if :S == nptype
 		push!(nwkwargs, :z0 => refres)
 	end

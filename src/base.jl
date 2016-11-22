@@ -13,9 +13,9 @@ immutable PSFFmt <: FileIO2.DataFormat; end
 immutable SNPFmt <: FileIO2.TextFormat{FileIO2.ASCIIEncoding}; end
 
 #Add Shorthand File constructors:
-FileIO2.File(::FileIO2.Shorthand{:tr0}, path::AbstractString) = File{Tr0Fmt}(path)
-FileIO2.File(::FileIO2.Shorthand{:psf}, path::AbstractString) = File{PSFFmt}(path)
-FileIO2.File(::FileIO2.Shorthand{:sNp}, path::AbstractString) = File{SNPFmt}(path)
+FileIO2.File(::FileIO2.Shorthand{:tr0}, path::String) = File{Tr0Fmt}(path)
+FileIO2.File(::FileIO2.Shorthand{:psf}, path::String) = File{PSFFmt}(path)
+FileIO2.File(::FileIO2.Shorthand{:sNp}, path::String) = File{SNPFmt}(path)
 
 
 #Last Line

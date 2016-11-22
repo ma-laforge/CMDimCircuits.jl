@@ -4,7 +4,7 @@
 using FileIO2
 using EDAData
 using EasyPlot
-import CppSimData
+import CppSimData #For sample data
 
 
 #==Constants

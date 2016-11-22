@@ -32,17 +32,17 @@ include("show.jl")
 #==Un-exported interface
 ================================================================================
 	_open(...) #Ensures EDAData opens file.
-	_open(File(:tr0/:psf, path::AbstractString)) #Opens {Tr0Reader/PSFReader}
+	_open(File(:tr0/:psf, path::String)) #Opens {Tr0Reader/PSFReader}
 
-	_read(File(:sNp, path::AbstractString), numports=X) #Returns NetworkParameters matrix
+	_read(File(:sNp, path::String), numports=X) #Returns NetworkParameters matrix
 ==#
 
 
 #==Extensions to other modules
 ================================================================================
-	FileIO2.File(:tr0/:psf/:sNp, filename::AbstractString)
+	FileIO2.File(:tr0/:psf/:sNp, filename::String)
 
-	Base.read(::{Tr0Reader/PSFReader}, signame::ASCIIString)
+	Base.read(::{Tr0Reader/PSFReader}, signame::String)
 	Base.names(::{Tr0Reader/PSFReader}) #Returns list of signal names
 	Base.close(::{Tr0Reader/PSFReader})
 ==#

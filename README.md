@@ -23,7 +23,7 @@ The EDAData.jl module provides wrappers to access file contents as `DataMD` data
 
  - **File()** (exported by FileIO2): Create file reference
 
-		File([:tr0/:psf/:sNp], path::AbstractString)
+		File([:tr0/:psf/:sNp], path::String)
 
  - **Reading .tr0 files**
 
@@ -59,7 +59,7 @@ The constant *must* be defined before the call to import the `EDAData` library. 
 
 Extensive compatibility testing of EDAData.jl has not been performed.  The module has been tested using the following environment(s):
 
- - Linux / Julia-0.4.2 (64-bit)
+ - Linux / Julia-0.5.0 (64-bit)
 
 ## Disclaimer
 

@@ -7,7 +7,7 @@ type SNPWriter <: AbstractWriter{SNPFmt}; end
 
 #==Useful validations/assertions
 ===============================================================================#
-function validate_structure(np::NetworkParameters, context::AbstractString)
+function validate_structure(np::NetworkParameters, context::String)
 	if !(eltype(np) <: DataF1)
 		throw(ArgumentError("$context: NetworkParameters elements must be DataF1."))
 	end
@@ -35,7 +35,7 @@ end
 #Write NetworkParameters to sNp file
 #NOTE: For now, always write f(Hz), data:re/im
 #      Only supports parameters with eltype(np) <: DataF1
-function __write(::Type{SNPWriter}, path::AbstractString, np::NetworkParameters)
+function __write(::Type{SNPWriter}, path::String, np::NetworkParameters)
 	validate_structure(np, "write(::Type{SNPWriter}, ...)")
 	nptype = NPType(np)
 	nptype_str = string(Symbol(nptype))
@@ -93,9 +93,9 @@ function __write(::Type{SNPWriter}, path::AbstractString, np::NetworkParameters)
 	end
 end
 
-Base.write{TP, NP}(::Type{SNPWriter}, path::AbstractString, np::NetworkParametersRef{TP, NP, DataF1}) =
+Base.write{TP, NP}(::Type{SNPWriter}, path::String, np::NetworkParametersRef{TP, NP, DataF1}) =
 	__write(SNPWriter, path, np)
-Base.write{TP, NP}(::Type{SNPWriter}, path::AbstractString, np::NetworkParametersNoRef{TP, NP, DataF1}) =
+Base.write{TP, NP}(::Type{SNPWriter}, path::String, np::NetworkParametersNoRef{TP, NP, DataF1}) =
 	__write(SNPWriter, path, np)
 
 #Write .sNp with this module:
