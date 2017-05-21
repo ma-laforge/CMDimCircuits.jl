@@ -40,7 +40,7 @@ function timespace(::DS{:ts}, ::DS{:tfund}, ts, tfund; tstart=0)
 	if abs(ns-ins) > ABSTOL
 		throw("tfund must be approx. an integer multiple of ts.")
 	end
-	return tstart+FloatRange{DataFloat}(0:ts:((ins-1)*ts))
+	return tstart+StepRangeLen{DataFloat}(0:ts:((ins-1)*ts))
 end
 
 #Fundamental period, tfund, is most important parameter.
@@ -53,10 +53,10 @@ function timespace(::DS{:tfund}, ::DS{:ts}, tfund, ts; tstart=0)
 		throw("tfund must be approx. an integer multiple of ts.")
 	end
 	ts = tfund/ins #Re-compute most accurate possible version of timestep
-	return tstart+FloatRange{DataFloat}(0:ts:((ins-1)*ts))
+	return tstart+StepRangeLen{DataFloat}(0:ts:((ins-1)*ts))
 end
 
-function timetofreq(t::FloatRange{DataFloat})
+function timetofreq(t::StepRangeLen{DataFloat})
 	n = length(t)
 	Δt = step(t)
 	tfund = Δt*n
@@ -65,7 +65,7 @@ function timetofreq(t::FloatRange{DataFloat})
 	return 0:Δf:fmax
 end
 
-function freqtotime(f::FloatRange{DataFloat}, teven::Bool)
+function freqtotime(f::StepRangeLen{DataFloat}, teven::Bool)
 	tfund = 1/step(f)
 	n = 2*length(f) - 1
 	if teven

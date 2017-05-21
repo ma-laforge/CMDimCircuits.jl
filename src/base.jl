@@ -13,29 +13,29 @@ const FREQ = DS{:freq}()
 
 #-------------------------------------------------------------------------------
 #==TODO: Remove.  Keep around in case is still useful.
-abstract AbstractDataDomain
-abstract Domain{Symbol} <: AbstractDataDomain
+abstract type AbstractDataDomain end
+abstract type Domain{Symbol} <: AbstractDataDomain end
 
 #Aliases to reduce typo mistakes:
-typealias BitDomain Domain{:bit} #Bit domain (discrete time, but one sample per bit)
+const BitDomain = Domain{:bit} #Bit domain (discrete time, but one sample per bit)
 #TODO: Should BitDomain <: DTDomain?  Should it not exist?
-typealias DTDomain Domain{:DT} #Discrete-time domain
-typealias CTDomain Domain{:CT} #Continuous-time domain
-typealias FDomain Domain{:f} #Frequency domain
-typealias ZDomain Domain{:Z} #Z-domain
+const DTDomain = Domain{:DT} #Discrete-time domain
+const CTDomain = Domain{:CT} #Continuous-time domain
+const FDomain = Domain{:f} #Frequency domain
+const ZDomain = Domain{:Z} #Z-domain
 ==#
 
 #-------------------------------------------------------------------------------
-abstract AbastractFrequency{Symbol} #Id
-typealias Hertz AbastractFrequency{:Hz}
-typealias RadiansPerSecond AbastractFrequency{:rad}
+abstract type AbastractFrequency{Symbol} end #Id
+const Hertz = AbastractFrequency{:Hz}
+const RadiansPerSecond = AbastractFrequency{:rad}
 
 #-------------------------------------------------------------------------------
 immutable Pole{T<:Number,AbastractFrequency}
 	v::T
 end
-typealias PoleHz{T<:Number} Pole{T,Hertz}
-typealias PoleRad{T<:Number} Pole{T,RadiansPerSecond}
+const PoleHz{T<:Number} = Pole{T,Hertz}
+const PoleRad{T<:Number} = Pole{T,RadiansPerSecond}
 
 #Constructor function:
 Pole{T<:Number}(v::T, u::Symbol) = Pole{T,AbastractFrequency{u}}(v)
@@ -54,9 +54,9 @@ type DataTF
 	tvalid::Bool #Time-domain data is valid
 	fvalid::Bool #Frequency-domain data is valid
 	#NOTE: Keep length(t) as either odd/even, when performing rfft
-	t::FloatRange{DataFloat} 
+	t::StepRangeLen{DataFloat} 
 	xt::Vector{DataFloat} #x(t)
-	f::FloatRange{DataFloat}
+	f::StepRangeLen{DataFloat}
 	Xf::Vector{DataComplex} #X(f)
 end
 DataTF(::DS{:time}, t, xt; tperiodic::Bool=false) =
