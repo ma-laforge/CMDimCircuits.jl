@@ -5,7 +5,7 @@
 ===============================================================================#
 
 #Object used to provide type information to something:
-type ValueTag{TAGID, T}
+mutable struct ValueTag{TAGID, T}
 	v::T
 end
 
@@ -14,10 +14,10 @@ end
 ===============================================================================#
 
 #Tags:
-typealias TImpedance{T} ValueTag{:Z, T}
-typealias TAdmittance{T} ValueTag{:Y, T}
-typealias TInductance{T} ValueTag{:L, T}
-typealias TCapacitance{T} ValueTag{:C, T}
+const TImpedance{T} = ValueTag{:Z, T}
+const TAdmittance{T} = ValueTag{:Y, T}
+const TInductance{T} = ValueTag{:L, T}
+const TCapacitance{T} = ValueTag{:C, T}
 
 
 #==Useful validations/assertions
@@ -34,12 +34,12 @@ typealias TCapacitance{T} ValueTag{:C, T}
 ===============================================================================#
 
 #_dotop(x)=Symbol(".$x")
-_operators_mult = [:*, :(.*)] #Multiplying a tagged object
-_operators_div = [:/, :(./)] #Dividing a tagged object
+_operators_mult = [:*] #Multiplying a tagged object
+_operators_div = [:/] #Dividing a tagged object
 _operators_scale = vcat(_operators_mult, _operators_div)#Scaling a tagged object
 _operators1 = [:+, :-] #Unary operator on a tagged object
 #Can be performed between two tagged objects of same type:
-_operators_same = [:+, :-, :(.+), :(.-)]
+_operators_same = [:+, :-]
 
 for op in _operators1; @eval begin #CODEGEN-------------------------------------
 

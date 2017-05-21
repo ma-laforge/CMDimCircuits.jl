@@ -5,7 +5,7 @@ module CircuitAnalysis
 
 #Type used to dispatch on a symbol & minimize namespace pollution:
 #-------------------------------------------------------------------------------
-immutable DS{Symbol}; end; #Dispatchable symbol
+struct DS{T}; end #Dispatchable symbol
 DS(v::Symbol) = DS{v}()
 
 include("base.jl")
