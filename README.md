@@ -59,7 +59,7 @@ The constant *must* be defined before the call to import the `EDAData` library. 
 
 Extensive compatibility testing of EDAData.jl has not been performed.  The module has been tested using the following environment(s):
 
- - Linux / Julia-0.5.0 (64-bit)
+ - Linux / Julia-0.6.0-rc1 (64-bit)
 
 ## Disclaimer
 
