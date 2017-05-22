@@ -15,7 +15,7 @@ const SNP_FSCALE_MAP = Dict("GHZ"=>1e9, "MHZ"=>1e6, "KHZ"=>1e3, "HZ"=>1)
 #==Main data structures
 ===============================================================================#
 
-type SNPReader <: AbstractReader{SNPFmt}
+mutable struct SNPReader <: AbstractReader{SNPFmt}
 	r::FileIO2.TextReader
 	numports::Int
 end
@@ -69,10 +69,10 @@ _read(file::File{SNPFmt}, args...; kwargs...) = #read .sNp with this module.
 #==Main reader algorithm
 ===============================================================================#
 #Returns DataF1 instead of DataFreq... in case step size is not constant.
-function Base.readall(r::SNPReader)
+function readall(r::SNPReader)
 	const str = String
 	x = DataFloat[]
-	y = Array(Vector{Complex{DataFloat}}, r.numports,r.numports)
+	y = Array{Vector{Complex{DataFloat}}}(r.numports,r.numports)
 
 	for row = 1:r.numports, col = 1:r.numports
 		y[row, col] = Complex{DataFloat}[]
@@ -125,7 +125,7 @@ function Base.readall(r::SNPReader)
 	end
 
 	x = x .* SNP_FSCALE_MAP[xunit]
-	m = Array(DataF1, r.numports, r.numports)
+	m = Array{DataF1}(r.numports, r.numports)
 	for row = 1:r.numports, col = 1:r.numports
 		m[row, col] = DataF1(x, y[row, col])
 	end

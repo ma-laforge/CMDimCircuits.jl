@@ -4,7 +4,7 @@
 
 #==Main data structures
 ===============================================================================#
-type Tr0Reader <: AbstractReader{Tr0Fmt}
+mutable struct Tr0Reader <: AbstractReader{Tr0Fmt}
 	reader::SpiceData.DataReader
 end
 

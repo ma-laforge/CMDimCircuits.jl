@@ -2,7 +2,7 @@
 
 #==Main data structures
 ===============================================================================#
-type SNPWriter <: AbstractWriter{SNPFmt}; end
+mutable struct SNPWriter <: AbstractWriter{SNPFmt}; end
 
 
 #==Useful validations/assertions
@@ -52,7 +52,7 @@ function __write(::Type{SNPWriter}, path::String, np::NetworkParameters)
 
 	if istwoport
 		#Special case: reorder parameters (x11, x21, x12, x22...) gross...
-		m = Array(eltype(np), nport, nport)
+		m = Array{eltype(np)}(nport, nport)
 		m[1,1] = np.m[1,1]; m[1,2] = np.m[2,1];
 		m[2,1] = np.m[1,2]; m[2,2] = np.m[2,2];
 		np = Network(nptype, m; nwkwargs...)

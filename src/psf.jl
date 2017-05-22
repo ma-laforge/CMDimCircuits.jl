@@ -4,7 +4,7 @@
 
 #==Main data structures
 ===============================================================================#
-type PSFReader <: AbstractReader{PSFFmt}
+mutable struct PSFReader <: AbstractReader{PSFFmt}
 	reader::PSFReaderLib.DataReader
 	x::Vector
 end
