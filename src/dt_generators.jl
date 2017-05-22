@@ -108,7 +108,7 @@ function prbs(; reglen::Int=32, seed::Integer=11, nsamples::Int=0)
 		reg = lfsr | mask
 		bit = msb
 		for j in 1:reglen
-			bit = ~(reg $ bit) #XNOR
+			bit = ~xor(reg, bit)
 			reg <<= 1
 		end
 		bit = Int((bit & msb) > 0) #Convert resultant MSB to an integer

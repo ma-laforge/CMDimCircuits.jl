@@ -1,7 +1,7 @@
 #SignalProcessing: Time/Frequency domain signals
 #-------------------------------------------------------------------------------
 
-import MDDatasets: _operators1, _operators2, _basefn1, _dotop
+import MDDatasets: _operators1, _operators2, _basefn1
 
 
 #==Helper functions
@@ -67,10 +67,10 @@ end
 for op in _operators1; @eval begin #CODEGEN--------------------------------------
 
 #op DataTime:
-Base.$op(d::DataTime) = DataTime(d.data, $op(d.data.xt))
+Base.$op(d::DataTime) = DataTime(d.data, ($op).(d.data.xt))
 
 #op DataFreq:
-Base.$op(d::DataFreq) = DataFreq(d.data, $op(d.data.Xf))
+Base.$op(d::DataFreq) = DataFreq(d.data, ($op).(d.data.Xf))
 
 end; end #CODEGEN---------------------------------------------------------------
 
@@ -78,16 +78,16 @@ end; end #CODEGEN---------------------------------------------------------------
 for op in _operators2; @eval begin #CODEGEN--------------------------------------
 
 #DataTime op Number:
-Base.$op(d::DataTime, n::Number) = DataTime(d.data, $(_dotop(op))(d.data.xt, n))
+Base.$op(d::DataTime, n::Number) = DataTime(d.data, ($op).(d.data.xt, n))
 
 #Number op DataTime:
-Base.$op(n::Number, d::DataTime) = DataTime(d.data, $(_dotop(op))(n, d.data.xt))
+Base.$op(n::Number, d::DataTime) = DataTime(d.data, ($op).(n, d.data.xt))
 
 #DataFreq op Number:
-Base.$op(d::DataFreq, n::Number) = DataFreq(d.data, $(_dotop(op))(d.data.Xf, n))
+Base.$op(d::DataFreq, n::Number) = DataFreq(d.data, ($op).(d.data.Xf, n))
 
 #Number op DataFreq:
-Base.$op(n::Number, d::DataFreq) = DataFreq(d.data, $(_dotop(op))(n, d.data.Xf))
+Base.$op(n::Number, d::DataFreq) = DataFreq(d.data, ($op).(n, d.data.Xf))
 
 end; end #CODEGEN---------------------------------------------------------------
 
@@ -98,10 +98,10 @@ end; end #CODEGEN---------------------------------------------------------------
 for fn in _basefn1; @eval begin #CODEGEN----------------------------------------
 
 #fn(DataTime)
-$fn(d::DataTime) = DataTime(d.data, $fn(d.data.xt))
+$fn(d::DataTime) = DataTime(d.data, ($fn).(d.data.xt))
 
 #fn(DataFreq)
-$fn(d::DataFreq) = DataFreq(d.data, $fn(d.data.Xf))
+$fn(d::DataFreq) = DataFreq(d.data, ($fn).(d.data.Xf))
 
 end; end #CODEGEN---------------------------------------------------------------
 
