@@ -11,7 +11,7 @@ import MDDatasets: DataMD
 import MDDatasets: DS #To dispatch on a symbol & minimize namespace pollution
 
 #Types that are meant to operate on network parameters:
-typealias TNetIop Union{DataMD,Number,Array}
+const TNetIop = Union{DataMD,Number,Array}
 
 include("base.jl")
 include("npconvert.jl")
@@ -36,6 +36,7 @@ export vector_pull #NwPar{Vector{Number}} => Vector{NwPar{Number}}
 export portcount
 export mx2elem #Returns 2-port matrix elements as a tuple of elements in intuitive order
 	#TODO: Find better name than mx2elem
+export submatrix #Get subset of network parameter matrix
 
 
 #==Other interface tools (symbols not exported to avoid collisions):

@@ -20,7 +20,7 @@ _zeroone(v) = (zeros(v), ones(v))
 #Create series/shunt elements:
 function shunt{T}(::NPType{:ABCD}, y::TAdmittance{T})
 	y = y.v; (_0, _1) = _zeroone(y)
-	m = Array(T, 2, 2) #Must build array manually
+	m = Array{T}(2, 2) #Must build array manually
 		m[1,1] = _1; m[1,2] = _0
 		m[2,1] =  y; m[2,2] = _1
 	return Network(:ABCD, m)
@@ -32,7 +32,7 @@ shunt(s::Symbol, args...; kwargs...) = shunt(NPType(s), args...; kwargs...)
 
 function series{T}(::NPType{:ABCD}, z::TImpedance{T})
 	z = z.v; (_0, _1) = _zeroone(z)
-	m = Array(T, 2, 2) #Must build array manually
+	m = Array{T}(2, 2) #Must build array manually
 		m[1,1] = _1; m[1,2] = z
 		m[2,1] = _0; m[2,2] = _1
 	return Network(:ABCD, m)

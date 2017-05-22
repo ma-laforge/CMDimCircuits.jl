@@ -5,26 +5,26 @@
 #==Main data structures
 ===============================================================================#
 #NP::Int: # of ports
-abstract Network{NP};
+abstract type Network{NP} end
 
-abstract NetworkParameters{TP, NP} <: Network{NP}
-typealias NetworkParameterMatrix{T} Array{T, 2}
+abstract type NetworkParameters{TP, NP} <: Network{NP} end
+const NetworkParameterMatrix{T} = Array{T, 2}
 
 
 #NPType: Mostly used to dispatch functions on a symbol:
-immutable NPType{TP}; end; #Dispatchable symbol
+struct NPType{TP}; end; #Dispatchable symbol
 NPType(s::Symbol) = NPType{s}()
 
 #Network parameters defined with port reference impedances:
 #TP::Symbol: Parameter type, NP::Int: # of ports, T: data type
-type NetworkParametersRef{TP, NP, T} <: NetworkParameters{TP, NP}
+mutable struct NetworkParametersRef{TP, NP, T} <: NetworkParameters{TP, NP}
 	z0::Real #For now. In general: one z0 per port
 	m::NetworkParameterMatrix{T}
 end
 
 #Network parameters defined *without* port reference impedances:
 #TP::Symbol: Parameter type, NP::Int: # of ports, T: data type
-type NetworkParametersNoRef{TP, NP, T} <: NetworkParameters{TP, NP}
+mutable struct NetworkParametersNoRef{TP, NP, T} <: NetworkParameters{TP, NP}
 	m::NetworkParameterMatrix{T}
 end
 
@@ -32,14 +32,14 @@ end
 #==Type aliases
 ===============================================================================#
 #Not exported
-typealias SParameters{NP, T} NetworkParametersRef{:S, NP, T}
-typealias TParameters{T} NetworkParametersRef{:T, 2, T}
+const SParameters{NP, T} = NetworkParametersRef{:S, NP, T}
+const TParameters{T} = NetworkParametersRef{:T, 2, T}
 
-typealias ZParameters{NP, T} NetworkParametersNoRef{:Z, NP, T}
-typealias YParameters{NP, T} NetworkParametersNoRef{:Y, NP, T}
-typealias HParameters{NP, T} NetworkParametersNoRef{:H, NP, T}
-typealias GParameters{NP, T} NetworkParametersNoRef{:G, NP, T}
-typealias ABCDParameters{T} NetworkParametersNoRef{:ABCD, 2, T}
+const ZParameters{NP, T} = NetworkParametersNoRef{:Z, NP, T}
+const YParameters{NP, T} = NetworkParametersNoRef{:Y, NP, T}
+const HParameters{NP, T} = NetworkParametersNoRef{:H, NP, T}
+const GParameters{NP, T} = NetworkParametersNoRef{:G, NP, T}
+const ABCDParameters{T} = NetworkParametersNoRef{:ABCD, 2, T}
 
 
 #==Useful validations/assertions
@@ -131,7 +131,7 @@ apply{TP}(fn::Function, d1::TNetIop, d2::NetworkParametersNoRef{TP}) = Network(T
 
 #==Register base operations
 ===============================================================================#
-fnlist = Symbol[:*, :/, :+, :-, :(.*), :(./), :(.+), :(.-)]
+fnlist = Symbol[:*, :/, :+, :-]
 for fn in fnlist; @eval begin #CODEGEN------------------------------------------
 
 Base.$fn(d1::NetworkParameters, d2::NetworkParameters) = apply($fn, d1, d2)
@@ -139,20 +139,5 @@ Base.$fn(d1::NetworkParameters, d2::TNetIop) = apply($fn, d1, d2)
 Base.$fn(d1::TNetIop, d2::NetworkParameters) = apply($fn, d1, d2)
 
 end; end #CODEGEN---------------------------------------------------------------
-
-
-#==Hacks
-===============================================================================#
-#TODO: Move to MDDatasets
-#Make *dot* operations work ond DataMD
-_dotop(x)=Symbol(".$x")
-_operators2 = [:*, :/, :+, :-]
-for op in _operators2; @eval begin #CODEGEN-------------------------------------
-
-Base.$(_dotop(op))(d1::DataMD, d2::Number) = Base.$op(d1, d2)
-Base.$(_dotop(op))(d1::Number, d2::DataMD) = Base.$op(d1, d2)
-
-end; end #CODEGEN---------------------------------------------------------------
-
 
 #Last line

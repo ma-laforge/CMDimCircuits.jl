@@ -40,7 +40,7 @@
   - `Network(NPType{:S}, Z, z0=50)`: Convert Z &rArr; S parameter network (z0=50 &Omega;).
  - **`vector_push`**`(np::Vector{NetworkParameters})`: Converts `Vector{NetworkParameters{Number}}` &rArr; `NetworkParameters{Vector{Number}}`
  - **`vector_pull`**`(np::NetworkParameters{Vector})`: Converts `NetworkParameters{Vector{Number}}` &rArr; `Vector{NetworkParameters{Number}}`
- - **`sub`**`(np::{S/Y/Z}Parameters, ports::Vector{Int})`: Creates a network parameter matrix that is a subset of np.  Can also be used to re-order ports.
+ - **`submatrix`**`(np::{S/Y/Z}Parameters, ports::Vector{Int})`: Creates a network parameter matrix that is a subset of np.  Can also be used to re-order ports.
 
 #### Other
  - **`series`**`({::Symbol/::NPType}, {::TImpedance/::TAdmittance})`: Returns a 2-port network parameter matrix representing the provided series impedance/admittance value.
@@ -61,7 +61,7 @@ Examples of the NetwAnalysis.jl capabilities (+more) can be found under the [sam
 
 Extensive compatibility testing of NetwAnalysis.jl has not been performed.  The module has been tested using the following environment(s):
 
- - Linux / Julia-0.5.0 (64-bit)
+ - Linux / Julia-0.6.0-rc1 (64-bit)
 
 ## Disclaimer
 

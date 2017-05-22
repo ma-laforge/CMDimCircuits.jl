@@ -12,7 +12,7 @@ function _printmatrix(io::IO, m::NetworkParameterMatrix)
 	nports = portcount(m)
 	for row = 1:nports, col = 1:nports
 		print(io, "  ($row,$col)=")
-		if isdefined(m, row, col)
+		if isassigned(m, row, col)
 			println(io, m[row, col])
 		else
 			println(io, "UNDEFINED")

@@ -45,7 +45,7 @@ println("\nTest matrix operations:")
 println(sepline)
 @show S
 @show S.*2
-@show S.*[3 4; 2 1]
+#@show S.*[3 4; 2 1] #TODO: Julia v0.6: Figure out a way to do element-by-element operations??
 @show S*[3 4; 2 1]
 @show s21 = S[2,1]
 
@@ -59,8 +59,8 @@ println(sepline)
 println("\nTest subset operations:")
 println(sepline)
 @show S
-@show sub(S, [2, 1])
-@show sub(S, [1])
+@show submatrix(S, [2, 1])
+@show submatrix(S, [1])
 
 println("\nTest network parameter conversions:")
 println(sepline)

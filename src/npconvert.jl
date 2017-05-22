@@ -27,23 +27,23 @@ const default_z0 = 50.0
 ===============================================================================#
 
 #Network parameter convenience unions:
-typealias NP_SConv Union{ #Those with S-parameter intermediaries
+const NP_SConv = Union{ #Those with S-parameter intermediaries
 	ZParameters, YParameters,
 	ABCDParameters,
 	TParameters
 }
-typealias NP_ZConv Union{ #Those with Z-parameter intermediaries
+const NP_ZConv = Union{ #Those with Z-parameter intermediaries
 	HParameters, GParameters,
 }
 
 #Network parameter >>type<< convenience unions:
 #TODO: auto-calculate from NP_SConv??
-typealias NPT_SConv Union{ #Those with S-parameter intermediaries
+const NPT_SConv = Union{ #Those with S-parameter intermediaries
 	NPType{:Z}, NPType{:Y},
 	NPType{:ABCD},
 	NPType{:T}
 }
-typealias NPT_ZConv Union{ #Those with Z-parameter intermediaries
+const NPT_ZConv = Union{ #Those with Z-parameter intermediaries
 	NPType{:H}, NPType{:G},
 }
 
@@ -64,7 +64,7 @@ function _vector_push{NT<:NetworkParameters}(RT::DataType, v::Vector{NT}, z0=not
 	T = eltype(RT)
 	nports = portcount(v[1])
 	vlen = length(v)
-	result_m = Array(T, nports, nports)
+	result_m = Array{T}(nports, nports)
 
 	for i in 1:vlen
 		if portcount(v[i]) != nports
@@ -99,7 +99,7 @@ vector_push{TP, NP, T}(np::Vector{NetworkParametersNoRef{TP, NP, T}}) =
 function _vector_pull(ET::DataType, np::NetworkParameters, z0=nothing)
 	nports = portcount(np)
 	vlen = length(np[1,1])
-	result = Array(ET, vlen)
+	result = Array{ET}(vlen)
 
 	for row = 1:nports, col = 1:nports
 		if length(np[row, col]) != vlen
@@ -128,9 +128,9 @@ vector_pull{TP, NP, T}(np::NetworkParametersNoRef{TP, NP, Vector{T}}) =
 	_vector_pull(NetworkParametersNoRef{TP, NP, T}, np)
 
 
-#sub: Obtain subset of a NetworkParameters matrix
+#submatrix: Obtain subset of a NetworkParameters matrix
 #-------------------------------------------------------------------------------
-function Base.sub{PT<:Integer}(np::NetworkParameters, ports::Vector{PT}=Int[])
+function submatrix{PT<:Integer}(np::NetworkParameters, ports::Vector{PT}=Int[])
 	nports = length(ports)
 
 	if !in(:Y, Set([:S, :Z, :Y]))
