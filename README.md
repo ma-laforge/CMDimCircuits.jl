@@ -7,7 +7,7 @@
 | <img src="https://github.com/ma-laforge/FileRepo/blob/master/SignalProcessing/sampleplots/demo15.png" width="850"> |
 | :---: |
 
-| <img src="https://github.com/ma-laforge/FileRepo/blob/master/InspectDR/sampleplots/demo1.png" width="425"> | <img src="https://github.com/ma-laforge/FileRepo/blob/master/InspectDR/sampleplots/demo17.png" width="425"> |
+| <img src="https://github.com/ma-laforge/FileRepo/blob/master/SignalProcessing/sampleplots/demo1.png" width="425"> | <img src="https://github.com/ma-laforge/FileRepo/blob/master/SignalProcessing/sampleplots/demo17.png" width="425"> |
 | :---: | :---: |
 
 ## Description
