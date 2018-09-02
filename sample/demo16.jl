@@ -44,7 +44,7 @@ sweeplist = PSweep[
 end
 #ϕ = ϕmax*cos(2pi*t/tck)
 
-noise = (rand(length(t))-0.5)*(2*noiseamp)
+noise = (rand(length(t)) .- 0.5)*(2*noiseamp)
 noise = DataF1(t.x, noise)
 ck = sin(2pi*t/tck+ϕ)+noise
 

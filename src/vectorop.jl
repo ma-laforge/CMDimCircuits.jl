@@ -11,7 +11,7 @@ evenlength(v::AbstractArray) = (0 == (length(v) % 2))
 ===============================================================================#
 
 datavec(s::Symbol, args...; kwargs...) = datavec(DS{s}(), args...; kwargs...)
-datavec{T<:Symbol}(::DS{T}, args...; kwargs...) = throw(ArgumentError("Unknown vector type: $T"))
+datavec(::DS{T}, args...; kwargs...) where {T<:Symbol} = throw(ArgumentError("Unknown vector type: $T"))
 
 
 #==Range generators
@@ -28,32 +28,32 @@ NOTE:
 
 timespace(primary::Symbol, v1, secondary::Symbol, v2; kwargs...) =
 	timespace(DS{primary}(), DS{secondary}(), v1, v2; kwargs...)
-timespace{T1, T2}(::DS{T1}, ::DS{T2}, args...; kwargs...) =
+timespace(::DS{T1}, ::DS{T2}, args...; kwargs...) where {T1, T2} =
 	throw(ArgumentError("timespace does not support combination (:$T1, :$T2)."))
 
 #Sampling period (timestep), ts is most important parameter:
 #Will throw error if "suggested" fundamental period does not land on the timestep:
 function timespace(::DS{:ts}, ::DS{:tfund}, ts, tfund; tstart=0)
-	const ABSTOL = .05
+	ABSTOL = .05 #WANTCONST
 	ns = tfund/ts
 	ins = round(Int, ns)
 	if abs(ns-ins) > ABSTOL
 		throw("tfund must be approx. an integer multiple of ts.")
 	end
-	return tstart+StepRangeLen{DataFloat}(0:ts:((ins-1)*ts))
+	return tstart .+ StepRangeLen{DataFloat}(0:ts:((ins-1)*ts))
 end
 
 #Fundamental period, tfund, is most important parameter.
 #Will throw error if fundamental period does not land on the "suggested" timestep:
 function timespace(::DS{:tfund}, ::DS{:ts}, tfund, ts; tstart=0)
-	const ABSTOL = .05
+	ABSTOL = .05 #WANTCONST
 	ns = tfund/ts
 	ins = round(Int, ns)
 	if abs(ns-ins) > ABSTOL
 		throw("tfund must be approx. an integer multiple of ts.")
 	end
 	ts = tfund/ins #Re-compute most accurate possible version of timestep
-	return tstart+StepRangeLen{DataFloat}(0:ts:((ins-1)*ts))
+	return tstart .+ StepRangeLen{DataFloat}(0:ts:((ins-1)*ts))
 end
 
 function timetofreq(t::StepRangeLen{DataFloat})

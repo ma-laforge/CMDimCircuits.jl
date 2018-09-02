@@ -5,10 +5,11 @@
 #-------------------------------------------------------------------------------
 function Base.step(ref::DataF1, p::Pole; tdel=0, amp=1)
 	#H(s) = 1/(s*tau+1)
-	const npoints = length(ref)
+	npoints = length(ref) #WANTCONST
+	e = Base.MathConstants.e
 	x = ref.x
 	one_tau = value(:rad, p) #1/tau
-	y = zeros(ref.y)
+	y = zero(ref.y)
 
 	#Find first point where x>=tdel:
 	istart = npoints+1
@@ -35,7 +36,7 @@ end
 # seq: a binary data sequence
 # Π: Pulse response
 # tbit: bit period
-function pattern{T<:Number}(seq::Vector{T}, Π::DataF1; tbit::Number=0)
+function pattern(seq::Vector{T}, Π::DataF1; tbit::Number=0) where {T<:Number}
 	ensure(tbit > 0, ArgumentError("tbit must be positive"))
 	result = 0
 	for i in 1:length(seq)

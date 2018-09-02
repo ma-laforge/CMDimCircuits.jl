@@ -51,7 +51,7 @@ s = add(plot, vvst, title="Sine wave")
 ===============================================================================#
 PoleRad = SignalProcessing.PoleRad
 f(x::Pole) = "Generic pole"
-f{T<:Number}(x::PoleRad{T}) = "Pole: $(value(x)) rad!"
+f(x::PoleRad{T}) where {T<:Number} = "Pole: $(value(x)) rad!"
 phz=Pole(1,:Hz)
 prad=Pole(1,:rad)
 @show phz, prad

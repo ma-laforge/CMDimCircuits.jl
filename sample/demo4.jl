@@ -4,6 +4,7 @@
 using MDDatasets
 using SignalProcessing
 using EasyPlot
+import Statistics
 
 
 #==Constants
@@ -49,7 +50,7 @@ result = pat
 tmax = tbit*(nsamples+nbit_Π-1)
 skew = DataF1([0, tmax],[0, 0.5])
 result = result + result + 4 + skew
-result += mean(result)
+result += Statistics.mean(result)
 
 
 #==Generate plot

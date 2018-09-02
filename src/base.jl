@@ -31,14 +31,14 @@ const Hertz = AbastractFrequency{:Hz}
 const RadiansPerSecond = AbastractFrequency{:rad}
 
 #-------------------------------------------------------------------------------
-immutable Pole{T<:Number,AbastractFrequency}
+struct Pole{T<:Number,AbastractFrequency}
 	v::T
 end
 const PoleHz{T<:Number} = Pole{T,Hertz}
 const PoleRad{T<:Number} = Pole{T,RadiansPerSecond}
 
 #Constructor function:
-Pole{T<:Number}(v::T, u::Symbol) = Pole{T,AbastractFrequency{u}}(v)
+Pole(v::T, u::Symbol) where {T<:Number} = Pole{T,AbastractFrequency{u}}(v)
 
 
 #==Time<=>Frequency domain signals
@@ -49,7 +49,7 @@ TODO: What about 2D images, 3D movies, etc?
 TODO: Make generic, instead of basing t/f on DataFloat?
 TODO: Is DataTF necessary??  Could having just DataTime & DataFreq be enough?
 ===============================================================================#
-type DataTF
+mutable struct DataTF
 	tperiodic::Bool #Represents a periodic signal
 	tvalid::Bool #Time-domain data is valid
 	fvalid::Bool #Frequency-domain data is valid
@@ -67,25 +67,25 @@ DataTF(::DS{:freq}, f, Xf; teven::Bool=true, tperiodic::Bool=false) =
 
 #Simple wrapper to point to DataTF:
 #-------------------------------------------------------------------------------
-immutable DataTime
+mutable struct DataTime
 	data::DataTF
 end
-DataTime(t::Range, xt::Vector{DataFloat}; tperiodic::Bool=false) = DataTime(DataTF(TIME, t, xt, tperiodic=tperiodic))
-DataTime(t::Range; tperiodic::Bool=false) = DataTime(t, collect(t), tperiodic=tperiodic)
+DataTime(t::AbstractRange, xt::Vector{DataFloat}; tperiodic::Bool=false) = DataTime(DataTF(TIME, t, xt, tperiodic=tperiodic))
+DataTime(t::AbstractRange; tperiodic::Bool=false) = DataTime(t, collect(t), tperiodic=tperiodic)
 #For low-level algorithms... Initializes data ranges:
 DataTime(d::DataTF, xt::Vector{DataFloat}) =
 	validatelengths(DataTime(DataTF(d.tperiodic, true, false, d.t, xt, d.f, [])))
-DataTime(t::Range, xt::DataF1; tperiodic::Bool=false) =
+DataTime(t::AbstractRange, xt::DataF1; tperiodic::Bool=false) =
 	DataTime(t, sample(xt, t).y, tperiodic=tperiodic)
 
-immutable DataFreq
+mutable struct DataFreq
 	data::DataTF
 end
-DataFreq(f::Range, Xf::Vector{DataComplex}; teven::Bool=true, tperiodic::Bool=false) =
+DataFreq(f::AbstractRange, Xf::Vector{DataComplex}; teven::Bool=true, tperiodic::Bool=false) =
 	DataFreq(DataTF(FREQ, f, Xf, teven=teven, tperiodic=tperiodic))
-DataFreq(f::Range; teven::Bool=true, tperiodic::Bool=false) =
+DataFreq(f::AbstractRange; teven::Bool=true, tperiodic::Bool=false) =
 	DataFreq(f, collect(f), teven=teven, tperiodic=tperiodic)
-DataFreq(f::Range, Xf::DataF1; teven::Bool=true, tperiodic::Bool=false) =
+DataFreq(f::AbstractRange, Xf::DataF1; teven::Bool=true, tperiodic::Bool=false) =
 	DataFreq(f, sample(Xf, f).y, teven=teven, tperiodic=tperiodic)
 #For low-level algorithms... Initializes data ranges:
 DataFreq(d::DataTF, Xf::Vector{DataComplex}) =
@@ -121,7 +121,7 @@ end
 Conversions do not maintain numeric data types.
 TODO: Use proper type conversion routines
 ==#
-Base.convert{T,U<:AbastractFrequency}(::Type{U}, p::Pole{T,U}) = p
+Base.convert(::Type{U}, p::Pole{T,U}) where {T,U<:AbastractFrequency} = p
 Base.convert(::Type{Hertz}, p::PoleRad) = Pole(p.v/(2*pi),:Hz)
 Base.convert(::Type{RadiansPerSecond}, p::PoleHz) = Pole(p.v*(2*pi),:rad)
 

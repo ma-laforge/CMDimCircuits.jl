@@ -1,7 +1,9 @@
 #SignalProcessing: 
 #-------------------------------------------------------------------------------
-
-#__precompile__()
+#=
+TAGS:
+	#WANTCONST, HIDEWARN_0.7
+=#
 
 module SignalProcessing
 
@@ -13,6 +15,7 @@ import MDDatasets: value
 import MDDatasets: DataF1
 import MDDatasets: DS #To dispatch on a symbol & minimize namespace pollution
 import MDDatasets: CastType
+import FFTW: rfft, irfft
 
 
 include("vectorop.jl")

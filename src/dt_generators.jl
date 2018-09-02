@@ -53,7 +53,7 @@ function Base.step(ref::DataTime; ndel::Index=Index(0), amp=1)
 	ndel = value(ndel)
 	#ASSERT INCREASING
 	t = ref.data.t
-	xt = zeros(t)
+	xt = zero(t)
 	istart = ceil(Int, 1-(t[1]/step(t))) #succeptible to round-offs?
 	istart += ndel
 	istart = max(istart, 1)
@@ -124,10 +124,10 @@ end
 # nbit: Number of sampling steps in a bit period.
 #TODO: shift x instead of y???
 #TODO: Add DataTime vectors directly once implemented
-function pattern{T<:Number}(seq::Vector{T}, p::DataTime; nbit::Index=Index(0))
+function pattern(seq::Vector{T}, p::DataTime; nbit::Index=Index(0)) where {T<:Number}
 	nbit = value(nbit)
 	ensure(nbit > 0, ArgumentError("nbit must be positive"))
-	result = zeros(p.data.xt)
+	result = zero(p.data.xt)
 	for i in 1:length(seq)
 		result += seq[i]*yshift(p, Index((i-1)*nbit)).data.xt
 	end

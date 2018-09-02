@@ -82,7 +82,7 @@ SignalProcessing.jl is part of the [CData](https://github.com/ma-laforge/CData.j
 
 Extensive compatibility testing of SignalProcessing.jl has not been performed.  The module has been tested using the following environment(s):
 
-- Linux / Julia-0.6.0-rc1 (64-bit)
+- Linux / Julia-0.7.0 (64-bit)
 
 ## Disclaimer
 
