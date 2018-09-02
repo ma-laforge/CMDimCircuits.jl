@@ -69,7 +69,7 @@ Examples of the CircuitAnalysis.jl capabilities can be found under the [test dir
 
 Extensive compatibility testing of CircuitAnalysis.jl has not been performed.  The module has been tested using the following environment(s):
 
- - Linux / Julia-0.6.0-rc1 (64-bit)
+ - Linux / Julia-0.7.0 (64-bit)
 
 ## Disclaimer
 
