@@ -49,17 +49,15 @@ Further examples on how to use the EDAData.jl capabilities can be found under th
 
 ## Known Limitations
 
-By default, EDAData reads .psf files using the pure-Julia libpsf implementation "LibPSF.jl".  To opt for a C++ implementation, it is possible to select the LibPSFC.jl library using the following julia statement:
+By default, EDAData reads .psf files using the pure-Julia libpsf implementation "LibPSF.jl".  To opt for a C++ implementation, it is possible to select the LibPSFC.jl library by modifying `defaultPSFReader` found in `src/LibPSF.jl`:
 
 	defaultPSFReader = :LibPSFC
-
-The constant *must* be defined before the call to import the `EDAData` library.  It can therefore be placed in your ~/.juliarc.jl file.
 
 ### Compatibility
 
 Extensive compatibility testing of EDAData.jl has not been performed.  The module has been tested using the following environment(s):
 
- - Linux / Julia-0.6.0-rc1 (64-bit)
+ - Linux / Julia-0.7.0 (64-bit)
 
 ## Disclaimer
 

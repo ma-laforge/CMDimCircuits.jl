@@ -1,8 +1,15 @@
 #EDAData
 #-------------------------------------------------------------------------------
+__precompile__(true)
+
+#=
+TAGS:
+	#WANTCONST, HIDEWARN_0.7
+=#
 
 module EDAData
-const defaultPSFReader = isdefined(Main, :defaultPSFReader)? Main.defaultPSFReader: (:LibPSF)
+
+const defaultPSFReader = :LibPSF #Overwrite with LibPSFC to use alternative algorithm
 
 import SpiceData #SPICE data reader
 
@@ -15,6 +22,7 @@ using NetwAnalysis
 using MDDatasets
 
 import NetwAnalysis: NetworkParameters, NetworkParametersRef, NetworkParametersNoRef
+import Dates: now
 
 
 include("base.jl")

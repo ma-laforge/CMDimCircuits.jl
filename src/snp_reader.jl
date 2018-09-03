@@ -23,7 +23,7 @@ end
 
 #==Helper functions
 ===============================================================================#
-iscomment(line::String) = length(line) < 1 || '!' == line[1]
+iscomment(line::AbstractString) = length(line) < 1 || '!' == line[1]
 
 #Read mangitude/angle data
 snp_read_ma(r::SNPReader) = read(r.r, DataFloat) * e^(im*read(r.r, DataFloat))
@@ -70,9 +70,9 @@ _read(file::File{SNPFmt}, args...; kwargs...) = #read .sNp with this module.
 ===============================================================================#
 #Returns DataF1 instead of DataFreq... in case step size is not constant.
 function readall(r::SNPReader)
-	const str = String
+	str = String #WANTCONST
 	x = DataFloat[]
-	y = Array{Vector{Complex{DataFloat}}}(r.numports,r.numports)
+	y = Array{Vector{Complex{DataFloat}}}(undef, r.numports,r.numports)
 
 	for row = 1:r.numports, col = 1:r.numports
 		y[row, col] = Complex{DataFloat}[]
@@ -125,7 +125,7 @@ function readall(r::SNPReader)
 	end
 
 	x = x .* SNP_FSCALE_MAP[xunit]
-	m = Array{DataF1}(r.numports, r.numports)
+	m = Array{DataF1}(undef, r.numports, r.numports)
 	for row = 1:r.numports, col = 1:r.numports
 		m[row, col] = DataF1(x, y[row, col])
 	end

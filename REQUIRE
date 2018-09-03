@@ -1,6 +1,7 @@
-julia 0.6-
+julia 0.7.0
 SpiceData
 LibPSF
 FileIO2
 MDDatasets
 NetwAnalysis
+Dates

@@ -52,7 +52,7 @@ function __write(::Type{SNPWriter}, path::String, np::NetworkParameters)
 
 	if istwoport
 		#Special case: reorder parameters (x11, x21, x12, x22...) gross...
-		m = Array{eltype(np)}(nport, nport)
+		m = Array{eltype(np)}(undef, nport, nport)
 		m[1,1] = np.m[1,1]; m[1,2] = np.m[2,1];
 		m[2,1] = np.m[1,2]; m[2,2] = np.m[2,2];
 		np = Network(nptype, m; nwkwargs...)
@@ -93,15 +93,15 @@ function __write(::Type{SNPWriter}, path::String, np::NetworkParameters)
 	end
 end
 
-Base.write{TP, NP}(::Type{SNPWriter}, path::String, np::NetworkParametersRef{TP, NP, DataF1}) =
+Base.write(::Type{SNPWriter}, path::String, np::NetworkParametersRef{TP, NP, DataF1}) where {TP, NP} =
 	__write(SNPWriter, path, np)
-Base.write{TP, NP}(::Type{SNPWriter}, path::String, np::NetworkParametersNoRef{TP, NP, DataF1}) =
+Base.write(::Type{SNPWriter}, path::String, np::NetworkParametersNoRef{TP, NP, DataF1}) where {TP, NP} =
 	__write(SNPWriter, path, np)
 
 #Write .sNp with this module:
-_write{TP, NP, T<:DataF1}(file::File{SNPFmt}, np::NetworkParametersRef{TP, NP, T}) =
+_write(file::File{SNPFmt}, np::NetworkParametersRef{TP, NP, T}) where {TP, NP, T<:DataF1} =
 	__write(SNPWriter, file.path, np)
-_write{TP, NP, T<:DataF1}(file::File{SNPFmt}, np::NetworkParametersNoRef{TP, NP, T}) =
+_write(file::File{SNPFmt}, np::NetworkParametersNoRef{TP, NP, T}) where {TP, NP, T<:DataF1} =
 	__write(SNPWriter, file.path, np)
 
 

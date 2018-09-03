@@ -18,7 +18,7 @@ function Base.open(::Type{PSFReader}, path::String)
 	try
 		x = PSFReaderLib.readsweep(reader)
 	catch
-		x = Void[] #No sweep
+		x = Nothing[] #No sweep
 	end
 	return PSFReader(reader, x)
 end
@@ -26,7 +26,7 @@ _open(file::File{PSFFmt}) = open(PSFReader, file.path) #Use PSF reader from this
 _open(fn::Function, file::File{PSFFmt}) = open(fn, PSFReader, file.path) #For do/end method
 
 function Base.read(r::PSFReader, signame::String)
-#	if typeof(r.x) <: Vector{Void}
+#	if typeof(r.x) <: Vector{Nothing}
 		#Very hacky... Figure out something better
 #		return PSFReaderLib.readscalar(r.reader, signame)
 #	end
