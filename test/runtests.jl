@@ -3,12 +3,15 @@
 
 using CircuitAnalysis 
 using NetwAnalysis
+import NetwAnalysis: NetworkParameters, NetworkParametersNoRef, NetworkParametersRef
+using Test
 
 #No real test code yet... just run demos:
 
 
 #==Input data
 ===============================================================================#
+mxerror_thresh = 1e-12
 sepline = "---------------------------------------------------------------------"
 f = collect(1:3)*1e9
 c = capacitance(5e-15)
@@ -23,6 +26,16 @@ ycap_vec = admittance(c, f=f)
 
 #==Tests
 ===============================================================================#
+mxtypematch(n1::NetworkParameters, n2::NetworkParameters) = false
+mxtypematch(n1::NetworkParametersNoRef{TP, NP}, n2::NetworkParametersNoRef{TP, NP}) where {TP, NP} = true
+mxtypematch(n1::NetworkParametersRef{TP, NP}, n2::NetworkParametersRef{TP, NP}) where {TP, NP} = (n1.z0==n2.z0) #impedance must also match
+
+function mxerror(n1::Network, n2::Network)
+	@test(mxtypematch(n1,n2)) #Make sure types match
+	Δ = n2-n1
+	ϵ = maximum(abs.(Δ.m))
+	return ϵ
+end
 
 println("\nTest constructors:")
 println(sepline)
@@ -44,7 +57,7 @@ println(sepline)
 println("\nTest matrix operations:")
 println(sepline)
 @show S
-@show S.*2
+@show S * 2
 #@show S.*[3 4; 2 1] #TODO: Julia v0.6: Figure out a way to do element-by-element operations??
 @show S*[3 4; 2 1]
 @show s21 = S[2,1]
@@ -66,7 +79,8 @@ println("\nTest network parameter conversions:")
 println(sepline)
 @show T = Network(:ABCD, S)
 @show Z = Network(:Z, T)
-@show Network(:ABCD, T) #Passthrough
+@show T2 = Network(:ABCD, T) #Passthrough
+@show T.m .- T2.m
 @show S2 = Network(:S, Z, z0=75)
 @show T = Network(:T, S2)
 
@@ -75,7 +89,7 @@ println(sepline)
 @show S = Network(:S, [0 1; 1 0])
 @show T = Network(:T, S)
 
-println("\nRef values:")
+println("\nImpedance transformation:")
 println(sepline)
 @show _S50 = Network(:S, [1 2; 3 4])
 @show _S75 = Network(:S, _S50, z0=75)
@@ -84,14 +98,17 @@ println(sepline)
 
 println("\nLook at conversion error:")
 println(sepline)
-@show Network(:T, _S75) - _T75
-@show Network(:T, _S75, z0=50) - _T50
-@show Network(:T, _S50, z0=75) - _T75
-@show Network(:T, _T75, z0=50) - _T50
+@test mxerror(Network(:T, _S75), _T75) < mxerror_thresh
+@test mxerror(Network(:T, _S75, z0=50), _T50) < mxerror_thresh
+@test mxerror(Network(:T, _S50, z0=75), _T75) < mxerror_thresh
+@test mxerror(Network(:T, _T75, z0=50), _T50) < mxerror_thresh
 
-@show Network(:S, _T50) - _S50
-@show Network(:S, _T75) - _S75
-@show Network(:S, _T75, z0=50) - _S50
+@test mxerror(Network(:S, _T50), _S50) < mxerror_thresh
+@test mxerror(Network(:S, _T75), _S75) < mxerror_thresh
+@test mxerror(Network(:S, _T75, z0=50), _S50) < mxerror_thresh
+
+#TODO: add tests more to validate impedance transformation (use realistic impedances)
+#Z->S50->S75; Z->S75
 
 println("\nTest stability & gains:")
 println(sepline)

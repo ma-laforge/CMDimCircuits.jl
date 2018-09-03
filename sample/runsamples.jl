@@ -16,7 +16,7 @@ getdemodisplay(d::EasyPlot.EasyPlotDisplay) = d
 #Must initialize display before defining specialized "getdemodisplay":
 EasyPlot.initbackend()
 
-if isdefined(:EasyPlotGrace)
+if @isdefined(EasyPlotGrace)
 #Improve display appearance a bit:
 function getdemodisplay(d::EasyPlotGrace.PlotDisplay)
 	d = EasyPlotGrace.PlotDisplay()
@@ -31,6 +31,7 @@ end
 ===============================================================================#
 pdisp = getdemodisplay(EasyPlot.defaults.maindisplay)
 
+let plot #HIDEWARN_0.7
 for i in 1:2
 	file = "./demo$i.jl"
 	sepline = "---------------------------------------------------------------------"
@@ -41,7 +42,7 @@ for i in 1:2
 	nosave=true
 	if nosave
 		display(pdisp, plot)
-	elseif isdefined(:EasyPlotInspect) &&
+	elseif @isdefined(EasyPlotInspect) &&
 			isa(pdisp, EasyPlotInspect.PlotDisplay) #InspectDR only
 		rplot = EasyPlot.render(pdisp, plot)
 		rplot.hplot*=.7 #Looks better with wider aspect ratio
@@ -49,6 +50,7 @@ for i in 1:2
 	else
 		EasyPlot._write(outfile, plot, pdisp)
 	end
+end
 end
 
 :SampleCode_Executed

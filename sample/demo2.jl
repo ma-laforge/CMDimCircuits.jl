@@ -18,10 +18,11 @@ color3 = line(color=:green, width=2)
 
 #==Input data
 ===============================================================================#
+_logspace(start, stop, n) = 10 .^ range(start, stop=stop, length=n)
 C = capacitance(2e-12)
 R = 20.0
 #f = (1:10)*1e9
-f = logspace(log10(1e3), log10(20e9), 100)
+f = _logspace(log10(1e3), log10(20e9), 100)
 xrange = axes(xmin=1e6, xmax=100e9)
 
 
@@ -43,7 +44,8 @@ end
 
 #Compute ABCD matrix of shunt capacitors:
 TC1 = shunt(:ABCD, admittance(C, f=f))
-TC2 = shunt(:ABCD, impedance(2C, f=f)) #Add asymmetry
+#TC2 = shunt(:ABCD, impedance(2C, f=f)) #Add asymmetry #TODO: fix multiplication of C
+TC2 = shunt(:ABCD, impedance(capacitance(2*C.v), f=f)) #Add asymmetry
 
 #Compute Pi network:
 T = TC1*TR*TC2
@@ -53,7 +55,6 @@ S = Network(:S, T)
 
 #Intermediate network parameters (verify conversion routines):
 nplist = [:Y, :Z, :ABCD, :H, :G, :T]
-
 
 #==Generate plot
 ===============================================================================#
@@ -68,6 +69,7 @@ strans = add(plot, axes_loglin, xrange, dbvsf, title="Transmission Coefficient")
 
 Sref = S
 
+let S, s11, s12, s21, s22 #HIDEWARN_0.7
 for np in nplist
 	X = Network(np, Sref)
 	S = Network(:S, X)
@@ -76,6 +78,7 @@ for np in nplist
 	add(s_s22, dB20(s22), color1, id="s11 ($np)")
 	add(strans, dB20(s12), color1, id="s12 ($np)")
 	add(strans, dB20(s21), color2, id="s21 ($np)")
+end
 end
 
 

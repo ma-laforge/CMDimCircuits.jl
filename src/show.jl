@@ -5,9 +5,9 @@
 #==Generate friendly show functions
 ===============================================================================#
 
-Base.show{NP}(io::IO, t::Type{NPType{NP}}) =	print(io, "NPType{:$NP}")
+Base.show(io::IO, t::Type{NPType{NP}}) where NP = print(io, "NPType{:$NP}")
 
-_printmatrix{T<:Number}(io::IO, m::NetworkParameterMatrix{T}) = println(io, m)
+_printmatrix(io::IO, m::NetworkParameterMatrix{T}) where {T<:Number} = println(io, m)
 function _printmatrix(io::IO, m::NetworkParameterMatrix)
 	nports = portcount(m)
 	for row = 1:nports, col = 1:nports

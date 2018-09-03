@@ -18,7 +18,7 @@ NPType(s::Symbol) = NPType{s}()
 #Network parameters defined with port reference impedances:
 #TP::Symbol: Parameter type, NP::Int: # of ports, T: data type
 mutable struct NetworkParametersRef{TP, NP, T} <: NetworkParameters{TP, NP}
-	z0::Real #For now. In general: one z0 per port
+	z0::Float64 #For now. In general: one z0 per port
 	m::NetworkParameterMatrix{T}
 end
 
@@ -53,26 +53,26 @@ end
 
 #==Constructor interfaces
 ===============================================================================#
-Base.Symbol{TP}(::NPType{TP}) = TP
+Base.Symbol(::NPType{TP}) where TP = TP
 
-NPType{TP}(::NetworkParameters{TP}) = NPType(TP)
+NPType(::NetworkParameters{TP}) where TP = NPType(TP)
 
 #Construct network parameter matrices of a specific type:
-Network{TP}(::NPType{TP}, args...; kwargs...) =
-	throw(ArgumentError("Unsupported call: Network($TP, ...)"))
-Network{T}(::NPType{:S}, m::NetworkParameterMatrix{T}; z0 = 50) =
+Network(npt::NPType, args...; kwargs...) =
+	throw(ArgumentError("Unsupported call: Network(:$(Symbol(npt)), ...)"))
+Network(::NPType{:S}, m::NetworkParameterMatrix{T}; z0 = 50) where T =
 	NetworkParametersRef{:S, portcount(m), T}(z0, m)
-Network{T}(::NPType{:T}, m::NetworkParameterMatrix{T}; z0 = 50) =
+Network(::NPType{:T}, m::NetworkParameterMatrix{T}; z0 = 50) where T =
 	NetworkParametersRef{:T, 2, T}(z0, m)
-Network{T}(::NPType{:Z}, m::NetworkParameterMatrix{T}) =
+Network(::NPType{:Z}, m::NetworkParameterMatrix{T}) where T =
 	NetworkParametersNoRef{:Z, portcount(m), T}(m)
-Network{T}(::NPType{:Y}, m::NetworkParameterMatrix{T}) =
+Network(::NPType{:Y}, m::NetworkParameterMatrix{T}) where T =
 	NetworkParametersNoRef{:Y, portcount(m), T}(m)
-Network{T}(::NPType{:ABCD}, m::NetworkParameterMatrix{T}) =
+Network(::NPType{:ABCD}, m::NetworkParameterMatrix{T}) where T =
 	NetworkParametersNoRef{:ABCD, 2, T}(m)
-Network{T}(::NPType{:G}, m::NetworkParameterMatrix{T}) =
+Network(::NPType{:G}, m::NetworkParameterMatrix{T}) where T =
 	NetworkParametersNoRef{:G, 2, T}(m)
-Network{T}(::NPType{:H}, m::NetworkParameterMatrix{T}) =
+Network(::NPType{:H}, m::NetworkParameterMatrix{T}) where T =
 	NetworkParametersNoRef{:H, 2, T}(m)
 Network(s::Symbol, args...; kwargs...) = Network(NPType(s), args...; kwargs...)
 
@@ -91,7 +91,7 @@ function portcount(m::NetworkParameterMatrix)
 	end
 	return sz[1]
 end
-function portcount{TP, NP}(np::NetworkParameters{TP, NP})
+function portcount(np::NetworkParameters{TP, NP}) where {TP, NP}
 	if NP != portcount(np.m)
 		throw(ArgumentError("NetworkParameters: Inconsistent # of ports."))
 	end
@@ -99,12 +99,13 @@ function portcount{TP, NP}(np::NetworkParameters{TP, NP})
 end
 
 #Returns 2-port matrix elements as a tuple of elements in intuitive order:
-mx2elem{TP}(np::NetworkParameters{TP, 2}) = (np.m[1,1], np.m[1,2], np.m[2,1], np.m[2,2])
+mx2elem(np::NetworkParameters{TP, 2}) where TP = (np.m[1,1], np.m[1,2], np.m[2,1], np.m[2,2])
 
-Base.eltype{TP, NP, T}(::Type{NetworkParametersRef{TP, NP, T}}) = T
-Base.eltype{TP, NP, T}(::Type{NetworkParametersNoRef{TP, NP, T}}) = T
-Base.eltype{NT<:NetworkParameters}(np::NT) = eltype(NT)
+Base.eltype(::Type{NetworkParametersRef{TP, NP, T}}) where {TP, NP, T} = T
+Base.eltype(::Type{NetworkParametersNoRef{TP, NP, T}}) where {TP, NP, T} = T
+Base.eltype(np::NT) where {NT<:NetworkParameters} = eltype(NT)
 Base.size(np::NetworkParameters, args...) = size(np.m, args...)
+#Base.length(np::NetworkParameters, args...) = length(np.m, args...)
 Base.getindex(np::NetworkParameters, r::Integer, c::Integer) = np.m[r,c]
 
 
@@ -113,20 +114,20 @@ Base.getindex(np::NetworkParameters, r::Integer, c::Integer) = np.m[r,c]
 #==Implement apply interface (simplify how functions are applied)
 ===============================================================================#
 
-function apply{TP}(fn::Function, d1::NetworkParametersRef{TP}, d2::NetworkParametersRef{TP})
+function apply(fn::Function, d1::NetworkParametersRef{TP}, d2::NetworkParametersRef{TP}) where TP
 	validate_sameref(d1, d2)
 	return Network(TP, fn(d1.m, d2.m), z0=d1.z0)
 end
-apply{TP}(fn::Function, d1::NetworkParametersNoRef{TP}, d2::NetworkParametersNoRef{TP}) =
+apply(fn::Function, d1::NetworkParametersNoRef{TP}, d2::NetworkParametersNoRef{TP}) where TP =
 	Network(TP, fn(d1.m, d2.m))
 
-apply{TP}(fn::Function, d1::NetworkParametersRef{TP}, d2::TNetIop) =
+apply(fn::Function, d1::NetworkParametersRef{TP}, d2::TNetIop) where TP =
 	Network(TP, fn(d1.m, d2), z0=d1.z0)
-apply{TP}(fn::Function, d1::NetworkParametersNoRef{TP}, d2::TNetIop) = Network(TP, fn(d1.m, d2))
+apply(fn::Function, d1::NetworkParametersNoRef{TP}, d2::TNetIop) where TP = Network(TP, fn(d1.m, d2))
 
-apply{TP}(fn::Function, d1::TNetIop, d2::NetworkParametersRef{TP}) =
+apply(fn::Function, d1::TNetIop, d2::NetworkParametersRef{TP}) where TP =
 	Network(TP, fn(d1, d2.m), z0=d2.z0)
-apply{TP}(fn::Function, d1::TNetIop, d2::NetworkParametersNoRef{TP}) = Network(TP, fn(d1, d2.m))
+apply(fn::Function, d1::TNetIop, d2::NetworkParametersNoRef{TP}) where TP = Network(TP, fn(d1, d2.m))
 
 
 #==Register base operations

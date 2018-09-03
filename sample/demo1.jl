@@ -31,7 +31,7 @@ f = collect(1:.1:100)*1e9
 ω = 2pi*f
 α = 0
 β = ω*sqrt(μ0*ϵ0)
-γ = α+im*β
+γ = α .+ im*β
 
 #Convert γ type to DataF1, function of 1 argument (leverage C-Data toolkit):
 γ = DataF1(f, γ)

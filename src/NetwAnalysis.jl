@@ -1,5 +1,10 @@
 #Network analysis tools
 #-------------------------------------------------------------------------------
+__precompile__(true)
+#=
+TAGS:
+	#WANTCONST, HIDEWARN_0.7
+=#
 
 module NetwAnalysis
 
