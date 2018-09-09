@@ -10,7 +10,7 @@ using EasyPlot
 
 #==Constants
 ===============================================================================#
-dbvsf = axes(ylabel="Amplitude (dB)", xlabel="Frequency (Hz)")
+dbvsf = paxes(ylabel="Amplitude (dB)", xlabel="Frequency (Hz)")
 color1 = line(color=:red, width=2)
 color2 = line(color=:blue, width=2)
 color3 = line(color=:green, width=2)

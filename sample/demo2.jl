@@ -10,8 +10,8 @@ using EasyPlot
 
 #==Constants
 ===============================================================================#
-dbvsf = axes(ylabel="Amplitude (dB)", xlabel="Frequency (Hz)")
-axes_loglin = axes(xscale = :log, yscale = :lin)
+dbvsf = paxes(ylabel="Amplitude (dB)", xlabel="Frequency (Hz)")
+axes_loglin = paxes(xscale = :log, yscale = :lin)
 color1 = line(color=:red, width=2)
 color2 = line(color=:blue, width=2)
 color3 = line(color=:green, width=2)
@@ -23,7 +23,7 @@ C = capacitance(2e-12)
 R = 20.0
 #f = (1:10)*1e9
 f = _logspace(log10(1e3), log10(20e9), 100)
-xrange = axes(xmin=1e6, xmax=100e9)
+xrange = paxes(xmin=1e6, xmax=100e9)
 
 
 #==Computations
