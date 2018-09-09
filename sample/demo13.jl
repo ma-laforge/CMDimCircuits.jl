@@ -8,7 +8,7 @@ using EasyPlot
 
 #==Constants
 ===============================================================================#
-a_yvsx = axes(ylabel="Y", xlabel="X")
+a_yvsx = paxes(ylabel="Y", xlabel="X")
 
 
 #==Input data
@@ -22,7 +22,7 @@ b = 2
 c = 1
 
 #Axis ranges based on input data:
-axrange = axes(xmin=-pext, xmax=pext, ymin=-pext, ymax=pext)
+axrange = paxes(xmin=-pext, xmax=pext, ymin=-pext, ymax=pext)
 
 
 #==Computations

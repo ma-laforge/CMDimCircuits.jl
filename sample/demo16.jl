@@ -8,12 +8,12 @@ using EasyPlot
 
 #==Constants
 ===============================================================================#
-vvst = axes(ylabel="Amplitude (V)", xlabel="Time (s)")
-Tnsvst = axes(ylabel="Period (ns)", xlabel="Time (s)")
-dutyvst = axes(ylabel="Duty Cycle (%)", xlabel="Time (s)")
-dutyoutvsmaxphi = axes(ylabel="Duty Cycle (%)", xlabel="Maximum Phase Shift")
-dpsvst = axes(ylabel="Delay (ps)", xlabel="Time (s)")
-dpsvsx = axes(ylabel="Delay (ps)", xlabel="Crossing")
+vvst = paxes(ylabel="Amplitude (V)", xlabel="Time (s)")
+Tnsvst = paxes(ylabel="Period (ns)", xlabel="Time (s)")
+dutyvst = paxes(ylabel="Duty Cycle (%)", xlabel="Time (s)")
+dutyoutvsmaxphi = paxes(ylabel="Duty Cycle (%)", xlabel="Maximum Phase Shift")
+dpsvst = paxes(ylabel="Delay (ps)", xlabel="Time (s)")
+dpsvsx = paxes(ylabel="Delay (ps)", xlabel="Crossing")
 ldelay = line(style=:solid, width=3)
 gdelay = glyph(shape=:x, size=2)
 

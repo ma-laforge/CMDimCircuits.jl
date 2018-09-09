@@ -8,9 +8,9 @@ using EasyPlot
 
 #==Constants
 ===============================================================================#
-vvst = axes(ylabel="Amplitude (V)", xlabel="Time (s)")
-Tpsvst = axes(ylabel="Period (ps)", xlabel="Time (s)")
-fvst = axes(ylabel="Frequency (Hz)", xlabel="Time (s)")
+vvst = paxes(ylabel="Amplitude (V)", xlabel="Time (s)")
+Tpsvst = paxes(ylabel="Period (ps)", xlabel="Time (s)")
+fvst = paxes(ylabel="Frequency (Hz)", xlabel="Time (s)")
 solidline = line(style=:solid)
 
 

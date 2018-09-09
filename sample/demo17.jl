@@ -8,8 +8,8 @@ using EasyPlot
 
 #==Constants
 ===============================================================================#
-vvst = axes(ylabel="Amplitude (V)", xlabel="Time (s)")
-rfpsvst = axes(ylabel="Rise/Fall (ps)", xlabel="Time (s)")
+vvst = paxes(ylabel="Amplitude (V)", xlabel="Time (s)")
+rfpsvst = paxes(ylabel="Rise/Fall (ps)", xlabel="Time (s)")
 ldelay = line(style=:solid, width=3)
 gdelay = glyph(shape=:x, size=2)
 
@@ -48,7 +48,7 @@ tfall = measfall(pat, lthresh=lthresh, hthresh=hthresh)
 
 #==Generate plot
 ===============================================================================#
-axrng = axes(xmax=tmax)
+axrng = paxes(xmax=tmax)
 plot=EasyPlot.new(title="Rise/Fall Tests", displaylegend=false)
 s = add(plot, axrng, vvst, title="Patterns")
 	add(s, pat, id="pat")

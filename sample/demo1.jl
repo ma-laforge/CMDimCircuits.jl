@@ -8,7 +8,7 @@ using EasyPlot
 
 #==Constants
 ===============================================================================#
-vvst = axes(ylabel="Amplitude (V)", xlabel="Time (s)")
+vvst = paxes(ylabel="Amplitude (V)", xlabel="Time (s)")
 color1 = line(color=:red)
 color2 = line(color=:blue)
 

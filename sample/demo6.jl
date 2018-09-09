@@ -9,10 +9,10 @@ using EasyPlot
 
 #==Constants
 ===============================================================================#
-vvst = axes(ylabel="Amplitude (V)", xlabel="Time (s)")
-vvsf = axes(ylabel="Amplitude (V)", xlabel="Frequency (Hz)")
-dbvsf = axes(ylabel="Amplitude (dB)", xlabel="Frequency (Hz)")
-fvspad = axes(ylabel="Frequency (Hz)", xlabel="padding")
+vvst = paxes(ylabel="Amplitude (V)", xlabel="Time (s)")
+vvsf = paxes(ylabel="Amplitude (V)", xlabel="Frequency (Hz)")
+dbvsf = paxes(ylabel="Amplitude (dB)", xlabel="Frequency (Hz)")
+fvspad = paxes(ylabel="Frequency (Hz)", xlabel="padding")
 
 
 #==Input data

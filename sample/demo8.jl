@@ -8,7 +8,7 @@ using EasyPlot
 
 #==Constants
 ===============================================================================#
-vvst = axes(ylabel="Amplitude (V)", xlabel="Time (s)")
+vvst = paxes(ylabel="Amplitude (V)", xlabel="Time (s)")
 noline = line(style=:none)
 
 

@@ -8,9 +8,9 @@ using EasyPlot
 
 #==Constants
 ===============================================================================#
-vvst = axes(ylabel="Amplitude (V)", xlabel="Time (s)")
-dpsvst = axes(ylabel="Delay wrt Ref (ps)", xlabel="Inserted Delay (s)")
-dpsvsx = axes(ylabel="Delay wrt Ref (ps)", xlabel="Crossing")
+vvst = paxes(ylabel="Amplitude (V)", xlabel="Time (s)")
+dpsvst = paxes(ylabel="Delay wrt Ref (ps)", xlabel="Inserted Delay (s)")
+dpsvsx = paxes(ylabel="Delay wrt Ref (ps)", xlabel="Crossing")
 ldelay = line(style=:solid, width=3)
 gdelay = glyph(shape=:x, size=2)
 
@@ -75,7 +75,7 @@ println("\n", "fall delay/1p: ", del/1e-12)
 #==Generate plot
 ===============================================================================#
 plot=EasyPlot.new(title="Signal Skew Tests", displaylegend=true)
-s = add(plot, vvst, title="Patterns", axes(xmax=tmax))
+s = add(plot, vvst, title="Patterns", paxes(xmax=tmax))
 	wfrm = add(s, patref+2, id="ref+2")
 		set(wfrm, line(width=1, color=:black))
 #	add(s, Π)
@@ -85,7 +85,7 @@ s = add(plot, dpsvst, title="Rise Delays")
 	add(s, skew[:min_delrise]/1e-12, id="min", ldelay, gdelay)
 	add(s, skew[:max_delrise]/1e-12, id="max", ldelay, gdelay)
 s = add(plot, vvst, title="Eye", eyeparam(tbit, teye=1.5*tbit, tstart=4.5*tbit))
-	set(s, axes(xmin=0, xmax=1.5*tbit)) #Force limits on exact data range.
+	set(s, paxes(xmin=0, xmax=1.5*tbit)) #Force limits on exact data range.
 	add(s, pat, id="p")
 s = add(plot, dpsvst, title="Fall Delays")
 	add(s, skew[:mean_delfall]/1e-12, id="mean", ldelay, gdelay)

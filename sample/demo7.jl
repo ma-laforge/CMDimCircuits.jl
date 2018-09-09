@@ -8,7 +8,7 @@ using EasyPlot
 
 #==Constants
 ===============================================================================#
-vvst = axes(ylabel="Amplitude (V)", xlabel="Time (s)")
+vvst = paxes(ylabel="Amplitude (V)", xlabel="Time (s)")
 
 
 #==Input data
@@ -42,12 +42,12 @@ patRS = DataRS(pat)
 ===============================================================================#
 plot=EasyPlot.new(title="Eye Diagram Tests", displaylegend=false)
 s = add(plot, vvst, title="Eye (DataHR)", eyeparam(tbit, teye=1.5*tbit, tstart=-.15*tbit))
-set(s, axes(xmin=0, xmax=1.5*tbit)) #Force limits on exact data range.
+set(s, paxes(xmin=0, xmax=1.5*tbit)) #Force limits on exact data range.
 	add(s, pat, id="eye")
 s = add(plot, vvst, title="Pattern")
 	add(s, pat, id="pat")
 s = add(plot, vvst, title="Eye (DataRS)", eyeparam(tbit, teye=1.5*tbit, tstart=-.15*tbit))
-set(s, axes(xmin=0, xmax=1.5*tbit)) #Force limits on exact data range.
+set(s, paxes(xmin=0, xmax=1.5*tbit)) #Force limits on exact data range.
 	add(s, patRS, id="eye")
 
 

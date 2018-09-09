@@ -9,9 +9,9 @@ using Colors
 
 #==Constants
 ===============================================================================#
-vvst = axes(ylabel="Amplitude (V)", xlabel="Time (s)")
-dpsvst = axes(ylabel="Delay (ps)", xlabel="Time (s)")
-dpsvsx = axes(ylabel="Delay (ps)", xlabel="Crossing")
+vvst = paxes(ylabel="Amplitude (V)", xlabel="Time (s)")
+dpsvst = paxes(ylabel="Delay (ps)", xlabel="Time (s)")
+dpsvsx = paxes(ylabel="Delay (ps)", xlabel="Crossing")
 ldelay = line(width=3, style=:solid)
 gdelay = glyph(shape=:x, size=2)
 
@@ -46,7 +46,7 @@ ck2q_ideal = measck2q(pat, tbit, tstart_ck=tstart_ck, xing_q=CrossType(:risefall
 
 #==Generate plot
 ===============================================================================#
-axrange = axes(xmax=maximum(t)+3*tbit)
+axrange = paxes(xmax=maximum(t)+3*tbit)
 plot=EasyPlot.new(title="Compare measdelay & measck2q", displaylegend=true)
 s = add(plot, vvst, title="Patterns", axrange)
 	wfrm = add(s, ck, id="clock")

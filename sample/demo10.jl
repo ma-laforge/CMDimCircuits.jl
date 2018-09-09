@@ -8,9 +8,9 @@ using EasyPlot
 
 #==Constants
 ===============================================================================#
-vvst = axes(ylabel="Amplitude (V)", xlabel="Time (s)")
-dpsvst = axes(ylabel="Delay (ps)", xlabel="Time (s)")
-dpsvsx = axes(ylabel="Delay (ps)", xlabel="Crossing")
+vvst = paxes(ylabel="Amplitude (V)", xlabel="Time (s)")
+dpsvst = paxes(ylabel="Delay (ps)", xlabel="Time (s)")
+dpsvsx = paxes(ylabel="Delay (ps)", xlabel="Crossing")
 ldelay = line(width=3, style=:solid)
 gdelay = glyph(shape=:x, size=2)
 

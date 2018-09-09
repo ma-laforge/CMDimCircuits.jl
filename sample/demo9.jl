@@ -8,8 +8,8 @@ using EasyPlot
 
 #==Constants
 ===============================================================================#
-vvst = axes(ylabel="Amplitude (V)", xlabel="Time (s)")
-vvsf = axes(ylabel="Amplitude (V)", xlabel="Frequency (Hz)")
+vvst = paxes(ylabel="Amplitude (V)", xlabel="Time (s)")
+vvsf = paxes(ylabel="Amplitude (V)", xlabel="Frequency (Hz)")
 
 
 #==Input data

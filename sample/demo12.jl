@@ -8,9 +8,9 @@ using EasyPlot
 
 #==Constants
 ===============================================================================#
-vch_vs_t = axes(ylabel="Scaled Amp (V) @ Channel #", xlabel="Time (s)")
-vch_vs_ui = axes(ylabel="Scaled Amp (V) @ Channel #", xlabel="Symbol Time (UI)")
-eyech_v_ui = axes(ylabel="Scaled Amp (V) @ Channel #", xlabel="Symbol Time (UI)")
+vch_vs_t = paxes(ylabel="Scaled Amp (V) @ Channel #", xlabel="Time (s)")
+vch_vs_ui = paxes(ylabel="Scaled Amp (V) @ Channel #", xlabel="Symbol Time (UI)")
+eyech_v_ui = paxes(ylabel="Scaled Amp (V) @ Channel #", xlabel="Symbol Time (UI)")
 
 
 #==Input data
@@ -93,7 +93,7 @@ for i in 1:nchannels
 	add(s, (i-1)+(undefdata[i]-0.5)*.8, id="pat[$i]") #Re-center around channel number
 end
 s = add(plot, eyech_v_ui, title="Eye", eyeparam(1, teye=1.5))
-set(s, axes(xmin=0, xmax=1.5)) #Force limits on exact data range.
+set(s, paxes(xmin=0, xmax=1.5)) #Force limits on exact data range.
 for i in 1:nchannels
 	add(s, (i-1)+(eyepat[i]-0.5)*.8, id="pat[$i]") #Re-center around channel number
 end

@@ -8,8 +8,8 @@ using EasyPlot
 
 #==Constants
 ===============================================================================#
-tvsbit = axes(ylabel="Value", xlabel="Bit Position")
-vvst = axes(ylabel="Amplitude (V)", xlabel="Time (s)")
+tvsbit = paxes(ylabel="Value", xlabel="Bit Position")
+vvst = paxes(ylabel="Amplitude (V)", xlabel="Time (s)")
 color1 = line(color=:red)
 color2 = line(color=:blue)
 
