@@ -9,8 +9,8 @@ import LibPSFC
 
 #==Constants
 ===============================================================================#
-vvst = axes(ylabel="Amplitude (V)", xlabel="Time (s)")
-ratvst = axes(ylabel="Ratio (%)", xlabel="Time (s)")
+vvst = paxes(ylabel="Amplitude (V)", xlabel="Time (s)")
+ratvst = paxes(ylabel="Ratio (%)", xlabel="Time (s)")
 color1 = line(color=:red)
 color2 = line(color=:blue)
 color3 = line(color=:green)
