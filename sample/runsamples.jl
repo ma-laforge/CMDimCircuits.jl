@@ -14,7 +14,7 @@ using EasyPlot
 getdemodisplay(d::EasyPlot.EasyPlotDisplay) = d
 
 #Must initialize display before defining specialized "getdemodisplay":
-EasyPlot.initbackend()
+EasyPlot.@initbackend()
 
 if @isdefined(EasyPlotGrace)
 #Improve display appearance a bit:
