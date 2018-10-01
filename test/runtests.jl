@@ -2,54 +2,86 @@
 #-------------------------------------------------------------------------------
 
 using CircuitAnalysis
-
-#No real test code yet... just run demos:
+import CircuitAnalysis: DataTag
+import CircuitAnalysis: TCapacitance
+import CircuitAnalysis: TImpedance, TAdmittance
+using Test
 
 
 #==Input data
 ===============================================================================#
-sepline = "---------------------------------------------------------------------"
 f = collect(1:3)*1e9
-
-
-#==Intermediate Computations
-===============================================================================#
+c = capacitance(5e-15)
+j = im
 
 
 #==Tests
 ===============================================================================#
 
-println("\nTest impedance operations:")
-println(sepline)
+@testset "Operations On Impedance Values" begin
+	fsng = 1e9
+	ω = 2π*fsng
+	@test c == TCapacitance(5.0e-15)
+	@test_throws ArgumentError admittance(c) #Needs frequency
+	@test TImpedance(1/(j*ω*c.v)) == impedance(c, f=fsng)
+	@test TAdmittance(j*ω*c.v) == admittance(c, f=fsng)
+end
 
-@show c = capacitance(5e-15)
-try; admittance(c); @warn("Failed")
-catch e; @info("Fail successful: ", e); end
+@testset "Operations On Impedance Vectors" begin
+	rtol = 1e-4
+	ω = 2π*f
+	_ycap = j .* ω .* c.v
+	ycap = admittance(c, f=f)
+	@test ycap ≈ TAdmittance(_ycap) rtol = rtol
+	a = -ycap
+	b = TAdmittance(-(ycap.v))
+	@test (-ycap) == TAdmittance(-(ycap.v))
+	@test (-ycap).v == -(ycap.v)
 
-@show ycap = admittance(c, f=1e9)
-@show zcap = impedance(c, f=1e9)
+	#@show ycap .* 5
+	#@show 5 .* ycap
+	#@show ycap .+ ycap
+	#@show ycap ./ 5
+	#try; 5 ./ ycap; @warn("Failed") #Would make impedance
+	#catch e; @info("Fail successful."); end
+end
 
+@testset "Unit conversions" begin
+	rtol = 1e-4
+	halfpwr = 3.010299956639812 #approx 3dB
+	@test dB10(2) ≈ halfpwr rtol = rtol
+	@test dB20(2) ≈ 2*halfpwr rtol = rtol
 
-println("\nTest impedance{vector} operations:")
-println(sepline)
-@show ycap = admittance(c, f=f)
-@show -ycap
-#@show ycap .* 5
-#@show 5 .* ycap
-#@show ycap .+ ycap
-#@show ycap ./ 5
-#try; 5 ./ ycap; @warn("Failed") #Would make impedance
-#catch e; @info("Fail successful."); end
+	#Decibels when provided power/voltage/current ratios
+	@test dB(2,:Wratio) ≈ halfpwr rtol = rtol
+	@test dB(2,:Vratio) ≈ 2*halfpwr rtol = rtol
+	@test dB(2,:Iratio) ≈ 2*halfpwr rtol = rtol
 
-println("\nTest unit conversion:")
-println(sepline)
-@show dB10(2), dB20(2)
-@show dB(2,:Wratio), dB(2,:Vratio), dB(2,:Iratio)
-@show dBm(2,:W), dBm(2,:VRMS), dBm(2,:Vpk)
-@show dBW(2,:W), dBW(2,:VRMS), dBW(2,:Vpk)
-@show Vpk(2,:W; R=50), Vpk(2,:VRMS)
-@show Ipk(2,:W; R=50), Ipk(2,:IRMS)
-@show VRMS(2,:W; R=50), VRMS(2,:Vpk)
-@show IRMS(2,:W; R=50), IRMS(2,:Ipk)
+	#Decibels reffered to 1W
+	@test dBW(2,:W) ≈ halfpwr rtol = rtol
+	@test dBW(2,:VRMS) ≈ 2*halfpwr rtol = rtol
+	@test dBW(2,:Vpk) ≈ halfpwr rtol = rtol
+
+	#Decibels reffered to 1mW
+	@test dBm(2,:W) ≈ 30+halfpwr rtol = rtol
+	@test dBm(2,:VRMS) ≈ 30+2*halfpwr rtol = rtol
+	@test dBm(2,:Vpk) ≈ 30+halfpwr rtol = rtol
+
+	#RMS voltage:
+	@test VRMS(2,:W; R=50) ≈ sqrt(2*50) rtol = rtol
+	@test VRMS(2,:Vpk) ≈ 2/sqrt(2) rtol = rtol
+
+	#RMS current:
+	@test IRMS(2,:W; R=50) ≈ sqrt(2/50) rtol = rtol
+	@test IRMS(2,:Ipk) ≈ 2/sqrt(2) rtol = rtol
+
+	#Peak voltage:
+	@test Vpk(2,:W; R=50) ≈ sqrt(2*50)*sqrt(2) rtol = rtol
+	@test Vpk(2,:VRMS) ≈ 2*sqrt(2) rtol = rtol
+
+	#Peak current:
+	@test Ipk(2,:W; R=50) ≈ sqrt(2/50)*sqrt(2) rtol = rtol
+	@test Ipk(2,:IRMS) ≈ 2*sqrt(2) rtol = rtol
+end
 
 :Test_Complete

@@ -49,6 +49,13 @@ divMD(a::AbstractArray, b::AbstractArray) = a ./ b
 
 #==Operations
 ===============================================================================#
+#Mostly for unit testing:
+Base.:(≈)(a::DataTag, b::DataTag; kwargs...) = false
+Base.:(≈)(a::DataTag{ID}, b::DataTag{ID}; kwargs...) where ID =
+	Base.:(≈)(a.v, b.v; kwargs...)
+
+Base.:(==)(a::DataTag, b::DataTag) = false
+Base.:(==)(a::DataTag{ID}, b::DataTag{ID}) where ID = (a.v == b.v)
 
 #_dotop(x)=Symbol(".$x")
 _operators1 = [:+, :-] #Unary operator on a tagged object

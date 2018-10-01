@@ -57,7 +57,7 @@ NOTE: The API is not yet fully consistent.
 <a name="SampleUsage"></a>
 ## Sample Usage
 
-Examples of the CircuitAnalysis.jl capabilities can be found under the [test directory](test/).
+Examples of the CircuitAnalysis.jl capabilities can be found under the [sample directory](sample/).
 
 ## Known Limitations
 
