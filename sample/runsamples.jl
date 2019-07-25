@@ -20,7 +20,7 @@ if @isdefined(EasyPlotGrace)
 #Improve display appearance a bit:
 function getdemodisplay(d::EasyPlotGrace.PlotDisplay)
 	d = EasyPlotGrace.PlotDisplay()
-	plotdefaults = GracePlot.defaults(linewidth=2.5)
+	plotdefaults = EasyPlotGrace.GracePlot.defaults(linewidth=2.5)
 	d.args = tuple(plotdefaults, d.args...) #Improve appearance a bit
 	return d
 end
