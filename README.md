@@ -57,7 +57,7 @@ By default, EDAData reads .psf files using the pure-Julia libpsf implementation 
 
 Extensive compatibility testing of EDAData.jl has not been performed.  The module has been tested using the following environment(s):
 
- - Linux / Julia-0.7.0 (64-bit)
+ - Linux / Julia-1.1.1 (64-bit)
 
 ## Disclaimer
 
