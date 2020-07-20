@@ -1,0 +1,37 @@
+name = "CMDimCircuits"
+uuid = "393e8715-ea6a-4fca-bb1f-4c907b63b032"
+version = "0.1.0"
+
+[deps]
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+NumericIO = "6c575b1c-77cb-5640-a5dc-a54116c90507"
+MDDatasets = "176e4ad4-9107-502a-977c-53a5728fe704"
+CMDimData = "70385e83-f223-47f4-874b-539892411e49"
+FFTW = "7a1cc6ca-52ef-59f5-83cd-3a7055c09341"
+SpiceData = "8ca2a67e-f683-5b14-a319-732e1d1d8f2e"
+LibPSF = "5cf4117a-c29c-5f6c-be10-22558df91208"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+
+#Modules used for sample data only:
+CppSimData = "4f7312ce-ae74-11e9-2ee8-13bd7ade2d31"
+LibPSFC = "efca402e-ae74-11e9-123a-81973fcce68b"
+
+#Only used in sample/. Might need to add target in future.
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+Colors = "5ae59095-9a9b-59fe-a467-6f913c188581"
+
+[targets]
+test = ["Test", "Printf"]
+
+[compat]
+NumericIO = "0.3.1"
+MDDatasets = "0.3.1"
+#CMDimData
+FFTW = "1.2"
+SpiceData = "0.3.1"
+LibPSF = "0.3.2"
+julia = "1"
