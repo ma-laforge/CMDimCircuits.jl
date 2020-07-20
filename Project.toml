@@ -1,0 +1,18 @@
+name = "NetwAnalysis"
+uuid = "437bbd88-ae72-11e9-0f87-79555471c79d"
+version = "0.1.0"
+
+[deps]
+MDDatasets = "176e4ad4-9107-502a-977c-53a5728fe704"
+CircuitAnalysis = "1e01fd38-ae70-11e9-267a-1dc6a35ae3d5"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+FileIO2 = "4dd517ac-adcb-11e9-3f98-b322291dcd86"
+EasyPlot = "08def96e-adcc-11e9-1c5d-0b35f2b3a72c"
+
+[targets]
+test = ["Test", "FileIO2", "EasyPlot"]
+
+[compat]
+julia = "1"
