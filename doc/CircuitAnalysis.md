@@ -1,4 +1,4 @@
-# CircuitAnalysis.jl: Circuit Analysis Tools
+# CMDimCircuits.CircuitAnalysis: Circuit Analysis Tools
 
 ## Description
 

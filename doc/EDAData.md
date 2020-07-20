@@ -1,4 +1,4 @@
-# EDAData.jl
+# CMDimCircuits.EDAData: Accessing EDA files
 
 ## Description
 
@@ -18,47 +18,34 @@ The EDAData.jl module provides wrappers to access file contents as `DataMD` data
  - **SpiceData.jl** (.tr0): <https://github.com/ma-laforge/SpiceData.jl>
  - **LibPSFC.jl** (.psf): (Optional: 3rd party wrapper) <https://github.com/ma-laforge/LibPSFC.jl>
  - **LibPSF.jl** (.psf): (Pure-Julia implementation) <https://github.com/ma-laforge/LibPSF.jl>
+ - **TODO: PSFWrite.jl** (.psf): <https://github.com/ma-laforge/PSFWrite.jl>
 
 ## Sample Usage
 
- - **File()** (exported by FileIO2): Create file reference
-
-		File([:tr0/:psf/:sNp], path::String)
-
  - **Reading .tr0 files**
 
-		r = EDAData._open(File(:tr0, "myfile.tr0"))
+		r = EDAData.open_tr0("myfile.tr0")
 		signaldata = read(r, "signalname")
 		close(r)
 
  - **Reading .psf files**
 
-		r = EDAData._open(File(:psf, "myfile.psf"))
+		r = EDAData.open_psf("myfile.psf")
 		signaldata = read(r, "signalname")
 		close(r)
 
  - **Reading .sNp files**
 
-		r = EDAData._read(File(:sNp, "myfile.s2p"), numports=2)
+		r = EDAData.read_snp("myfile.s2p", numports=2)
 
  - **Writing .sNp files**
 
-		r = EDAData._write(File(:sNp, "outputfile.s2p"))
+		r = EDAData.write_snp(:sNp, "outputfile.s2p")
 
-Further examples on how to use the EDAData.jl capabilities can be found under the [sample directory](sample/).
+Further examples on how to use the EDAData.jl capabilities can be found under the [sample directory](../sample/).
 
-## Known Limitations
+## Configuration
 
 By default, EDAData reads .psf files using the pure-Julia libpsf implementation "LibPSF.jl".  To opt for a C++ implementation, it is possible to select the LibPSFC.jl library by modifying `defaultPSFReader` found in `src/LibPSF.jl`:
 
 	defaultPSFReader = :LibPSFC
-
-### Compatibility
-
-Extensive compatibility testing of EDAData.jl has not been performed.  The module has been tested using the following environment(s):
-
- - Linux / Julia-1.1.1 (64-bit)
-
-## Disclaimer
-
-This software is provided "as is", with no guarantee of correctness.  Use at own risk.

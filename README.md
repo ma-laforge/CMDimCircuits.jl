@@ -1,91 +1,98 @@
 # :art: Galleries (Sample Output) :art:
 
-[:satellite: SignalProcessing.jl](https://github.com/ma-laforge/FileRepo/tree/master/SignalProcessing/sampleplots/README.md) (might be out of date).
+[:satellite: Signal processing examples](https://github.com/ma-laforge/FileRepo/tree/master/SignalProcessing/sampleplots/README.md), [:chart_with_upwards_trend: InspectDR.jl samples](https://github.com/ma-laforge/FileRepo/tree/master/InspectDR/sampleplots/README.md) (might be out of date).
 
-# SignalProcessing.jl: {T&hArr;F}-Domain Analysis Tools
+# CMDimCircuits.jl: Process measurement/simulation results from parametric analyses
+
+[![Build Status](https://travis-ci.org/ma-laforge/CMDimCircuits.jl.svg?branch=master)](https://travis-ci.org/ma-laforge/CMDimCircuits.jl)
+
+| <img src="https://github.com/ma-laforge/FileRepo/blob/master/InspectDR/sampleplots/demo11.png" width="425"> | <img src="https://github.com/ma-laforge/FileRepo/blob/master/InspectDR/sampleplots/demo2.png" width="425"> |
+| :---: | :---: |
 
 | <img src="https://github.com/ma-laforge/FileRepo/blob/master/SignalProcessing/sampleplots/demo15.png" width="850"> |
 | :---: |
 
-| <img src="https://github.com/ma-laforge/FileRepo/blob/master/SignalProcessing/sampleplots/demo1.png" width="425"> | <img src="https://github.com/ma-laforge/FileRepo/blob/master/SignalProcessing/sampleplots/demo17.png" width="425"> |
-| :---: | :---: |
-
 ## Description
 
-### Principal Types
+`CMDimCircuits.jl` provides facilities to efficiently post-process and analyze results from circuit measurement & simulation.
 
-- **`DataTime`**: Represents a time-domain signal, x(t), with a constant time step.
-- **`DataFreq`**: Represents a frequency-domain signal, x(t), with a constant frequency step.
-- **`DataHR{DataTime/DataFreq}`**: A collection of data with hyper-rectangular organization.
-- **`Pole(v, :rad/:Hz)`**: Creates a pole object, in rad/s or Hz.
-- **`Index(v)`**: Creates an index value (identifies a number as an integer-valued index, or span).
+`CMDimCircuits.jl` is based off of the `CMDimData.jl/MDDatasets.jl` solution, thus providing a means to deal with multi-dimensional datasets from "parametric analyses".
 
+More specifically, the goal is to provide an analysis framework leading to minimal code, written in a *natural*, and *readable* fashion.  The following describes a typical workflow enabled by this package:
 
-### Function Listing
+ 1. Read in complex multi-dimensional input data from measurement/simulation results.
+ 1. Treat transient datasets as continuous-time (automatically interpolate when time steps are mismatched).
+ 1. Perform the same operation on all parametric sweeps (usually) without having to write explicit loops.
+ 1. Quickly generate plots that shed light on the studied phenomenon.
+    1. Select from a multitude of plotting backends (possibly at a later date).
+ 1. Save both data & plot configuration to a single .hdf5 file.
+    1. Reload plot & data for further investigation at a later time.
 
-#### Frequency Domain
+### Features/Highlights
 
-- **`timespace`**`(::Symbol, ::Number, ::Symbol, ::Number)`: Generates a range representing time.
-  - `timespace(:ts, [SAMPLING_PERIOD], :tfund, [PERIOD_OF_FUNDAMENTAL])`: Guarantees accuracy of `ts` & verifies `tfund`.
-  - `timespace(:tfund, [PERIOD_OF_FUNDAMENTAL], :ts, [SAMPLING_PERIOD])`: Targets a value of `tfund` & verifies applicability of `ts`.
-- **`timedomain`**`(::DataFreq)`: Returns a `DataTime` (performs `ifft()`, if necessary).
-- **`step`**`()`: Generates a step response.
-  - `step(reftime::DataTime, [::Pole,] ndel::Index=[DELAY_TSTEPS], amp=[AMPLITUDE])`: Discrete time (drop `::Pole` to get ideal response).
-  - `step(reftime::DataF1, ::Pole, tdel=[DELAY_TIME], amp=[AMPLITUDE])`: Continuous time.
-- **`pulse`**`()`: Generates a pulse response.
-  - `pulse(reftime::DataTime, [::Pole,] ndel::Index=[DELAY_TSTEPS], amp=[AMPLITUDE], tpw::Index=[PULSE_WIDTH])`: Discrete time (drop `::Pole` to get ideal response).
-  - `pulse(reftime::DataF1, ::Pole, tdel=[DELAY_TIME], amp=[AMPLITUDE], tpw=[PULSE_WIDTH])`: Continuous time.
-- **`prbs`**`(reglen=[LFSR_REG_LEN], seed=[SEED], nsamples=[NUM_OUTPUT_SAMPLES])`: Generates PRBS sequence.
-- **`pattern`**`()`: Generates pattern from a bit sequence
-  - `pattern(seq::Vector, pulseresp::DataTime, nbit::Index=[TSTEPS_PER_BIT_PERIOD])`: Discrete time
-  - `pattern(seq::{Vector/DataF1}, pulseresp::DataF1, tbit::Index=[BIT_PERIOD])`: Continuous time
-- **`datavec`**`(::Symbol, ::DataMD)`: Accessor for a base vector
-  - `datavec(:time, ::{DataTime/DataFreq})`: Returns the time vector
-  - `datavec(:freq, ::{DataTime/DataFreq})`: Returns the frequency vector
-  - `datavec(:sig, ::DataTime)`: Returns the signal vector (x(t))
-  - `datavec(:sig, ::DataFreq)`: Returns the signal vector (X(f))
+ - Support for popular EDA file formats: (.tr0, .psf, .sNp).
+ - Plot the results of multi-dimensional parametric analyses with a single command.
+   - Support for multiple plotting backends ([see CMDimData.jl for more details](https://github.com/ma-laforge/CMDimData.jl)).
+   - Generate eye diagrams (even for backends without native support).
+   - Generate Smith Plots ([InspectDR backend only](https://github.com/ma-laforge/InspectDR.jl)).
+   - Read/write plots to .hdf5 files.
 
-#### Time Domain
+## Table of Contents
 
-- **`freqdomain`**`(::DataTime)`: Returns a `DataFreq` (performs `fft()`, if necessary)
-- **`fspectrum`**`(::DataFreq)`: Returns sampled frequency spectrum (non-periodic signals).
-- **`fcoeff`**`(::DataFreq)`: Returns Fourier-series coefficients (time-periodic signals).
+ 1. [Installation](#Installation)
+ 1. [Sample Usage](#SampleUsage)
+ 1. Provided tools
+    1. [`CMDimCircuits.EDAData`: Accessing EDA files](doc/EDAData.md)
+    1. [`CMDimCircuits.CircuitAnalysis`: Circuit Analysis Tools](doc/CircuitAnalysis.md)
+    1. [`CMDimCircuits.NetwAnalysis`: Network Analysis Tools](doc/NetwAnalysis.md)
+    1. [`CMDimCircuits.SignalProcessing`: {T&hArr;F}-Domain Analysis Tools](doc/SignalProcessing.md)
 
-#### Querying Different Method Signatures
+<a name="Installation"></a>
+## Installation
+
+In julia, you can add `CMDimCircuits.jl` with the package facilities:
+
+```
+]add git://github.com/ma-laforge/CMDimData.jl
+```
+
+It is also highly suggested that you install InspectDR.jl for plotting.
+
+```
+]add InspectDR
+```
+
+The full `git://github.com` is not required for InspectDR, as it is already included in Julia's package registry.
+
+<a name="SampleUsage"></a>
+## Sample Usage
+
+Examples of how you might use this package [sample directory](sample/).
+
+:art: **Galleries:** [:satellite: sample/SignalProcessing/ output](https://github.com/ma-laforge/FileRepo/tree/master/SignalProcessing/sampleplots/README.md) (might be out of date).
+
+## Usage Tips
+
+### Querying Different Method Signatures
 
 In Julia, a good way to see the methods available for a particular function is to run:
 
 		julia> methods([FUNCTION_NAME])
 
-Given the multitude of optional/keyword agruments in some functions, it is currently best to take a look at the samples provided [below](#SampleUsage).
-
-<a name="SampleUsage"></a>
-## Sample Usage
-
-Examples of the SignalProcessing.jl capabilities (+more) can be found under the [sample directory](sample/).
-
-:art: **Galleries:** [:satellite: SignalProcessing.jl](https://github.com/ma-laforge/FileRepo/tree/master/SignalProcessing/sampleplots/README.md) (might be out of date).
-
-<a name="Installation"></a>
-## Installation
-
-SignalProcessing.jl is part of the [CData](https://github.com/ma-laforge/CData.jl) analysis/visualization suite.  The installation process is described [here](https://github.com/ma-laforge/CData.jl#installation).
+Given the multitude of optional/keyword agruments in some functions, it is currently best to take a look at the samples provided [above](#SampleUsage).
 
 ## Known Limitations
 
-### Limited support
-
-1. Small library of functions.
-1. Limited support for broadcasting functions over `DataHR{DataTime/DataFreq}` vectors.
+### [TODO](TODO.md)
 
 ### Compatibility
 
-Extensive compatibility testing of SignalProcessing.jl has not been performed.  The module has been tested using the following environment(s):
+Extensive compatibility testing of the CMDimCircuits.jl package has not been performed.  It has been tested in the following environment(s):
 
-- Linux / Julia-1.1.1 (64-bit)
+ - Windows 10 / Linux / Julia-1.3.1
 
 ## Disclaimer
 
-The SignalProcessing.jl module is not yet mature.  Expect significant changes.
+The CMDimCircuits.jl package is not yet mature.  Expect significant changes.
 
 This software is provided "as is", with no guarantee of correctness.  Use at own risk.
