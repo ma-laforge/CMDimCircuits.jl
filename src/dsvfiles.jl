@@ -1,10 +1,14 @@
-#FileIO2 tools to manipulate text files
+#A simple DSV (delimiter-seperated values) file reader
 #-------------------------------------------------------------------------------
+module DSVFiles
+#==Implements a basic character-delimited text reader.
+Uses somewhat impractical high-level tools (readline/split) to provide a more
+traditional handling of character-delimited files.
 
-#==Implements a text reader.
-
-NOTE: Uses inefficient high-level tools (readline/split) to provide functionnality.
+#TODO: Doesn't enforce that CSV data MUST HAVE a "," between values.
 ==#
+
+import Base: open, read, write, close, readline, eof
 
 
 #==Constants
@@ -12,30 +16,25 @@ NOTE: Uses inefficient high-level tools (readline/split) to provide functionnali
 const splitter_default = [' ', '\t']
 const splitter_csv = [' ', '\t', ',']
 
+
 #==Main data structures
 ===============================================================================#
-mutable struct TextReader{T<:TextFormat} <: AbstractReader{T}
+mutable struct DSVReader
 	s::IO
 	splitter
 	linebuf::Vector
 end
 
-#Define default TextReader - when text format not (fully) specified:
-(::Type{TextReader})(s::IO, splitter, linebuf::Vector) =
-	TextReader{TextFormat{UnknownTextEncoding}}(s, splitter, linebuf)
-(::Type{TextReader{TextFormat}})(s::IO, splitter, linebuf::Vector) =
-	TextReader{TextFormat{UnknownTextEncoding}}(s, splitter, linebuf)
-
 #Default splitter value:
-(RT::Type{T})(s::IO, splitter = splitter_default) where T<:TextReader =
+(RT::Type{T})(s::IO, splitter = splitter_default) where T<:DSVReader =
 	RT(s, splitter, String[])
 
 
 #==Helper functions
 ===============================================================================#
-#Advance TextReader linebuf, if necessary:
+#Advance DSVReader linebuf, if necessary:
 #TODO: Re-implement with more efficient, lower level functions
-function refreshbuf(r::TextReader)
+function refreshbuf(r::DSVReader)
 	while length(r.linebuf) < 1
 		if eof(r.s); throw(EOFError()); end
 		linebuf = split(chomp(readline(r.s)), r.splitter)
@@ -52,20 +51,18 @@ end
 #==Open/read/close functions
 ===============================================================================#
 
-open(RT::Type{T}, path::String, splitter = splitter_default) where T<:TextReader =
-	RT(open(path, "r"), splitter)
-open(RT::Type{TextReader{T}}, path::String, splitter = splitter_csv) where T<:CSVFormat =
+open(RT::Type{T}, path::String, splitter = splitter_default) where T<:DSVReader =
 	RT(open(path, "r"), splitter)
 
 #Read in entire text file as string
-function read(RT::Type{T}, path::String) where T<:TextReader
+function read(RT::Type{T}, path::String) where T<:DSVReader
 	open(RT, path) do reader
 		return read(reader.s, String)
 	end
 end
 
 #Read in next token as String:
-function read(r::TextReader, ::Type{DT}) where DT<:AbstractString
+function read(r::DSVReader, ::Type{DT}) where DT<:AbstractString
 	refreshbuf(r)
 	v = popfirst!(r.linebuf)
 	try
@@ -77,30 +74,42 @@ function read(r::TextReader, ::Type{DT}) where DT<:AbstractString
 end
 
 #Read in next token & interpret as of type DT:
-function read(r::TextReader, ::Type{DT}) where DT
+function read(r::DSVReader, ::Type{DT}) where DT
 	return parse(DT, read(r, String))
 end
 
 #Read in next token & interpret as most appropriate type:
-function read(r::TextReader, ::Type{Any})
+function read(r::DSVReader, ::Type{Any})
 	return parse(read(r, String))
 end
 
 
-close(r::TextReader) = close(r.s)
+close(r::DSVReader) = close(r.s)
+
 
 #==Support functions
 ===============================================================================#
-eof(r::TextReader) = (eof(r.s) && length(r.linebuf) < 1)
+eof(r::DSVReader) = (eof(r.s) && length(r.linebuf) < 1)
 
-function Base.readline(r::TextReader)
+function readline(r::DSVReader)
 	linebuf = []
 	return readline(r.s)
 end
 
-function Base.read(r::TextReader, String)
+function read(r::DSVReader, String)
 	linebuf = []
 	return read(r.s, String)
 end
 
+
+#==High-level interface
+===============================================================================#
+
+#Default delimiter-seperated value:
+open_dsv(path::String, splitter = splitter_default) =
+	open(DSVReader, path, splitter = splitter)
+open_csv(path::String) =
+	open(DSVReader, path, splitter = splitter_csv)
+
+end
 #Last line
