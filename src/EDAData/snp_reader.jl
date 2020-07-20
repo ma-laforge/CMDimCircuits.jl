@@ -15,8 +15,8 @@ const SNP_FSCALE_MAP = Dict("GHZ"=>1e9, "MHZ"=>1e6, "KHZ"=>1e3, "HZ"=>1)
 #==Main data structures
 ===============================================================================#
 
-mutable struct SNPReader <: AbstractReader{SNPFmt}
-	r::FileIO2.TextReader
+mutable struct SNPReader
+	r::DSVReader
 	numports::Int
 end
 
@@ -46,15 +46,14 @@ function Base.open(::Type{SNPReader}, path::String; numports=0)
 		error("Must specify number of ports > 0")
 	end
 	#Open with specific reader to ensure consistent behaviour:
-	r = open(FileIO2.TextReader, path)
+	r = open(DSVReader, path)
 	return SNPReader(r, numports)
 end
-_open(file::File{SNPFmt}, args...; kwargs...) = #Open .sNp with this module.
-	open(SNPReader, file.path, args...; kwargs...)
 
 Base.close(r::SNPReader) = close(r.r)
 
 function Base.read(::Type{SNPReader}, path::String; numports=0)
+	#Default open ... do definitions do not support kwargs.
 	reader = open(SNPReader, path, numports=numports)
 	try
 		return readall(reader)
@@ -62,8 +61,6 @@ function Base.read(::Type{SNPReader}, path::String; numports=0)
 		close(reader)
 	end
 end
-_read(file::File{SNPFmt}, args...; kwargs...) = #read .sNp with this module.
-	read(SNPReader, file.path, args...; kwargs...)
 
 
 #==Main reader algorithm
@@ -90,7 +87,7 @@ function readall(r::SNPReader)
 	line = strip(line[2:end])
 
 	local xunit, nptype, datafmt, refres
-	optreader = FileIO2.TextReader(IOBuffer(line))
+	optreader = DSVReader(IOBuffer(line))
 	try
 		xunit = uppercase(read(optreader, str))
 		nptype = uppercase(read(optreader, str))
@@ -146,5 +143,10 @@ function readall(r::SNPReader)
 
 	return Network(nptype, m; nwkwargs...)
 end
+
+
+#==High-level interface
+===============================================================================#
+read_snp(path::String, args...; kwargs...) = read(SNPReader, path, args...; kwargs...)
 
 #Last line

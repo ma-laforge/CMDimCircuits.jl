@@ -1,15 +1,9 @@
 #Network analysis tools
 #-------------------------------------------------------------------------------
-__precompile__(true)
-#=
-TAGS:
-	#WANTCONST, HIDEWARN_0.7
-=#
-
 module NetwAnalysis
 
-using CircuitAnalysis
-import CircuitAnalysis: TImpedance, TAdmittance, TInductance, TCapacitance
+using CMDimCircuits.CircuitAnalysis
+import CMDimCircuits.CircuitAnalysis: TImpedance, TAdmittance, TInductance, TCapacitance
 
 import MDDatasets
 import MDDatasets: DataMD

@@ -2,7 +2,7 @@
 
 #==Main data structures
 ===============================================================================#
-mutable struct SNPWriter <: AbstractWriter{SNPFmt}; end
+mutable struct SNPWriter; end
 
 
 #==Useful validations/assertions
@@ -69,7 +69,7 @@ function __write(::Type{SNPWriter}, path::String, np::NetworkParameters)
 		nowstr = string(now())
 		
 		println(w, "! $nport port network data")
-		println(w, "! Created with C-Data ($nowstr)")
+		println(w, "! Created with Julia/CMDimCircuits ($nowstr)")
 
 		println(w, "# Hz $nptype_str RI R $z0")
 		println(w, portidstr)
@@ -93,16 +93,20 @@ function __write(::Type{SNPWriter}, path::String, np::NetworkParameters)
 	end
 end
 
-Base.write(::Type{SNPWriter}, path::String, np::NetworkParametersRef{TP, NP, DataF1}) where {TP, NP} =
-	__write(SNPWriter, path, np)
-Base.write(::Type{SNPWriter}, path::String, np::NetworkParametersNoRef{TP, NP, DataF1}) where {TP, NP} =
-	__write(SNPWriter, path, np)
 
+Base.write(::Type{SNPWriter}, path::String, np::NetworkParametersRef{TP, NP, T}) where {TP, NP, T<:DataF1} =
+	__write(SNPWriter, path, np)
+Base.write(::Type{SNPWriter}, path::String, np::NetworkParametersNoRef{TP, NP, T}) where {TP, NP, T<:DataF1} =
+	__write(SNPWriter, path, np)
+#NOTE: Use T<:DataF1 because DataF1 -> DataF1{Float64} (does not include DataF1{Complex64})
+
+
+#==High-level interface
+===============================================================================#
 #Write .sNp with this module:
-_write(file::File{SNPFmt}, np::NetworkParametersRef{TP, NP, T}) where {TP, NP, T<:DataF1} =
-	__write(SNPWriter, file.path, np)
-_write(file::File{SNPFmt}, np::NetworkParametersNoRef{TP, NP, T}) where {TP, NP, T<:DataF1} =
-	__write(SNPWriter, file.path, np)
-
+write_snp(path::String, np::NetworkParametersRef{TP, NP, T}) where {TP, NP, T<:DataF1} =
+	__write(SNPWriter, path, np)
+write_snp(path::String, np::NetworkParametersNoRef{TP, NP, T}) where {TP, NP, T<:DataF1} =
+	__write(SNPWriter, path, np)
 
 #Last line

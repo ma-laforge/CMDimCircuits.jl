@@ -4,7 +4,7 @@
 
 #==Main data structures
 ===============================================================================#
-mutable struct PSFReader <: AbstractReader{PSFFmt}
+mutable struct PSFReader
 	reader::PSFReaderLib.DataReader
 	x::Vector
 end
@@ -22,8 +22,6 @@ function Base.open(::Type{PSFReader}, path::String)
 	end
 	return PSFReader(reader, x)
 end
-_open(file::File{PSFFmt}) = open(PSFReader, file.path) #Use PSF reader from this module.
-_open(fn::Function, file::File{PSFFmt}) = open(fn, PSFReader, file.path) #For do/end method
 
 function Base.read(r::PSFReader, signame::String)
 #	if typeof(r.x) <: Vector{Nothing}
@@ -47,5 +45,12 @@ Base.names(r::PSFReader) = names(r.reader)
 function Base.show(io::IO, r::PSFReader)
 	print(io, "PSFReader($(r.reader.filepath))")
 end
+
+
+#==High-level interface
+===============================================================================#
+open_psf(path::String) = open(PSFReader, path) #Use PSF reader from this module.
+open_psf(fn::Function, path::String) = open(fn, PSFReader, path) #For do/end method
+
 
 #Last line

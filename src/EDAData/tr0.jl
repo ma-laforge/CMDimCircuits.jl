@@ -4,7 +4,7 @@
 
 #==Main data structures
 ===============================================================================#
-mutable struct Tr0Reader <: AbstractReader{Tr0Fmt}
+mutable struct Tr0Reader
 	reader::SpiceData.DataReader
 end
 
@@ -14,8 +14,6 @@ end
 function Base.open(::Type{Tr0Reader}, path::String)
 	return Tr0Reader(SpiceData._open(path))
 end
-_open(file::File{Tr0Fmt}) = open(Tr0Reader, file.path) #Use Tr0 reader from this module.
-_open(fn::Function, file::File{Tr0Fmt}) = open(fn, Tr0Reader, file.path) #For do/end method
 
 function Base.read(r::Tr0Reader, signame::String)
 	y = read(r.reader, signame)
@@ -35,5 +33,11 @@ Base.names(r::Tr0Reader) = r.reader.signalnames
 function Base.show(io::IO, r::Tr0Reader)
 	print(io, "Tr0Reader:", r.reader)
 end
+
+
+#==High-level interface
+===============================================================================#
+open_tr0(path::String) = open(Tr0Reader, path) #Use Tr0 reader from this module.
+open_tr0(fn::Function, path::String) = open(fn, Tr0Reader, path) #For do/end method
 
 #Last line

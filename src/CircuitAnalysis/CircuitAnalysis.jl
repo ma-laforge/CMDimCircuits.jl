@@ -1,12 +1,8 @@
 #Circuit analysis tools
 #-------------------------------------------------------------------------------
-
 module CircuitAnalysis
 
-#Type used to dispatch on a symbol & minimize namespace pollution:
-#-------------------------------------------------------------------------------
-struct DS{T}; end #Dispatchable symbol
-DS(v::Symbol) = DS{v}()
+import MDDatasets: DS #To dispatch on a symbol & minimize namespace pollution
 
 include("base.jl")
 include("functions.jl")
