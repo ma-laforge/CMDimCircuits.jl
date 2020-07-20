@@ -1,9 +1,13 @@
 #Demo 12: Eye diagrams, shifting, multiple channels, etc
 #-------------------------------------------------------------------------------
 
-using MDDatasets
-using SignalProcessing
-using EasyPlot
+using CMDimCircuits
+CMDimCircuits.@using_CData()
+
+#Get a demo display:
+include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
+#Normally use something like:
+#CMDimData.@includepkg EasyPlotInspect; pdisp = EasyPlotInspect.PlotDisplay()
 
 
 #==Constants
@@ -101,9 +105,14 @@ s = add(plot, vch_vs_t, title="Pattern")
 for i in 1:nchannels
 	add(s, (i-1)+(pat[i]-.5)*.8, id="pat[$i]") #Re-center around channel number
 end
+plot.ncolumns = 2
+
+
+#==Display results as a plot
+===============================================================================#
+display(pdisp, plot)
 
 
 #==Return plot to user (call evalfile(...))
 ===============================================================================#
-plot.ncolumns = 2
 plot

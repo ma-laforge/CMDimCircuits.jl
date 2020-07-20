@@ -1,7 +1,8 @@
-#Run sample code
+#demo_cktanalysis.jl: Run sample code for CircuitAnalysis tools
 #-------------------------------------------------------------------------------
 
-using CircuitAnalysis
+using CMDimCircuits
+using CMDimCircuits.CircuitAnalysis
 
 
 #==Input data
@@ -9,36 +10,27 @@ using CircuitAnalysis
 f = collect(1:5)*1e9
 
 
-#==Helper functions
-===============================================================================#
-sepline = String(fill('-', 80))
-
-
-#==Intermediate Computations
-===============================================================================#
-
-
 #==Sample code
 ===============================================================================#
-println("\nDefine circuit elements:\n", sepline)
+@info("Define circuit elements:")
 #@show r = resistance(20.5)
 #@show g = conductance(1/50)
 @show l = inductance(20e-9)
 @show c = capacitance(5e-15)
 
-println("\nCompute single-frequency values:\n", sepline)
+@info("Compute single-frequency values:")
 @show ycap = admittance(c, f=1e9)
 @show zcap = impedance(c, f=1e9)
 
-println("\nCompute frequency-dependent values:\n", sepline)
+@info("Compute frequency-dependent values:")
 @show f
 @show ycap = admittance(c, f=f)
 @show zcap = impedance(c, f=f)
 
-#println("\nOperations:", sepline)
+#println("\nOperations:")
 #TODO: fix operations
 
-println("\nPerform unit conversions:\n", sepline)
+@info("Perform unit conversions:")
 @show dB10(2), dB20(2)
 @show dB(2,:Wratio), dB(2,:Vratio), dB(2,:Iratio)
 @show dBm(2,:W), dBm(2,:VRMS), dBm(2,:Vpk)

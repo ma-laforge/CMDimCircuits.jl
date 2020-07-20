@@ -1,9 +1,13 @@
 #Demo 11: Measure frequency/period
 #-------------------------------------------------------------------------------
 
-using MDDatasets
-using SignalProcessing
-using EasyPlot
+using CMDimCircuits
+CMDimCircuits.@using_CData()
+
+#Get a demo display:
+include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
+#Normally use something like:
+#CMDimData.@includepkg EasyPlotInspect; pdisp = EasyPlotInspect.PlotDisplay()
 
 
 #==Constants
@@ -43,9 +47,14 @@ s = add(plot, Tpsvst, title="Instantaneous Period")
 s = add(plot, fvst, title="Instantaneous Frequency")
 	add(s, measfreq(y, xing=xrise, shiftx=true), solidline, glyph(shape=:+), id="shift")
 	add(s, measfreq(y, xing=xrise, shiftx=false), solidline, glyph(shape=:x), id="no shift")
+plot.ncolumns = 1
+
+
+#==Display results as a plot
+===============================================================================#
+display(pdisp, plot)
 
 
 #==Return plot to user (call evalfile(...))
 ===============================================================================#
-plot.ncolumns = 1
 plot

@@ -1,9 +1,13 @@
 #Demo 8: Sampling
 #-------------------------------------------------------------------------------
 
-using MDDatasets
-using SignalProcessing
-using EasyPlot
+using CMDimCircuits
+CMDimCircuits.@using_CData()
+
+#Get a demo display:
+include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
+#Normally use something like:
+#CMDimData.@includepkg EasyPlotInspect; pdisp = EasyPlotInspect.PlotDisplay()
 
 
 #==Constants
@@ -44,9 +48,14 @@ s = add(plot, vvst, title="Pattern")
 	add(s, spat_, id="straddle high", noline, glyph(shape=:x, color=:green))
 s = add(plot, vvst, title="Oversampling")
 	add(s, overspat, noline, glyph(shape=:x, color=:blue))
+plot.ncolumns = 1
+
+
+#==Display results as a plot
+===============================================================================#
+display(pdisp, plot)
 
 
 #==Return plot to user (call evalfile(...))
 ===============================================================================#
-plot.ncolumns = 1
 plot

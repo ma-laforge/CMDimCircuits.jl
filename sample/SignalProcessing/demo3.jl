@@ -1,9 +1,13 @@
 #Demo 3: Simple MDDatasets tests
 #-------------------------------------------------------------------------------
 
-using MDDatasets
-using SignalProcessing
-using EasyPlot
+using CMDimCircuits
+CMDimCircuits.@using_CData()
+
+#Get a demo display:
+include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
+#Normally use something like:
+#CMDimData.@includepkg EasyPlotInspect; pdisp = EasyPlotInspect.PlotDisplay()
 
 
 #==Constants
@@ -47,9 +51,14 @@ s = add(plot, vvst, title="Clipping datasets")
 	add(s, clip(d1, 2.5:8.25), dfltline, dfltglyph, id = "clip(d1, 2.5:8.25)")
 	add(s, clip(d2, xmax=10), dfltline, dfltglyph, id = "clip(d2, xmax=10)")
 	add(s, clip(d3, xmin=5), dfltline, dfltglyph, id = "clip(d3, xmin=5)")
+plot.ncolumns = 1
+
+
+#==Display results as a plot
+===============================================================================#
+display(pdisp, plot)
 
 
 #==Return plot to user (call evalfile(...))
 ===============================================================================#
-plot.ncolumns = 1
 plot

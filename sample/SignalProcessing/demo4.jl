@@ -1,10 +1,14 @@
 #Demo 4: Multi-dimensional datasets
 #-------------------------------------------------------------------------------
 
-using MDDatasets
-using SignalProcessing
-using EasyPlot
 import Statistics
+using CMDimCircuits
+CMDimCircuits.@using_CData()
+
+#Get a demo display:
+include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
+#Normally use something like:
+#CMDimData.@includepkg EasyPlotInspect; pdisp = EasyPlotInspect.PlotDisplay()
 
 
 #==Constants
@@ -58,9 +62,14 @@ result += Statistics.mean(result)
 plot=EasyPlot.new(title="Mulit-Dataset Tests", displaylegend=false)
 s = add(plot, vvst, title="PRBS Pattern")
 	add(s, result, id="pat")
+plot.ncolumns = 1
+
+
+#==Display results as a plot
+===============================================================================#
+display(pdisp, plot)
 
 
 #==Return plot to user (call evalfile(...))
 ===============================================================================#
-plot.ncolumns = 1
 plot

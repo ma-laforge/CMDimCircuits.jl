@@ -1,10 +1,20 @@
-#Demo 1: psf read tests
+#demo_psf_r.jl: psf read tests
 #-------------------------------------------------------------------------------
 
-using FileIO2
-using EDAData
-using EasyPlot
-import LibPSFC
+using CMDimCircuits
+CMDimCircuits.@using_CData()
+
+try
+import LibPSFC #To access sample data ONLY!!!
+catch e
+	@error "Demo requires package \"LibPSFC\" for sample data."
+	rethrow(e)
+end
+
+#Get a demo display:
+include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
+#Normally use something like:
+#CMDimData.@includepkg EasyPlotInspect; pdisp = EasyPlotInspect.PlotDisplay()
 
 
 #==Constants
@@ -19,10 +29,10 @@ color3 = line(color=:green)
 #==Input data
 ===============================================================================#
 testfile = "timeSweep"
-file = File(:psf, joinpath(LibPSFC.rootpath, "core/data", testfile))
+filepath = joinpath(LibPSFC.rootpath, "core/data", testfile)
 
-#open(file) do data #Generic open interface.
-EDAData._open(file) do data #Ensure EDAData opens file.
+@info("Reading $filepath...")
+EDAData.open_psf(filepath) do data
 	global inp, outp0, outp1
 	@show data
 #	@show names(data) #Too many
@@ -32,10 +42,6 @@ EDAData._open(file) do data #Ensure EDAData opens file.
 end
 
 
-#==Computations
-===============================================================================#
-
-
 #==Generate plot
 ===============================================================================#
 plot=EasyPlot.new(title="EDAData Tests: psf Format")
@@ -43,9 +49,14 @@ s = add(plot, vvst, title="VCO")
 	add(s, inp, color1, id="Vinp")
 	add(s, outp0, color2, id="Voutp<0>")
 	add(s, outp1, color3, id="Voutp<1>")
+plot.ncolumns = 1
+
+
+#==Display results as a plot
+===============================================================================#
+display(pdisp, plot)
 
 
 #==Return plot to user (call evalfile(...))
 ===============================================================================#
-plot.ncolumns = 1
-plot
+plot #Will display a second time if executed from REPL

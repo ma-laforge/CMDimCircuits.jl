@@ -1,11 +1,13 @@
 #Demo 1: Transmission line test
 #-------------------------------------------------------------------------------
 
-using FileIO2
-using MDDatasets
-using CircuitAnalysis
-using NetwAnalysis
-using EasyPlot
+using CMDimCircuits
+CMDimCircuits.@using_CData()
+
+#Get a demo display:
+include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
+#Normally use something like:
+#CMDimData.@includepkg EasyPlotInspect; pdisp = EasyPlotInspect.PlotDisplay()
 
 
 #==Constants
@@ -44,6 +46,7 @@ T = Network(:ABCD, [A B; C D])
 S = Network(:S, T, z0=z0)
 (s11, s12, s21, s22) = mx2elem(S)
 
+
 #==Generate plot
 ===============================================================================#
 plot=EasyPlot.new(title="Transmission Line Test")
@@ -53,9 +56,14 @@ s = add(plot, dbvsf, title="Reflection Coefficient")
 s = add(plot, dbvsf, title="Transmission Coefficient")
 	add(s, dB20(s12), color1, id="s12")
 	add(s, dB20(s21), color2, id="s21")
+plot.ncolumns = 1
+
+
+#==Display results as a plot
+===============================================================================#
+display(pdisp, plot)
 
 
 #==Return plot to user (call evalfile(...))
 ===============================================================================#
-plot.ncolumns = 1
 plot

@@ -1,10 +1,14 @@
 #Demo 14: Ck2Q vs Delay tests
 #-------------------------------------------------------------------------------
 
-using MDDatasets
-using SignalProcessing
-using EasyPlot
 using Colors
+using CMDimCircuits
+CMDimCircuits.@using_CData()
+
+#Get a demo display:
+include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
+#Normally use something like:
+#CMDimData.@includepkg EasyPlotInspect; pdisp = EasyPlotInspect.PlotDisplay()
 
 
 #==Constants
@@ -60,9 +64,14 @@ s = add(plot, dpsvst, title="Delays", axrange)
 s = add(plot, dpsvst, title="Delay Differences", axrange)
 	add(s, (Δ-ck2q)/1e-12, id="del-ck2q", ldelay, gdelay)
 	add(s, (Δ-ck2q_ideal)/1e-12, id="del-ck2qI", ldelay, gdelay)
+plot.ncolumns = 1
+
+
+#==Display results as a plot
+===============================================================================#
+display(pdisp, plot)
 
 
 #==Return plot to user (call evalfile(...))
 ===============================================================================#
-plot.ncolumns = 1
 plot

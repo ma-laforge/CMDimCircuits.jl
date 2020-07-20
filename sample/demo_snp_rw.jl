@@ -1,12 +1,13 @@
-#Demo 3: sNp (Touchstone) file tests
+#demo_snp_rw.jl: sNp (Touchstone) file tests
 #-------------------------------------------------------------------------------
 
-using FileIO2
-using MDDatasets
-using CircuitAnalysis
-using NetwAnalysis
-using EDAData
-using EasyPlot
+using CMDimCircuits
+CMDimCircuits.@using_CData()
+
+#Get a demo display:
+include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
+#Normally use something like:
+#CMDimData.@includepkg EasyPlotInspect; pdisp = EasyPlotInspect.PlotDisplay()
 
 
 #==Constants
@@ -29,12 +30,16 @@ f = collect(1:.1:100)*1e9
 
 #==Computations
 ===============================================================================#
+len_mm = ℓ/1e-3
+filepath_S = "lineS_$(len_mm)m.s2p"
+filepath_Z = "lineZ_$(len_mm)m.s2p"
+
 ω = 2pi*f
 α = 0
 β = ω*sqrt(μ0*ϵ0)
 γ = α .+ im*β
 
-#Convert γ type to DataF1, function of 1 argument (leverage C-Data toolkit):
+#Convert γ type to DataF1 (function of 1 argument):
 γ = DataF1(f, γ)
 
 #ABCD matrix:
@@ -46,13 +51,11 @@ T = Network(:ABCD, [A B; C D])
 data = Network(:S, T)
 
 #Save data to .s2p file:
-len_mm = ℓ/1e-3
-filepath(np::Symbol) = "line$(np)_$(len_mm)m.s2p"
-EDAData._write(File(:sNp, filepath(:S)), data)
-EDAData._write(File(:sNp, filepath(:Z)), Network(:Z, data))
+EDAData.write_snp(filepath_S, data)
+EDAData.write_snp(filepath_Z, Network(:Z, data))
 
 #Re-load data:
-data = EDAData._read(File(:sNp, filepath(:S)), numports=2)
+data = EDAData.read_snp(filepath_S, numports=2)
 (s11, s12, s21, s22) = mx2elem(data)
 @show Symbol(NPType(data))
 
@@ -68,16 +71,21 @@ strans = add(plot, dbvsf, title="Transmission Coefficient")
 	add(strans, dB20(s21), color2, id="s21")
 
 #Overlay result of reading/writing Z-parameters:
-data = EDAData._read(File(:sNp, filepath(:Z)), numports=2)
+data = EDAData.read_snp(filepath_Z, numports=2)
 @show s = Symbol(NPType(data))
 (s11, s12, s21, s22) = mx2elem(Network(:S, data))
 	add(srefl, dB20(s11), color1, id="s11 ($(s)P)")
 	add(srefl, dB20(s22), color2, id="s11 ($(s)P)")
 	add(strans, dB20(s12), color1, id="s12 ($(s)P)")
 	add(strans, dB20(s21), color2, id="s21 ($(s)P)")
+plot.ncolumns = 1
+
+
+#==Display results as a plot
+===============================================================================#
+display(pdisp, plot)
 
 
 #==Return plot to user (call evalfile(...))
 ===============================================================================#
-plot.ncolumns = 1
-plot
+plot #Will display a second time if executed from REPL

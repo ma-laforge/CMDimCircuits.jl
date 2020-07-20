@@ -1,9 +1,13 @@
 #Demo 1: Pulse generation
 #-------------------------------------------------------------------------------
 
-using MDDatasets
-using SignalProcessing
-using EasyPlot
+using CMDimCircuits
+CMDimCircuits.@using_CData()
+
+#Get a demo display:
+include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
+#Normally use something like:
+#CMDimData.@includepkg EasyPlotInspect; pdisp = EasyPlotInspect.PlotDisplay()
 
 
 #==Constants
@@ -46,6 +50,7 @@ s = add(plot, vvst, title="Pulse Response")
 	add(s, Π, color2, id="CT")
 s = add(plot, vvst, title="Sine wave")
 	add(s, sin(tCT*(pi*10/tmax)), color2)
+plot.ncolumns = 1
 
 #==Show results
 ===============================================================================#
@@ -60,7 +65,11 @@ prad=Pole(1,:rad)
 @show f(phz), f(prad)
 
 
+#==Display results as a plot
+===============================================================================#
+display(pdisp, plot)
+
+
 #==Return plot to user (call evalfile(...))
 ===============================================================================#
-plot.ncolumns = 1
 plot

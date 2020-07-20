@@ -1,48 +1,17 @@
 #Run sample code
 #-------------------------------------------------------------------------------
 
-using FileIO2
-using EasyPlot
-
-
-#==Obtain plot rendering display:
-===============================================================================#
-
-#getdemodisplay: Potentially overwrite defaults:
-#-------------------------------------------------------------------------------
-#Default behaviour, just use provided display:
-getdemodisplay(d::EasyPlot.EasyPlotDisplay) = d
-
-#Must initialize display before defining specialized "getdemodisplay":
-EasyPlot.@initbackend()
-
-if @isdefined(EasyPlotGrace)
-#Improve display appearance a bit:
-function getdemodisplay(d::EasyPlotGrace.PlotDisplay)
-	d = EasyPlotGrace.PlotDisplay()
-	plotdefaults = GracePlot.defaults(linewidth=2.5)
-	d.args = tuple(plotdefaults, d.args...) #Improve appearance a bit
-	return d
-end
+function printheader(title)
+	println("\n", title, "\n", repeat("-", 80))
 end
 
+filelist = ["demo_cktanalysis.jl",
+	"demo_psf_r.jl", "demo_snp_rw.jl", "demo_tr0_r.jl",
+]
 
-#==Show results
-===============================================================================#
-pdisp = getdemodisplay(EasyPlot.defaults.maindisplay)
-
-let plot #HIDEWARN_0.7
-for i in 1:3
-	file = "./demo$i.jl"
-	sepline = "---------------------------------------------------------------------"
-	outfile = File(:png, joinpath("./", splitext(basename(file))[1] * ".png"))
-	println("\nExecuting $file...")
-	println(sepline)
-	plot = evalfile(file)
-	rplot = EasyPlot.render(pdisp, plot)
-	#write(outfile, rplot)
-	EasyPlot._display(rplot)
-end
+for file in filelist
+	printheader("Executing $file...")
+	result = evalfile(file)
 end
 
 :SampleCode_Executed

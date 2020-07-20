@@ -1,10 +1,13 @@
 #Demo 6: Fourier Transforms
 #-------------------------------------------------------------------------------
 
-using MDDatasets
-using CircuitAnalysis
-using SignalProcessing
-using EasyPlot
+using CMDimCircuits
+CMDimCircuits.@using_CData()
+
+#Get a demo display:
+include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
+#Normally use something like:
+#CMDimData.@includepkg EasyPlotInspect; pdisp = EasyPlotInspect.PlotDisplay()
 
 
 #==Constants
@@ -65,9 +68,14 @@ s = add(plot, vvst, title="Time Domain")
 	add(s, DataF1(collect(tvec), sigvec), id="")
 s = add(plot, dbvsf, title="Sampled Frequency Spectrum")
 	add(s, dB20(sigSpec), id="")
+plot.ncolumns = 1
+
+
+#==Display results as a plot
+===============================================================================#
+display(pdisp, plot)
 
 
 #==Return plot to user (call evalfile(...))
 ===============================================================================#
-plot.ncolumns = 1
 plot

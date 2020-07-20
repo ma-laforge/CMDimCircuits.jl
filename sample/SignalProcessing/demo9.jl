@@ -1,9 +1,13 @@
 #Demo 9: Integration/differentiation
 #-------------------------------------------------------------------------------
 
-using MDDatasets
-using SignalProcessing
-using EasyPlot
+using CMDimCircuits
+CMDimCircuits.@using_CData()
+
+#Get a demo display:
+include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
+#Normally use something like:
+#CMDimData.@includepkg EasyPlotInspect; pdisp = EasyPlotInspect.PlotDisplay()
 
 
 #==Constants
@@ -47,9 +51,14 @@ s = add(plot, vvst, title="Integration/Differentiation")
 	add(s, ycross(y, dydt), line(style=:none), glyph(shape=:o, color=:red), id="crossings")
 s = add(plot, vvst, title="Lissajous Curves")
 	add(s, yvsx(ydel,yref))
+plot.ncolumns = 1
+
+
+#==Display results as a plot
+===============================================================================#
+display(pdisp, plot)
 
 
 #==Return plot to user (call evalfile(...))
 ===============================================================================#
-plot.ncolumns = 1
 plot

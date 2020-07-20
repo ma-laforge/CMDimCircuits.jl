@@ -1,9 +1,13 @@
 #Demo 13: Broadcast test: Slicing a Paraboloid
 #-------------------------------------------------------------------------------
 
-using MDDatasets
-using SignalProcessing
-using EasyPlot
+using CMDimCircuits
+CMDimCircuits.@using_CData()
+
+#Get a demo display:
+include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
+#Normally use something like:
+#CMDimData.@includepkg EasyPlotInspect; pdisp = EasyPlotInspect.PlotDisplay()
 
 
 #==Constants
@@ -71,9 +75,14 @@ s = add(plot, a_yvsx, axrange, title="Slice with planes 1 & 2")
 	add(s, slice_p2, id="plane 1", line(style=:none, width=2), glyph(shape=:o))
 #Change color scheme:
 plot.theme.colorscheme = EasyPlot.ColorScheme(EasyPlot.colormap("Blues", 12))
+plot.ncolumns = 1
+
+
+#==Display results as a plot
+===============================================================================#
+display(pdisp, plot)
 
 
 #==Return plot to user (call evalfile(...))
 ===============================================================================#
-plot.ncolumns = 1
 plot

@@ -1,11 +1,13 @@
 #Demo 2: Chaining ABCD matrices
 #-------------------------------------------------------------------------------
 
-using FileIO2
-using MDDatasets
-using CircuitAnalysis
-using NetwAnalysis
-using EasyPlot
+using CMDimCircuits
+CMDimCircuits.@using_CData()
+
+#Get a demo display:
+include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
+#Normally use something like:
+#CMDimData.@includepkg EasyPlotInspect; pdisp = EasyPlotInspect.PlotDisplay()
 
 
 #==Constants
@@ -80,10 +82,14 @@ for np in nplist
 	add(strans, dB20(s21), color2, id="s21 ($np)")
 end
 end
+plot.ncolumns = 1
 
+
+#==Display results as a plot
+===============================================================================#
+display(pdisp, plot)
 
 
 #==Return plot to user (call evalfile(...))
 ===============================================================================#
-plot.ncolumns = 1
 plot

@@ -1,9 +1,13 @@
 #Demo 10: Delay tests
 #-------------------------------------------------------------------------------
 
-using MDDatasets
-using SignalProcessing
-using EasyPlot
+using CMDimCircuits
+CMDimCircuits.@using_CData()
+
+#Get a demo display:
+include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
+#Normally use something like:
+#CMDimData.@includepkg EasyPlotInspect; pdisp = EasyPlotInspect.PlotDisplay()
 
 
 #==Constants
@@ -57,9 +61,14 @@ s = add(plot, dpsvst, title="Delays")
 	add(s, Δ/1e-12, id="D", ldelay, gdelay)
 s = add(plot, dpsvsx, title="Delays vs Crossing Number")
 	add(s, Δxn/1e-12, id="D", ldelay, gdelay)
+plot.ncolumns = 1
+
+
+#==Display results as a plot
+===============================================================================#
+display(pdisp, plot)
 
 
 #==Return plot to user (call evalfile(...))
 ===============================================================================#
-plot.ncolumns = 1
 plot

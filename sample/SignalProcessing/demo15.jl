@@ -1,9 +1,13 @@
 #Demo 15: Skew tests
 #-------------------------------------------------------------------------------
 
-using MDDatasets
-using SignalProcessing
-using EasyPlot
+using CMDimCircuits
+CMDimCircuits.@using_CData()
+
+#Get a demo display:
+include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
+#Normally use something like:
+#CMDimData.@includepkg EasyPlotInspect; pdisp = EasyPlotInspect.PlotDisplay()
 
 
 #==Constants
@@ -91,9 +95,14 @@ s = add(plot, dpsvst, title="Fall Delays")
 	add(s, skew[:mean_delfall]/1e-12, id="mean", ldelay, gdelay)
 	add(s, skew[:min_delfall]/1e-12, id="min", ldelay, gdelay)
 	add(s, skew[:max_delfall]/1e-12, id="max", ldelay, gdelay)
+plot.ncolumns = 2
+
+
+#==Display results as a plot
+===============================================================================#
+display(pdisp, plot)
 
 
 #==Return plot to user (call evalfile(...))
 ===============================================================================#
-plot.ncolumns = 2
 plot

@@ -1,9 +1,13 @@
 #Demo 16: Clock tests
 #-------------------------------------------------------------------------------
 
-using MDDatasets
-using SignalProcessing
-using EasyPlot
+using CMDimCircuits
+CMDimCircuits.@using_CData()
+
+#Get a demo display:
+include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
+#Normally use something like:
+#CMDimData.@includepkg EasyPlotInspect; pdisp = EasyPlotInspect.PlotDisplay()
 
 
 #==Constants
@@ -84,9 +88,14 @@ s = add(plot, dutyoutvsmaxphi, title="Duty cycle")
 	add(s, stats[:mean_duty]*100, id="mean", ldelay, gdelay)
 	add(s, stats[:min_duty]*100, id="min", ldelay, gdelay)
 	add(s, stats[:max_duty]*100, id="max", ldelay, gdelay)
+plot.ncolumns = 2
+
+
+#==Display results as a plot
+===============================================================================#
+display(pdisp, plot)
 
 
 #==Return plot to user (call evalfile(...))
 ===============================================================================#
-plot.ncolumns = 2
 plot

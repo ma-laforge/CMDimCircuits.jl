@@ -1,9 +1,13 @@
 #Demo 7: Eye diagrams
 #-------------------------------------------------------------------------------
 
-using MDDatasets
-using SignalProcessing
-using EasyPlot
+using CMDimCircuits
+CMDimCircuits.@using_CData()
+
+#Get a demo display:
+include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
+#Normally use something like:
+#CMDimData.@includepkg EasyPlotInspect; pdisp = EasyPlotInspect.PlotDisplay()
 
 
 #==Constants
@@ -49,9 +53,14 @@ s = add(plot, vvst, title="Pattern")
 s = add(plot, vvst, title="Eye (DataRS)", eyeparam(tbit, teye=1.5*tbit, tstart=-.15*tbit))
 set(s, paxes(xmin=0, xmax=1.5*tbit)) #Force limits on exact data range.
 	add(s, patRS, id="eye")
+plot.ncolumns = 2
+
+
+#==Display results as a plot
+===============================================================================#
+display(pdisp, plot)
 
 
 #==Return plot to user (call evalfile(...))
 ===============================================================================#
-plot.ncolumns = 2
 plot

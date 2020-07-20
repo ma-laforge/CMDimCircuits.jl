@@ -1,9 +1,13 @@
 #Demo 17: Rise/fall tests
 #-------------------------------------------------------------------------------
 
-using MDDatasets
-using SignalProcessing
-using EasyPlot
+using CMDimCircuits
+CMDimCircuits.@using_CData()
+
+#Get a demo display:
+include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
+#Normally use something like:
+#CMDimData.@includepkg EasyPlotInspect; pdisp = EasyPlotInspect.PlotDisplay()
 
 
 #==Constants
@@ -55,9 +59,14 @@ s = add(plot, axrng, vvst, title="Patterns")
 s = add(plot, axrng, rfpsvst, title="20-80 Rise/Fall Times")
 	add(s, trise/1e-12, id="", ldelay, gdelay, line(color=:blue))
 	add(s, tfall/1e-12, id="", ldelay, gdelay, line(color=:red))
+plot.ncolumns = 1
+
+
+#==Display results as a plot
+===============================================================================#
+display(pdisp, plot)
 
 
 #==Return plot to user (call evalfile(...))
 ===============================================================================#
-plot.ncolumns = 1
 plot
