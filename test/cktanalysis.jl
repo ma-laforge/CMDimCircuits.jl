@@ -1,11 +1,9 @@
-#Test code
-#-------------------------------------------------------------------------------
+@testset "CircuitAnalysis tests" begin show_testset_section() #Scope for test data
 
-using CircuitAnalysis
-import CircuitAnalysis: DataTag
-import CircuitAnalysis: TCapacitance
-import CircuitAnalysis: TImpedance, TAdmittance
-using Test
+using CMDimCircuits.CircuitAnalysis
+import CMDimCircuits.CircuitAnalysis: DataTag
+import CMDimCircuits.CircuitAnalysis: TCapacitance
+import CMDimCircuits.CircuitAnalysis: TImpedance, TAdmittance
 
 
 #==Input data
@@ -18,7 +16,7 @@ j = im
 #==Tests
 ===============================================================================#
 
-@testset "Operations On Impedance Values" begin
+@testset "Operations On Impedance Values" begin show_testset_description()
 	fsng = 1e9
 	ω = 2π*fsng
 	@test c == TCapacitance(5.0e-15)
@@ -27,7 +25,7 @@ j = im
 	@test TAdmittance(j*ω*c.v) == admittance(c, f=fsng)
 end
 
-@testset "Operations On Impedance Vectors" begin
+@testset "Operations On Impedance Vectors" begin show_testset_description()
 	rtol = 1e-4
 	ω = 2π*f
 	_ycap = j .* ω .* c.v
@@ -46,7 +44,7 @@ end
 	#catch e; @info("Fail successful."); end
 end
 
-@testset "Unit conversions" begin
+@testset "Unit conversions" begin show_testset_description()
 	rtol = 1e-4
 	halfpwr = 3.010299956639812 #approx 3dB
 	@test dB10(2) ≈ halfpwr rtol = rtol
@@ -84,4 +82,4 @@ end
 	@test Ipk(2,:IRMS) ≈ 2*sqrt(2) rtol = rtol
 end
 
-:Test_Complete
+end

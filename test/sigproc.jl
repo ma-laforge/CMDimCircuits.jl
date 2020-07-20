@@ -1,10 +1,8 @@
-#Test code
-#-------------------------------------------------------------------------------
+@testset "EDAData tests" begin show_testset_section() #Scope for test data
 
+using CMDimCircuits.SignalProcessing
 using SignalProcessing
 
 @warn("No real test code yet... just ensuring that \"using\" works.")
 
-@info("Run sample/runsamples.jl for sample usage.")
-
-:Test_Complete
+end

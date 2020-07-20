@@ -1,18 +1,14 @@
-#Test code
-#-------------------------------------------------------------------------------
+@testset "NetwAnalysis tests" begin show_testset_section() #Scope for test data
 
-using CircuitAnalysis 
-using NetwAnalysis
-import NetwAnalysis: NetworkParameters, NetworkParametersNoRef, NetworkParametersRef
-using Test
-
-#No real test code yet... just run demos:
+using MDDatasets
+using CMDimCircuits.CircuitAnalysis
+using CMDimCircuits.NetwAnalysis
+import CMDimCircuits.NetwAnalysis: NetworkParameters, NetworkParametersNoRef, NetworkParametersRef
+include("netwanalysis_cmptools.jl")
 
 
 #==Input data
 ===============================================================================#
-mxerror_thresh = 1e-12
-sepline = "---------------------------------------------------------------------"
 f = collect(1:3)*1e9
 c = capacitance(5e-15)
 
@@ -24,98 +20,101 @@ zcap = impedance(c, f=1e9)
 ycap_vec = admittance(c, f=f)
 
 
+#==Helper functions
+===============================================================================#
+
+
 #==Tests
 ===============================================================================#
-mxtypematch(n1::NetworkParameters, n2::NetworkParameters) = false
-mxtypematch(n1::NetworkParametersNoRef{TP, NP}, n2::NetworkParametersNoRef{TP, NP}) where {TP, NP} = true
-mxtypematch(n1::NetworkParametersRef{TP, NP}, n2::NetworkParametersRef{TP, NP}) where {TP, NP} = (n1.z0==n2.z0) #impedance must also match
-
-function mxerror(n1::Network, n2::Network)
-	@test(mxtypematch(n1,n2)) #Make sure types match
-	Δ = n2-n1
-	ϵ = maximum(abs.(Δ.m))
-	return ϵ
+@testset "Test constructors" begin show_testset_description()
+	S = Network(:S, [1 2; 3 4])
+		@test isa(S, NetworkParametersRef{:S,2,Int64})
+		@test S.m == [1 2; 3 4]
+		@test S.z0 == 50 #Default
+	T = Network(:ABCD, [1 2; 3 4])
+		@test isa(T, NetworkParametersNoRef{:ABCD,2,Int64})
+		@test T.m == [1 2; 3 4]
 end
 
-println("\nTest constructors:")
-println(sepline)
-@show S = Network(:S, [1 2; 3 4])
-@show T = Network(:ABCD, [1 2; 3 4])
+@testset "Test traits" begin show_testset_description()
+	S = Network(:S, [1 2; 3 4])
+	nptype = NPType(S)
+		@test isa(nptype, NPType{:S})
+		@test Symbol(nptype) == :S
+end
 
-println("\nTest traits:")
-println(sepline)
-@show nptype = NPType(S)
-@show Symbol(nptype)
+printheader("Test impedance operations:")
+	@show shunt(:ABCD, zcap)
+	@show shunt(:ABCD, ycap)
+	@show series(:ABCD, zcap)
+	@show series(:ABCD, ycap)
 
-println("\nTest impedance operations:")
-println(sepline)
-@show shunt(:ABCD, zcap)
-@show shunt(:ABCD, ycap)
-@show series(:ABCD, zcap)
-@show series(:ABCD, ycap)
+@testset "Basic matrix operations" begin show_testset_description()
+	S = Network(:S, [1 2; 3 4])
+	Sx2 = S * 2
+	@test maxerror(Sx2, Network(:S, 2 .* S.m)) < SPARAM_THRESH
+	#@show S.*[3 4; 2 1] #TODO: Julia v0.6: Figure out a way to do element-by-element operations??
+	mm = S*[3 4; 2 1]
+	@test maxerror(mm, Network(:S, S.m * [3 4; 2 1])) < SPARAM_THRESH
+	s21 = S[2,1]
+	@test s21 == S.m[2,1]
+end
 
-println("\nTest matrix operations:")
-println(sepline)
-@show S
-@show S * 2
-#@show S.*[3 4; 2 1] #TODO: Julia v0.6: Figure out a way to do element-by-element operations??
-@show S*[3 4; 2 1]
-@show s21 = S[2,1]
+@testset "Complex matrix{vector} operations" begin show_testset_description()
+	TC = shunt(:ABCD, ycap_vec) #Matrix of vectors
+	TCpull = vector_pull(TC) #Vector of matrices
+	TCpush = vector_push(TCpull) #Back to matrix of vectors
+	@test maxerror(TC, TCpush) < ABCD_THRESH
+end
 
-println("\nTest matrix{vector} operations:")
-println(sepline)
-@show TC = shunt(:ABCD, ycap_vec)
-@show TCpull = vector_pull(TC)
-@show TCpush = vector_push(TCpull)
-@show TC-TCpush #Take difference
+@testset "Subset operations" begin show_testset_description()
+	S = Network(:S, [1 2; 3 4])
+	Sswapped = submatrix(S, [2, 1]) #Port-swapped
+	@test maxerror(Sswapped, Network(:S, [4 3; 2 1])) < SPARAM_THRESH
+	Γ = submatrix(S, [1])
+		Γ_mx2D = convert(Array{Int64,2}, [S.m[1,1]]')
+	x = Network(:S, Γ_mx2D, z0=S.z0)
+	@test maxerror(Γ, Network(:S, Γ_mx2D, z0=S.z0)) < SPARAM_THRESH
+end
 
-println("\nTest subset operations:")
-println(sepline)
-@show S
-@show submatrix(S, [2, 1])
-@show submatrix(S, [1])
+@testset "Network parameter conversions" begin show_testset_description()
+	T = Network(:ABCD, S)
+	Z = Network(:Z, T)
+	T2 = Network(:ABCD, T) #Passthrough
+	@test maxerror(T, T2) < ABCD_THRESH
+	@show S2 = Network(:S, Z, z0=75)
+	@show T = Network(:T, S2)
+end
 
-println("\nTest network parameter conversions:")
-println(sepline)
-@show T = Network(:ABCD, S)
-@show Z = Network(:Z, T)
-@show T2 = Network(:ABCD, T) #Passthrough
-@show T.m .- T2.m
-@show S2 = Network(:S, Z, z0=75)
-@show T = Network(:T, S2)
+@testset "Specific S <=> T conversions" begin show_testset_description()
+	S = Network(:S, [0 1; 1 0])
+	T = Network(:T, S)
+	@test maxerror(Network(:T, [1.0 0.0; 0.0 1.0], z0=50), T) < TPARAM_THRESH
+end
 
-println("\nTest specific S <=> T conversions:")
-println(sepline)
-@show S = Network(:S, [0 1; 1 0])
-@show T = Network(:T, S)
+@testset "Matrix impedance transformations" begin show_testset_description()
+	_S50 = Network(:S, [1 2; 3 4])
+	_S75 = Network(:S, _S50, z0=75)
+	_T50 = Network(:T, _S50)
+	_T75 = Network(:T, _S75)
 
-println("\nImpedance transformation:")
-println(sepline)
-@show _S50 = Network(:S, [1 2; 3 4])
-@show _S75 = Network(:S, _S50, z0=75)
-@show _T50 = Network(:T, _S50)
-@show _T75 = Network(:T, _S75)
+	@test maxerror(Network(:T, _S75), _T75) < TPARAM_THRESH
+	@test maxerror(Network(:T, _S75, z0=50), _T50) < TPARAM_THRESH
+	@test maxerror(Network(:T, _S50, z0=75), _T75) < TPARAM_THRESH
+	@test maxerror(Network(:T, _T75, z0=50), _T50) < TPARAM_THRESH
 
-println("\nLook at conversion error:")
-println(sepline)
-@test mxerror(Network(:T, _S75), _T75) < mxerror_thresh
-@test mxerror(Network(:T, _S75, z0=50), _T50) < mxerror_thresh
-@test mxerror(Network(:T, _S50, z0=75), _T75) < mxerror_thresh
-@test mxerror(Network(:T, _T75, z0=50), _T50) < mxerror_thresh
+	@test maxerror(Network(:S, _T50), _S50) < SPARAM_THRESH
+	@test maxerror(Network(:S, _T75), _S75) < SPARAM_THRESH
+	@test maxerror(Network(:S, _T75, z0=50), _S50) < SPARAM_THRESH
+	#TODO: add tests more to validate impedance transformation (use realistic impedances)
+	#Z->S50->S75; Z->S75
+end
 
-@test mxerror(Network(:S, _T50), _S50) < mxerror_thresh
-@test mxerror(Network(:S, _T75), _S75) < mxerror_thresh
-@test mxerror(Network(:S, _T75, z0=50), _S50) < mxerror_thresh
+printheader("Test stability & gains:")
+	@show S = Network(:S, [1 2; 3 4])
+	@show kstab(S)
+	@show gain(:U, S)
+	@show gain(:MA, S)
+	@show gain(:MS, S)
 
-#TODO: add tests more to validate impedance transformation (use realistic impedances)
-#Z->S50->S75; Z->S75
-
-println("\nTest stability & gains:")
-println(sepline)
-@show S = Network(:S, [1 2; 3 4])
-@show kstab(S)
-@show gain(:U, S)
-@show gain(:MA, S)
-@show gain(:MS, S)
-
-:Test_Complete
+end
