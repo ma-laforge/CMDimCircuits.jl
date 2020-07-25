@@ -7,7 +7,11 @@ CMDimCircuits.@using_CData()
 try
 import LibPSFC #To access sample data ONLY!!!
 catch e
-	@error "Demo requires package \"LibPSFC\" for sample data."
+	msg = "Demo requires sampled data stored in the \"LibPSFC\" package."
+	msg *= "\nTo execute demo, install with the following:"
+	msg *= "\n\n    using Pkg; Pkg.add(PackageSpec(path=\"git://github.com/ma-laforge/LibPSFC.jl\"))"
+
+	@error msg
 	rethrow(e)
 end
 
