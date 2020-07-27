@@ -30,7 +30,7 @@ test = ["Test", "Printf"]
 [compat]
 NumericIO = "0.3.1"
 MDDatasets = "0.3.1"
-#CMDimData
+CMDimData = "0.1.0"
 FFTW = "1.1"
 SpiceData = "0.3.1"
 LibPSF = "0.3.2"
