@@ -12,10 +12,10 @@ include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
 
 #==Constants
 ===============================================================================#
-tvsbit = paxes(ylabel="Value", xlabel="Bit Position")
-vvst = paxes(ylabel="Amplitude (V)", xlabel="Time (s)")
-color1 = line(color=:red)
-color2 = line(color=:blue)
+tvsbit = cons(:a, labels = set(yaxis="Value", xaxis="Bit Position"))
+vvst = cons(:a, labels = set(yaxis="Amplitude (V)", xaxis="Time (s)"))
+color1 = cons(:a, line = set(color=:red))
+color2 = cons(:a, line = set(color=:blue))
 
 
 #==Input data
@@ -37,20 +37,23 @@ pat = pattern(seq, Π, nbit=Index(osr))
 
 #==Generate plot
 ===============================================================================#
-plot=EasyPlot.new(title="Generating Patterns")
-s = add(plot, tvsbit, title="PRBS Sequence")
-	add(s, DataF1(collect(1:length(seq)), seq), color2)
-s = add(plot, vvst, title="PRBS Pattern")
-	add(s, DataF1(Π), color1, id="Pulse")
-	add(s, DataF1(pat), color2, id="Pattern")
-plot.ncolumns = 1
+p1 = push!(cons(:plot, tvsbit, title="PRBS Sequence"),
+	cons(:wfrm, DataF1(collect(1:length(seq)), seq), color2),
+)
+p2 = push!(cons(:plot, vvst, title="PRBS Pattern"),
+	cons(:wfrm, DataF1(Π), color1, label="Pulse"),
+	cons(:wfrm, DataF1(pat), color2, label="Pattern"),
+)
+
+pcoll = push!(cons(:plotcoll, title="Generating Patterns"), p1, p2)
+	pcoll.ncolumns = 1
 
 
-#==Display results as a plot
+#==Display results in pcoll
 ===============================================================================#
-display(pdisp, plot)
+display(pdisp, pcoll)
 
 
-#==Return plot to user (call evalfile(...))
+#==Return pcoll to user (call evalfile(...))
 ===============================================================================#
-plot
+pcoll #Will display pcoll a second time if executed from REPL

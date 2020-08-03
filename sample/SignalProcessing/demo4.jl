@@ -13,7 +13,7 @@ include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
 
 #==Constants
 ===============================================================================#
-vvst = paxes(ylabel="Amplitude (V)", xlabel="Time (s)")
+vvst = cons(:a, labels = set(yaxis="Amplitude (V)", xaxis="Time (s)"))
 
 
 #==Input data
@@ -59,17 +59,20 @@ result += Statistics.mean(result)
 
 #==Generate plot
 ===============================================================================#
-plot=EasyPlot.new(title="Mulit-Dataset Tests", displaylegend=false)
-s = add(plot, vvst, title="PRBS Pattern")
-	add(s, result, id="pat")
-plot.ncolumns = 1
+plot = push!(cons(:plot, vvst, title="PRBS Pattern"),
+	cons(:wfrm, result, label="pat"),
+)
+
+pcoll = push!(cons(:plotcoll, title="Mulit-Dataset Tests"), plot)
+	pcoll.displaylegend = false
+	pcoll.ncolumns = 1
 
 
-#==Display results as a plot
+#==Display results in pcoll
 ===============================================================================#
-display(pdisp, plot)
+display(pdisp, pcoll)
 
 
-#==Return plot to user (call evalfile(...))
+#==Return pcoll to user (call evalfile(...))
 ===============================================================================#
-plot
+pcoll #Will display pcoll a second time if executed from REPL

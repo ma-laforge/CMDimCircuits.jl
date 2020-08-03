@@ -12,10 +12,10 @@ include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
 
 #==Constants
 ===============================================================================#
-dbvsf = paxes(ylabel="Amplitude (dB)", xlabel="Frequency (Hz)")
-color1 = line(color=:red, width=2)
-color2 = line(color=:blue, width=2)
-color3 = line(color=:green, width=2)
+dbvsf = cons(:a, labels = set(yaxis="Amplitude (dB)", xaxis="Frequency (Hz)"))
+color1 = cons(:a, line = set(color=:red, width=2))
+color2 = cons(:a, line = set(color=:blue, width=2))
+color3 = cons(:a, line = set(color=:green, width=2))
 
 
 #==Input data
@@ -49,21 +49,24 @@ S = Network(:S, T, z0=z0)
 
 #==Generate plot
 ===============================================================================#
-plot=EasyPlot.new(title="Transmission Line Test")
-s = add(plot, dbvsf, title="Reflection Coefficient")
-	add(s, dB20(s11), color1, id="s11")
-	add(s, dB20(s22), color2, id="s11")
-s = add(plot, dbvsf, title="Transmission Coefficient")
-	add(s, dB20(s12), color1, id="s12")
-	add(s, dB20(s21), color2, id="s21")
-plot.ncolumns = 1
+p𝛤 = push!(cons(:plot, dbvsf, title="Reflection Coefficient (Γ)"),
+	cons(:wfrm, dB20(s11), color1, label="s11"),
+	cons(:wfrm, dB20(s22), color2, label="s22"),
+)
+p𝛵 = push!(cons(:plot, dbvsf, title="Transmission Coefficient (Τ)"),
+	cons(:wfrm, dB20(s12), color1, label="s12"),
+	cons(:wfrm, dB20(s21), color2, label="s21"),
+)
+
+pcoll = push!(cons(:plotcoll, title="Transmission Line Test"), p𝛤, p𝛵)
+	pcoll.ncolumns = 1
 
 
-#==Display results as a plot
+#==Display results in pcoll
 ===============================================================================#
-display(pdisp, plot)
+display(pdisp, pcoll)
 
 
-#==Return plot to user (call evalfile(...))
+#==Return pcoll to user (call evalfile(...))
 ===============================================================================#
-plot
+pcoll #Will display pcoll a second time if executed from REPL

@@ -23,10 +23,10 @@ include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
 
 #==Constants
 ===============================================================================#
-vvst = paxes(ylabel="Amplitude (V)", xlabel="Time (s)")
-ratvst = paxes(ylabel="Ratio (%)", xlabel="Time (s)")
-color1 = line(color=:red, width=3)
-color2 = line(color=:blue, width=3)
+vvst = cons(:a, labels = set(yaxis="Amplitude (V)", xaxis="Time (s)"))
+ratvst = cons(:a, labels = set(yaxis="Ratio (%)", xaxis="Time (s)"))
+color1 = cons(:a, line = set(color=:red))
+color2 = cons(:a, line = set(color=:blue))
 
 
 #==Input data
@@ -47,20 +47,24 @@ end
 
 #==Generate plot
 ===============================================================================#
-plot=EasyPlot.new(title="EDAData Tests: tr0 Format")
-s = add(plot, vvst, title="VCO")
-	add(s, out, color2, id="Vout")
-	add(s, vin, color1, id="Vcontrol")
-s = add(plot, ratvst, title="Divide Ratio")
-	add(s, div_val, color1)
-plot.ncolumns = 1
+plot1 = push!(cons(:plot, vvst, title="VCO"),
+	cons(:wfrm, out, color2, label="Vout"),
+	cons(:wfrm, vin, color1, label="Vcontrol"),
+)
+plot2 = push!(cons(:plot, ratvst, title="Divide Ratio"),
+	cons(:wfrm, div_val, color1),
+)
+
+pcoll = push!(cons(:plot_collection, title="EDAData Tests: tr0 Format"), plot1, plot2)
+	pcoll.displaylegend = true
+	pcoll.ncolumns = 1
 
 
-#==Display results as a plot
+#==Display results in pcoll
 ===============================================================================#
-display(pdisp, plot)
+display(pdisp, pcoll)
 
 
-#==Return plot to user (call evalfile(...))
+#==Return pcoll to user (call evalfile(...))
 ===============================================================================#
-plot #Will display a second time if executed from REPL
+pcoll #Will display pcoll a second time if executed from REPL

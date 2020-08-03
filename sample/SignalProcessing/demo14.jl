@@ -13,11 +13,12 @@ include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
 
 #==Constants
 ===============================================================================#
-vvst = paxes(ylabel="Amplitude (V)", xlabel="Time (s)")
-dpsvst = paxes(ylabel="Delay (ps)", xlabel="Time (s)")
-dpsvsx = paxes(ylabel="Delay (ps)", xlabel="Crossing")
-ldelay = line(width=3, style=:solid)
-gdelay = glyph(shape=:x, size=2)
+vvst = cons(:a, labels = set(yaxis="Amplitude (V)", xaxis="Time (s)"))
+dpsvst = cons(:a, labels = set(yaxis="Delay (ps)", xaxis="Time (s)"))
+delayattr = cons(:a,
+	line = set(width=3, style=:solid),
+	glyph = set(shape=:x, size=2),
+)
 
 
 #==Input data
@@ -45,33 +46,37 @@ pat = (pattern(seq, Π, tbit=tbit)-0.5)*2 #Center data pattern
 Δ = measdelay(patref, pat, xing_ref=CrossType(:risefall), xing_main=CrossType(:risefall))
 ck2q = measck2q(ck, pat, xing_ck=CrossType(:rise), xing_q=CrossType(:risefall))
 @show tstart_ck = xcross1(patref)-50e-12
+#Relative to ideal reference clock:
 ck2q_ideal = measck2q(pat, tbit, tstart_ck=tstart_ck, xing_q=CrossType(:risefall))
 
 
 #==Generate plot
 ===============================================================================#
-axrange = paxes(xmax=maximum(t)+3*tbit)
-plot=EasyPlot.new(title="Compare measdelay & measck2q", displaylegend=true)
-s = add(plot, vvst, title="Patterns", axrange)
-	wfrm = add(s, ck, id="clock")
-		set(wfrm, line(width=1, color=RGB24(.5, .5, .5)))
-	add(s, patref, id="ref", line(width=2))
-	add(s, pat, id="pat")
-s = add(plot, dpsvst, title="Delays", axrange)
-	add(s, Δ/1e-12, id="del=measdelay(ref,pat)", ldelay, gdelay)
-	add(s, ck2q/1e-12, id="ck2q=measck2q(ck,pat)", ldelay, gdelay)
-	add(s, ck2q_ideal/1e-12, id="ck2qI=measck2q(ideal,pat)", ldelay, gdelay)
-s = add(plot, dpsvst, title="Delay Differences", axrange)
-	add(s, (Δ-ck2q)/1e-12, id="del-ck2q", ldelay, gdelay)
-	add(s, (Δ-ck2q_ideal)/1e-12, id="del-ck2qI", ldelay, gdelay)
-plot.ncolumns = 1
+axrange = cons(:a, xyaxes=set(xmax=maximum(t)+3*tbit))
+p1 = push!(cons(:plot, vvst, axrange, title="Patterns"),
+	cons(:wfrm, ck, line=set(width=1, color=RGB24(.5, .5, .5)), label="clock"),
+	cons(:wfrm, patref, line=set(width=2), label="ref"),
+	cons(:wfrm, pat, label="pat"),
+)
+p2 = push!(cons(:plot, dpsvst, axrange, title="Delays (measdelay, measck2q)"),
+	cons(:wfrm, Δ/1e-12, delayattr, label="delay"),
+	cons(:wfrm, ck2q/1e-12, delayattr, label="ck2q"),
+	cons(:wfrm, ck2q_ideal/1e-12, delayattr, label="ck2qI (ideal)"),
+)
+p3 = push!(cons(:plot, dpsvst, axrange, title="Delay Differences (wrt ck2q & ideal ck2q)"),
+	cons(:wfrm, (Δ-ck2q)/1e-12, delayattr, label="del-ck2q"),
+	cons(:wfrm, (Δ-ck2q_ideal)/1e-12, delayattr, label="del-ck2qI"),
+)
+
+pcoll = push!(cons(:plotcoll, title="Compare measdelay & measck2q"), p1, p2, p3)
+	pcoll.ncolumns = 1
 
 
-#==Display results as a plot
+#==Display results in pcoll
 ===============================================================================#
-display(pdisp, plot)
+display(pdisp, pcoll)
 
 
-#==Return plot to user (call evalfile(...))
+#==Return pcoll to user (call evalfile(...))
 ===============================================================================#
-plot
+pcoll #Will display pcoll a second time if executed from REPL

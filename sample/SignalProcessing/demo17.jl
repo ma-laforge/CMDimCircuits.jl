@@ -12,10 +12,12 @@ include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
 
 #==Constants
 ===============================================================================#
-vvst = paxes(ylabel="Amplitude (V)", xlabel="Time (s)")
-rfpsvst = paxes(ylabel="Rise/Fall (ps)", xlabel="Time (s)")
-ldelay = line(style=:solid, width=3)
-gdelay = glyph(shape=:x, size=2)
+vvst = cons(:a, labels = set(yaxis="Amplitude (V)", xaxis="Time (s)"))
+rfpsvst = cons(:a, labels = set(yaxis="Rise/Fall (ps)", xaxis="Time (s)"))
+delayattr = cons(:a,
+	line = set(style=:solid, width=3),
+	glyph = set(shape=:x, size=2),
+)
 
 
 #==Input data
@@ -52,21 +54,25 @@ tfall = measfall(pat, lthresh=lthresh, hthresh=hthresh)
 
 #==Generate plot
 ===============================================================================#
-axrng = paxes(xmax=tmax)
-plot=EasyPlot.new(title="Rise/Fall Tests", displaylegend=false)
-s = add(plot, axrng, vvst, title="Patterns")
-	add(s, pat, id="pat")
-s = add(plot, axrng, rfpsvst, title="20-80 Rise/Fall Times")
-	add(s, trise/1e-12, id="", ldelay, gdelay, line(color=:blue))
-	add(s, tfall/1e-12, id="", ldelay, gdelay, line(color=:red))
-plot.ncolumns = 1
+axrng = cons(:a, xyaxes=set(xmax=tmax))
+p1 = push!(cons(:plot, axrng, vvst, title="Patterns"),
+	cons(:wfrm, pat, label="pat"),
+)
+p2 = push!(cons(:plot, axrng, rfpsvst, title="20-80 Rise/Fall Times"),
+	cons(:wfrm, trise/1e-12, delayattr, line=set(color=:blue)),
+	cons(:wfrm, tfall/1e-12, delayattr, line=set(color=:red)),
+)
+
+pcoll = push!(cons(:plotcoll, title="Rise/Fall Tests"), p1, p2)
+	pcoll.displaylegend = false
+	pcoll.ncolumns = 1
 
 
-#==Display results as a plot
+#==Display results in pcoll
 ===============================================================================#
-display(pdisp, plot)
+display(pdisp, pcoll)
 
 
-#==Return plot to user (call evalfile(...))
+#==Return pcoll to user (call evalfile(...))
 ===============================================================================#
-plot
+pcoll #Will display pcoll a second time if executed from REPL

@@ -12,8 +12,9 @@ include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
 
 #==Constants
 ===============================================================================#
-vvst = paxes(ylabel="Amplitude (V)", xlabel="Time (s)")
-vvsf = paxes(ylabel="Amplitude (V)", xlabel="Frequency (Hz)")
+vvst = cons(:a, labels = set(yaxis="Amplitude (V)", xaxis="Time (s)"))
+sigvscosref = cons(:a, labels = set(yaxis="Signal Amplitude (V)", xaxis="Ref cos(t) Value"))
+noline = cons(:a, line = set(style=:none))
 
 
 #==Input data
@@ -37,28 +38,31 @@ sweeplist = PSweep[
 	PSweep("phi", pi*[0, .25, .5, .75])
 ]
 
-ϕ = parameter(DataHR, sweeplist, "phi")
-ydel = cos(t+ϕ)
+𝜙 = parameter(DataHR, sweeplist, "phi")
+ydel = cos(t+𝜙)
 yref = y
 
 #==Generate plot
 ===============================================================================#
-plot=EasyPlot.new(title="Integration/Differentiation/yvsx")
-s = add(plot, vvst, title="Integration/Differentiation")
-	add(s, y, id="sig")
-	add(s, dydt, id="dy/dt")
-	add(s, ∫ydt, id="integ(y)dt")
-	add(s, ycross(y, dydt), line(style=:none), glyph(shape=:o, color=:red), id="crossings")
-s = add(plot, vvst, title="Lissajous Curves")
-	add(s, yvsx(ydel,yref))
-plot.ncolumns = 1
+plot1 = push!(cons(:plot, vvst, title="Integration/Differentiation"),
+	cons(:wfrm, y, label="sig"),
+	cons(:wfrm, dydt, label="dy/dt"),
+	cons(:wfrm, ∫ydt, label="integ(y)dt"),
+	cons(:wfrm, ycross(y, dydt), noline, glyph=set(shape=:o, color=:red), label="crossings"),
+)
+plot2 = push!(cons(:plot, sigvscosref, title="Lissajous Curves: yvsx(cos(t+ϕ), cos(t))"),
+	cons(:wfrm, yvsx(ydel,yref)),
+)
+
+pcoll = push!(cons(:plotcoll, title="Integration/Differentiation/yvsx"), plot1, plot2)
+	pcoll.ncolumns = 1
 
 
-#==Display results as a plot
+#==Display results in pcoll
 ===============================================================================#
-display(pdisp, plot)
+display(pdisp, pcoll)
 
 
-#==Return plot to user (call evalfile(...))
+#==Return pcoll to user (call evalfile(...))
 ===============================================================================#
-plot
+pcoll #Will display pcoll a second time if executed from REPL

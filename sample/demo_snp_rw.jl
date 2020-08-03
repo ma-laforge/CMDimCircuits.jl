@@ -12,10 +12,10 @@ include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
 
 #==Constants
 ===============================================================================#
-dbvsf = paxes(ylabel="Amplitude (dB)", xlabel="Frequency (Hz)")
-color1 = line(color=:red, width=2)
-color2 = line(color=:blue, width=2)
-color3 = line(color=:green, width=2)
+dbvsf = cons(:a, labels = set(yaxis="Amplitude (dB)", xaxis="Frequency (Hz)"))
+color1 = cons(:a, line = set(color=:red, width=2))
+color2 = cons(:a, line = set(color=:blue, width=2))
+color3 = cons(:a, line = set(color=:green, width=2))
 
 
 #==Input data
@@ -62,30 +62,38 @@ data = EDAData.read_snp(filepath_S, numports=2)
 
 #==Generate plot
 ===============================================================================#
-plot=EasyPlot.new(title="EDAData Tests: sNp (Touchstone) Format")
-srefl = add(plot, dbvsf, title="Reflection Coefficient")
-	add(srefl, dB20(s11), color1, id="s11")
-	add(srefl, dB20(s22), color2, id="s11")
-strans = add(plot, dbvsf, title="Transmission Coefficient")
-	add(strans, dB20(s12), color1, id="s12")
-	add(strans, dB20(s21), color2, id="s21")
+plotrefl = push!(cons(:plot, dbvsf, title="Reflection Coefficients"),
+	cons(:wfrm, dB20(s11), color1, label="s11"),
+	cons(:wfrm, dB20(s22), color2, label="s22"),
+)
+plottrans = push!(cons(:plot, dbvsf, title="Transmission Coefficients"),
+	cons(:wfrm, dB20(s12), color1, label="s12"),
+	cons(:wfrm, dB20(s21), color2, label="s21"),
+)
 
 #Overlay result of reading/writing Z-parameters:
 data = EDAData.read_snp(filepath_Z, numports=2)
 @show s = Symbol(NPType(data))
 (s11, s12, s21, s22) = mx2elem(Network(:S, data))
-	add(srefl, dB20(s11), color1, id="s11 ($(s)P)")
-	add(srefl, dB20(s22), color2, id="s11 ($(s)P)")
-	add(strans, dB20(s12), color1, id="s12 ($(s)P)")
-	add(strans, dB20(s21), color2, id="s21 ($(s)P)")
-plot.ncolumns = 1
+push!(plotrefl,
+	cons(:wfrm, dB20(s11), color1, label="s11 ($(s)P)"),
+	cons(:wfrm, dB20(s22), color2, label="s22 ($(s)P)"),
+)
+push!(plottrans,
+	cons(:wfrm, dB20(s12), color1, label="s12 ($(s)P)"),
+	cons(:wfrm, dB20(s21), color2, label="s21 ($(s)P)"),
+)
+
+pcoll = cons(:plot_collection, title="EDAData Tests: sNp (Touchstone) Format")
+	push!(pcoll, plotrefl, plottrans)
+	pcoll.ncolumns = 1
 
 
 #==Display results as a plot
 ===============================================================================#
-display(pdisp, plot)
+display(pdisp, pcoll)
 
 
-#==Return plot to user (call evalfile(...))
+#==Return pcoll to user (call evalfile(...))
 ===============================================================================#
-plot #Will display a second time if executed from REPL
+pcoll #Will display pcoll a second time if executed from REPL

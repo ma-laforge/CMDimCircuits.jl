@@ -12,7 +12,7 @@ include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
 
 #==Constants
 ===============================================================================#
-vvst = paxes(ylabel="Amplitude (V)", xlabel="Time (s)")
+vvst = cons(:a, labels = set(yaxis="Amplitude (V)", xaxis="Time (s)"))
 
 
 #==Input data
@@ -44,23 +44,33 @@ patRS = DataRS(pat)
 
 #==Generate plot
 ===============================================================================#
-plot=EasyPlot.new(title="Eye Diagram Tests", displaylegend=false)
-s = add(plot, vvst, title="Eye (DataHR)", eyeparam(tbit, teye=1.5*tbit, tstart=-.15*tbit))
-set(s, paxes(xmin=0, xmax=1.5*tbit)) #Force limits on exact data range.
-	add(s, pat, id="eye")
-s = add(plot, vvst, title="Pattern")
-	add(s, pat, id="pat")
-s = add(plot, vvst, title="Eye (DataRS)", eyeparam(tbit, teye=1.5*tbit, tstart=-.15*tbit))
-set(s, paxes(xmin=0, xmax=1.5*tbit)) #Force limits on exact data range.
-	add(s, patRS, id="eye")
-plot.ncolumns = 2
+#TODO: supply eyeparam() as a FoldedAxis or Plot constructor???
+eyeparam(tbit; teye=1.5*tbit, tstart=0) = cons(:a,
+	xfolded = set(tbit, xstart=tstart, xmax=teye),
+	xaxis = set(min=0, max=teye), #Force limits on exact data range.
+)
+eyeaxis = eyeparam(tbit, teye=1.5*tbit, tstart=-.15*tbit)
+
+p1 = push!(cons(:plot, vvst, eyeaxis, title="Eye (DataHR)"),
+	cons(:wfrm, pat, label="eye"),
+)
+p2 = push!(cons(:plot, vvst, title="Pattern"),
+	cons(:wfrm, pat, label="pat"),
+)
+p3 = push!(cons(:plot, vvst, eyeaxis, title="Eye (DataRS)"),
+	cons(:wfrm, patRS, label="eye"),
+)
+
+pcoll = push!(cons(:plotcoll, title="Eye Diagram Tests"), p1, p2, p3)
+	pcoll.displaylegend = false
+	pcoll.ncolumns = 2
 
 
-#==Display results as a plot
+#==Display results in pcoll
 ===============================================================================#
-display(pdisp, plot)
+display(pdisp, pcoll)
 
 
-#==Return plot to user (call evalfile(...))
+#==Return pcoll to user (call evalfile(...))
 ===============================================================================#
-plot
+pcoll #Will display pcoll a second time if executed from REPL

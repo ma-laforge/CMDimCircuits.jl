@@ -12,8 +12,8 @@ include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
 
 #==Constants
 ===============================================================================#
-vvst = paxes(ylabel="Amplitude (V)", xlabel="Time (s)")
-noline = line(style=:none)
+vvst = cons(:a, labels = set(yaxis="Amplitude (V)", xaxis="Time (s)"))
+noline = cons(:a, line = set(style=:none))
 
 
 #==Input data
@@ -39,23 +39,26 @@ overspat = sample(pat, 0:(tbit/osr/4):maximum(t))
 
 #==Generate plot
 ===============================================================================#
-plot=EasyPlot.new(title="Sampling tests")
-s = add(plot, vvst, title="Pattern")
-	add(s, pat, id="pat")
-	add(s, _spat_, id="over range", noline, glyph(shape=:o, color=:red))
-	add(s, spat, id="full sample", noline, glyph(shape=:+, color=:black))
-	add(s, _spat, id="straddle low", noline, glyph(shape=:x, color=:blue))
-	add(s, spat_, id="straddle high", noline, glyph(shape=:x, color=:green))
-s = add(plot, vvst, title="Oversampling")
-	add(s, overspat, noline, glyph(shape=:x, color=:blue))
-plot.ncolumns = 1
+p1 = push!(cons(:plot, vvst, title="Pattern"),
+	cons(:wfrm, pat, label="pat"),
+	cons(:wfrm, _spat_, noline, glyph=set(shape=:o, color=:red), label="over range"),
+	cons(:wfrm, spat, noline, glyph=set(shape=:+, color=:black), label="full sample"),
+	cons(:wfrm, _spat, noline, glyph=set(shape=:x, color=:blue), label="straddle low"),
+	cons(:wfrm, spat_, noline, glyph=set(shape=:x, color=:green), label="straddle high"),
+)
+p2 = push!(cons(:plot, vvst, title="Oversampling"),
+	cons(:wfrm, overspat, noline, glyph=set(shape=:x, color=:blue)),
+)
+
+pcoll = push!(cons(:plotcoll, title="Sampling tests"), p1, p2)
+	pcoll.ncolumns = 1
 
 
-#==Display results as a plot
+#==Display results in pcoll
 ===============================================================================#
-display(pdisp, plot)
+display(pdisp, pcoll)
 
 
-#==Return plot to user (call evalfile(...))
+#==Return pcoll to user (call evalfile(...))
 ===============================================================================#
-plot
+pcoll #Will display pcoll a second time if executed from REPL

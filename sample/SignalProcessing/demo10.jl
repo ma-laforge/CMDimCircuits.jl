@@ -12,11 +12,11 @@ include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
 
 #==Constants
 ===============================================================================#
-vvst = paxes(ylabel="Amplitude (V)", xlabel="Time (s)")
-dpsvst = paxes(ylabel="Delay (ps)", xlabel="Time (s)")
-dpsvsx = paxes(ylabel="Delay (ps)", xlabel="Crossing")
-ldelay = line(width=3, style=:solid)
-gdelay = glyph(shape=:x, size=2)
+vvst = cons(:a, labels = set(yaxis="Amplitude (V)", xaxis="Time (s)"))
+dpsvst = cons(:a, labels = set(yaxis="Delay (ps)", xaxis="Time (s)"))
+dpsvsx = cons(:a, labels = set(yaxis="Delay (ps)", xaxis="Crossing"))
+ldelay = cons(:a, line = set(width=3, style=:solid))
+gdelay = cons(:a, glyph = set(shape=:x, size=2))
 
 
 #==Input data
@@ -52,23 +52,26 @@ refpat = pat.elem[1]
 
 #==Generate plot
 ===============================================================================#
-plot=EasyPlot.new(title="Signal Delay Tests", displaylegend=true)
-s = add(plot, vvst, title="Patterns")
-	wfrm = add(s, refpat, id="Ref")
-		set(wfrm, line(width=5, color=:black))
-	add(s, pat, id="pat")
-s = add(plot, dpsvst, title="Delays")
-	add(s, Δ/1e-12, id="D", ldelay, gdelay)
-s = add(plot, dpsvsx, title="Delays vs Crossing Number")
-	add(s, Δxn/1e-12, id="D", ldelay, gdelay)
-plot.ncolumns = 1
+p1 = push!(cons(:plot, vvst, title="Patterns"),
+	cons(:wfrm, refpat, line=set(width=5, color=:black), label="Ref"),
+	cons(:wfrm, pat, label="pat"),
+)
+p2 = push!(cons(:plot, dpsvst, title="Delays"),
+	cons(:wfrm, Δ/1e-12, ldelay, gdelay, label="D"),
+)
+p3 = push!(cons(:plot, dpsvsx, title="Delays vs Crossing Number"),
+	cons(:wfrm, Δxn/1e-12, ldelay, gdelay, label="D"),
+)
+
+pcoll = push!(cons(:plotcoll, title="Signal Delay Tests"), p1, p2, p3)
+	pcoll.ncolumns = 1
 
 
-#==Display results as a plot
+#==Display results in pcoll
 ===============================================================================#
-display(pdisp, plot)
+display(pdisp, pcoll)
 
 
-#==Return plot to user (call evalfile(...))
+#==Return pcoll to user (call evalfile(...))
 ===============================================================================#
-plot
+pcoll #Will display pcoll a second time if executed from REPL

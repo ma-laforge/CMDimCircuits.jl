@@ -1,6 +1,10 @@
 #Run sample code
 #-------------------------------------------------------------------------------
 
+module CMDimCircuits_Sample
+
+#==Helper functions
+===============================================================================#
 function printheader(title)
 	println("\n", title, "\n", repeat("-", 80))
 end
@@ -11,7 +15,9 @@ filelist = ["demo_cktanalysis.jl",
 
 for file in filelist
 	printheader("Executing $file...")
-	result = evalfile(file)
+	evalfile(file)
+end
+
 end
 
 :SampleCode_Executed

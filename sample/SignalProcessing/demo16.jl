@@ -12,14 +12,14 @@ include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
 
 #==Constants
 ===============================================================================#
-vvst = paxes(ylabel="Amplitude (V)", xlabel="Time (s)")
-Tnsvst = paxes(ylabel="Period (ns)", xlabel="Time (s)")
-dutyvst = paxes(ylabel="Duty Cycle (%)", xlabel="Time (s)")
-dutyoutvsmaxphi = paxes(ylabel="Duty Cycle (%)", xlabel="Maximum Phase Shift")
-dpsvst = paxes(ylabel="Delay (ps)", xlabel="Time (s)")
-dpsvsx = paxes(ylabel="Delay (ps)", xlabel="Crossing")
-ldelay = line(style=:solid, width=3)
-gdelay = glyph(shape=:x, size=2)
+vvst = cons(:a, labels = set(yaxis="Amplitude (V)", xaxis="Time (s)"))
+Tnsvst = cons(:a, labels = set(yaxis="Period (ns)", xaxis="Time (s)"))
+dutyvst = cons(:a, labels = set(yaxis="Duty Cycle (%)", xaxis="Time (s)"))
+dutyoutvsmaxphi = cons(:a, labels = set(yaxis="Duty Cycle (%)", xaxis="Maximum Phase Shift"))
+delayattr = cons(:a,
+	line = set(style=:solid, width=3),
+	glyph = set(shape=:x, size=2),
+)
 
 
 #==Input data
@@ -73,29 +73,44 @@ end
 println("\n", "maximum duty-cycle phase shift: ", ϕmax)
 
 
+#==Helper functions
+===============================================================================#
+#TODO: supply eyeparam() as a FoldedAxis or Plot constructor???
+eyeparam(tbit; teye=1.5*tbit, tstart=0) = cons(:a,
+	xfolded = set(tbit, xstart=tstart, xmax=teye),
+	xaxis = set(min=0, max=teye), #Force limits on exact data range.
+)
+
+
 #==Generate plot
 ===============================================================================#
-plot=EasyPlot.new(title="Clock Stats Tests", displaylegend=true)
-s = add(plot, vvst, title="Clock")
-	add(s, ck)
-s = add(plot, Tnsvst, title="Period (cycle-to-cycle)")
-	add(s, Tc2c/1e-9, id="")
-s = add(plot, vvst, title="Clock Eye", eyeparam(tck, teye=1*tck))
-	add(s, ck, id="")
-s = add(plot, dutyvst, title="Duty")
-	add(s, duty*100, id="")
-s = add(plot, dutyoutvsmaxphi, title="Duty cycle")
-	add(s, stats[:mean_duty]*100, id="mean", ldelay, gdelay)
-	add(s, stats[:min_duty]*100, id="min", ldelay, gdelay)
-	add(s, stats[:max_duty]*100, id="max", ldelay, gdelay)
-plot.ncolumns = 2
+p1 = push!(cons(:plot, vvst, title="Clock"),
+	cons(:wfrm, ck),
+)
+p2 = push!(cons(:plot, Tnsvst, title="Period (cycle-to-cycle)"),
+	cons(:wfrm, Tc2c/1e-9),
+)
+p3 = push!(cons(:plot, eyeparam(tck, teye=1*tck), vvst, title="Clock Eye"),
+	cons(:wfrm, ck),
+)
+p4 = push!(cons(:plot, dutyvst, title="Duty"),
+	cons(:wfrm, duty*100),
+)
+p5 = push!(cons(:plot, dutyoutvsmaxphi, title="Duty"),
+	cons(:wfrm, stats[:mean_duty]*100, delayattr, label="mean"),
+	cons(:wfrm, stats[:min_duty]*100, delayattr, label="min"),
+	cons(:wfrm, stats[:max_duty]*100, delayattr, label="max"),
+)
+
+pcoll = push!(cons(:plotcoll, title="Clock Stats Tests"), p1, p2, p3, p4, p5)
+	pcoll.ncolumns = 2
 
 
-#==Display results as a plot
+#==Display results in pcoll
 ===============================================================================#
-display(pdisp, plot)
+display(pdisp, pcoll)
 
 
-#==Return plot to user (call evalfile(...))
+#==Return pcoll to user (call evalfile(...))
 ===============================================================================#
-plot
+pcoll #Will display pcoll a second time if executed from REPL

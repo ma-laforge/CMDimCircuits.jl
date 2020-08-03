@@ -12,9 +12,10 @@ include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
 
 #==Constants
 ===============================================================================#
-vvst = paxes(ylabel="Amplitude (V)", xlabel="Time (s)")
-color1 = line(color=:red)
-color2 = line(color=:blue)
+vvst = cons(:a, labels = set(yaxis="Amplitude (V)", xaxis="Time (s)"))
+color1 = cons(:a, line = set(color=:red))
+color2 = cons(:a, line = set(color=:blue))
+
 
 #==Input data
 ===============================================================================#
@@ -41,16 +42,21 @@ u = step(tCT, Pole(3/pulsewidth,:rad), tdel=tmax/4)
 
 #==Generate plot
 ===============================================================================#
-plot=EasyPlot.new(title="Generating Simple Responses")
-s = add(plot, vvst, title="Step Response")
-	add(s, DataF1(uideal), color1, id="DT")
-	add(s, u, color2, id="CT")
-s = add(plot, vvst, title="Pulse Response")
-	add(s, DataF1(Πideal), color1, id="DT")
-	add(s, Π, color2, id="CT")
-s = add(plot, vvst, title="Sine wave")
-	add(s, sin(tCT*(pi*10/tmax)), color2)
-plot.ncolumns = 1
+p1 = push!(cons(:plot, vvst, title="Step Response"),
+	cons(:wfrm, DataF1(uideal), color1, label="DT"),
+	cons(:wfrm, u, color2, label="CT"),
+)
+p2 = push!(cons(:plot, vvst, title="Pulse Response"),
+	cons(:wfrm, DataF1(Πideal), color1, label="DT"),
+	cons(:wfrm, Π, color2, label="CT"),
+)
+p3 = push!(cons(:plot, vvst, title="Sine wave"),
+	cons(:wfrm, sin(tCT*(pi*10/tmax)), color2),
+)
+
+pcoll = push!(cons(:plotcoll, title="Generating Simple Responses"), p1, p2, p3)
+	pcoll.ncolumns = 1
+
 
 #==Show results
 ===============================================================================#
@@ -65,11 +71,11 @@ prad=Pole(1,:rad)
 @show f(phz), f(prad)
 
 
-#==Display results as a plot
+#==Display results in pcoll
 ===============================================================================#
-display(pdisp, plot)
+display(pdisp, pcoll)
 
 
-#==Return plot to user (call evalfile(...))
+#==Return pcoll to user (call evalfile(...))
 ===============================================================================#
-plot
+pcoll #Will display pcoll a second time if executed from REPL

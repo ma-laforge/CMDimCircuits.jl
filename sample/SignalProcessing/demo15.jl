@@ -12,11 +12,12 @@ include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
 
 #==Constants
 ===============================================================================#
-vvst = paxes(ylabel="Amplitude (V)", xlabel="Time (s)")
-dpsvst = paxes(ylabel="Delay wrt Ref (ps)", xlabel="Inserted Delay (s)")
-dpsvsx = paxes(ylabel="Delay wrt Ref (ps)", xlabel="Crossing")
-ldelay = line(style=:solid, width=3)
-gdelay = glyph(shape=:x, size=2)
+vvst = cons(:a, labels = set(yaxis="Amplitude (V)", xaxis="Time (s)"))
+dnsvst = cons(:a, labels = set(yaxis="Delay wrt Ref (ns)", xaxis="Inserted Delay (s)"))
+delayattr = cons(:a,
+	line = set(style=:solid, width=3),
+	glyph = set(shape=:x, size=2),
+)
 
 
 #==Input data
@@ -76,33 +77,45 @@ del = parameter(pat, "del")
 println("\n", "fall delay/1p: ", del/1e-12)
 
 
+#==Helper functions
+===============================================================================#
+#TODO: supply eyeparam() as a FoldedAxis or Plot constructor???
+eyeparam(tbit; teye=1.5*tbit, tstart=0) = cons(:a,
+	xfolded = set(tbit, xstart=tstart, xmax=teye),
+	xaxis = set(min=0, max=teye), #Force limits on exact data range.
+)
+
+
 #==Generate plot
 ===============================================================================#
-plot=EasyPlot.new(title="Signal Skew Tests", displaylegend=true)
-s = add(plot, vvst, title="Patterns", paxes(xmax=tmax))
-	wfrm = add(s, patref+2, id="ref+2")
-		set(wfrm, line(width=1, color=:black))
-#	add(s, Π)
-	add(s, pat, id="pat")
-s = add(plot, dpsvst, title="Rise Delays")
-	add(s, skew[:mean_delrise]/1e-12, id="mean", ldelay, gdelay)
-	add(s, skew[:min_delrise]/1e-12, id="min", ldelay, gdelay)
-	add(s, skew[:max_delrise]/1e-12, id="max", ldelay, gdelay)
-s = add(plot, vvst, title="Eye", eyeparam(tbit, teye=1.5*tbit, tstart=4.5*tbit))
-	set(s, paxes(xmin=0, xmax=1.5*tbit)) #Force limits on exact data range.
-	add(s, pat, id="p")
-s = add(plot, dpsvst, title="Fall Delays")
-	add(s, skew[:mean_delfall]/1e-12, id="mean", ldelay, gdelay)
-	add(s, skew[:min_delfall]/1e-12, id="min", ldelay, gdelay)
-	add(s, skew[:max_delfall]/1e-12, id="max", ldelay, gdelay)
-plot.ncolumns = 2
+p1 = push!(cons(:plot, xyaxes=set(xmax=tmax), vvst, title="Patterns"),
+	cons(:wfrm, patref+2, line=set(width=1, color=:black), label="ref+2"),
+#	cons(:wfrm, Π),
+	cons(:wfrm, pat, label="pat"),
+)
+p2 = push!(cons(:plot, dnsvst, title="Rise Delays"),
+	cons(:wfrm, skew[:mean_delrise]/1e-9, delayattr, label="mean"),
+	cons(:wfrm, skew[:min_delrise]/1e-9, delayattr, label="min"),
+	cons(:wfrm, skew[:max_delrise]/1e-9, delayattr, label="max"),
+)
+p3 = push!(cons(:plot, vvst, eyeparam(tbit, teye=1.5*tbit, tstart=4.5*tbit), title="Eye"),
+	cons(:wfrm, pat, label=""), #No label to see params
+)
+p4 = push!(cons(:plot, dnsvst, title="Fall Delays"),
+	cons(:wfrm, skew[:mean_delfall]/1e-9, delayattr, label="mean"),
+	cons(:wfrm, skew[:min_delfall]/1e-9, delayattr, label="min"),
+	cons(:wfrm, skew[:max_delfall]/1e-9, delayattr, label="max"),
+)
+
+pcoll = push!(cons(:plotcoll, title="Signal Skew Tests"), p1, p2, p3, p4)
+	pcoll.ncolumns = 2
 
 
-#==Display results as a plot
+#==Display results in pcoll
 ===============================================================================#
-display(pdisp, plot)
+display(pdisp, pcoll)
 
 
-#==Return plot to user (call evalfile(...))
+#==Return pcoll to user (call evalfile(...))
 ===============================================================================#
-plot
+pcoll #Will display pcoll a second time if executed from REPL

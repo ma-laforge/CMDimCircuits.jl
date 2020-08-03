@@ -12,8 +12,8 @@ include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
 
 #==Constants
 ===============================================================================#
-vvst = paxes(ylabel="Amplitude (V)", xlabel="Time (s)")
-vvsf = paxes(ylabel="Amplitude (V)", xlabel="Frequency (Hz)")
+vvst = cons(:a, labels = set(yaxis="Amplitude (V)", xaxis="Time (s)"))
+magvsf = cons(:a, labels = set(yaxis="|X(f)|²", xaxis="Frequency (Hz)"))
 
 
 #==Input data
@@ -32,20 +32,23 @@ sigSpec = abs2(fcoeff(Fsig)) #Periodic
 
 #==Generate plot
 ===============================================================================#
-plot=EasyPlot.new(title="Fourier Transform Tests")
-s = add(plot, vvst, title="Time domain")
-	#add(s, DataF1(sig), id="", glyph(shape=:o))
-	add(s, DataF1(sig), id="")
-s = add(plot, vvsf, title="")
-	add(s, sigSpec, id="", glyph(shape=:o, size=1.5), line(style=:none, color=:red, width=2))
-plot.ncolumns = 1
+plot_t = push!(cons(:plot, vvst, title="Time domain"),
+#	cons(:wfrm, DataF1(sig), glyph=set(shape=:o)),
+	cons(:wfrm, DataF1(sig)),
+)
+plot_f = push!(cons(:plot, magvsf, title="Frequency domain"),
+	cons(:wfrm, sigSpec, glyph=set(shape=:o, size=1.5), line=set(style=:none, color=:red, width=2)),
+)
+
+pcoll = push!(cons(:plotcoll, title="Fourier Transform Tests"), plot_t, plot_f)
+	pcoll.ncolumns = 1
 
 
-#==Display results as a plot
+#==Display results in pcoll
 ===============================================================================#
-display(pdisp, plot)
+display(pdisp, pcoll)
 
 
-#==Return plot to user (call evalfile(...))
+#==Return pcoll to user (call evalfile(...))
 ===============================================================================#
-plot
+pcoll #Will display pcoll a second time if executed from REPL

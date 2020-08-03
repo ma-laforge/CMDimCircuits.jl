@@ -12,7 +12,11 @@ include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
 
 #==Constants
 ===============================================================================#
-a_yvsx = paxes(ylabel="Y", xlabel="X")
+a_yvsx = cons(:a, labels = set(yaxis="Y", xaxis="X"))
+dfltwfrmattr = cons(:a,
+	line = set(style=:none, width=2),
+	glyph = set(shape=:o),
+)
 
 
 #==Input data
@@ -26,7 +30,7 @@ b = 2
 c = 1
 
 #Axis ranges based on input data:
-axrange = paxes(xmin=-pext, xmax=pext, ymin=-pext, ymax=pext)
+axrange = cons(:a, xyaxes=set(xmin=-pext, xmax=pext, ymin=-pext, ymax=pext))
 
 
 #==Computations
@@ -66,23 +70,26 @@ end
 
 #==Generate plot
 ===============================================================================#
-plot=EasyPlot.new(title="Sliced Paraboloid", displaylegend=false)
-s = add(plot, a_yvsx, axrange, title="Slice with planes z=3 & z=60")
-	add(s, slice_z3, id="z=3", line(style=:none, width=2), glyph(shape=:o))
-	add(s, slice_z60, id="z=60", line(style=:none, width=2), glyph(shape=:o))
-s = add(plot, a_yvsx, axrange, title="Slice with planes 1 & 2")
-	add(s, slice_p1, id="plane 1", line(style=:none, width=2), glyph(shape=:o))
-	add(s, slice_p2, id="plane 1", line(style=:none, width=2), glyph(shape=:o))
-#Change color scheme:
-plot.theme.colorscheme = EasyPlot.ColorScheme(EasyPlot.colormap("Blues", 12))
-plot.ncolumns = 1
+p1 = push!(cons(:plot, a_yvsx, axrange, title="Slice with planes z=3 & z=60"),
+	cons(:wfrm, slice_z3, dfltwfrmattr, label="z=3"),
+	cons(:wfrm, slice_z60, dfltwfrmattr, label="z=60"),
+)
+p2 = push!(cons(:plot, a_yvsx, axrange, title="Slice with planes 1 & 2"),
+	cons(:wfrm, slice_p1, dfltwfrmattr, label="plane 1"),
+	cons(:wfrm, slice_p2, dfltwfrmattr, label="plane 1"),
+)
+
+pcoll = push!(cons(:plotcoll, title="Sliced Paraboloid"), p1, p2)
+	pcoll.theme.colorscheme = EasyPlot.ColorScheme(EasyPlot.colormap("Blues", 12))
+	pcoll.displaylegend = false
+	pcoll.ncolumns = 1
 
 
-#==Display results as a plot
+#==Display results in pcoll
 ===============================================================================#
-display(pdisp, plot)
+display(pdisp, pcoll)
 
 
-#==Return plot to user (call evalfile(...))
+#==Return pcoll to user (call evalfile(...))
 ===============================================================================#
-plot
+pcoll #Will display pcoll a second time if executed from REPL

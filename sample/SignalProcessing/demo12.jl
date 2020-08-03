@@ -12,9 +12,8 @@ include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
 
 #==Constants
 ===============================================================================#
-vch_vs_t = paxes(ylabel="Scaled Amp (V) @ Channel #", xlabel="Time (s)")
-vch_vs_ui = paxes(ylabel="Scaled Amp (V) @ Channel #", xlabel="Symbol Time (UI)")
-eyech_v_ui = paxes(ylabel="Scaled Amp (V) @ Channel #", xlabel="Symbol Time (UI)")
+vch_vs_t = cons(:a, labels = set(yaxis="Centered @ ch#", xaxis="Time (s)"))
+vch_vs_ui = cons(:a, labels = set(yaxis="Centered @ ch#", xaxis="Symbol Time (UI)"))
 
 
 #==Input data
@@ -89,30 +88,43 @@ for i in 1:nchannels
 end
 
 
+#==Helper functions
+===============================================================================#
+#Scale/shift data to center by channel number:
+_scaleshift(data, chnum) = (chnum-1)+(data-0.5)*.8
+
+#TODO: supply eyeparam() as a FoldedAxis or Plot constructor???
+eyeparam(tbit; teye=1.5*tbit, tstart=0) = cons(:a,
+	xfolded = set(tbit, xstart=tstart, xmax=teye),
+	xaxis = set(min=0, max=teye), #Force limits on exact data range.
+)
+
+
 #==Generate plot
 ===============================================================================#
-plot=EasyPlot.new(title="Normalized Eye Diagrams", displaylegend=false)
-s = add(plot, vch_vs_ui, title="Initial Undefined Pattern")
+p1 = cons(:plot, vch_vs_ui, title="Initial Undefined Pattern")
 for i in 1:nchannels
-	add(s, (i-1)+(undefdata[i]-0.5)*.8, id="pat[$i]") #Re-center around channel number
+	push!(p1, cons(:wfrm, _scaleshift(undefdata[i], i), label="pat[$i]"))
 end
-s = add(plot, eyech_v_ui, title="Eye", eyeparam(1, teye=1.5))
-set(s, paxes(xmin=0, xmax=1.5)) #Force limits on exact data range.
+p2 = cons(:plot, vch_vs_ui, eyeparam(1.0, teye=1.5), title="Eye")
 for i in 1:nchannels
-	add(s, (i-1)+(eyepat[i]-0.5)*.8, id="pat[$i]") #Re-center around channel number
+	push!(p2, cons(:wfrm, _scaleshift(eyepat[i], i), label="pat[$i]"))
 end
-s = add(plot, vch_vs_t, title="Pattern")
+p3 = cons(:plot, vch_vs_t, title="Pattern")
 for i in 1:nchannels
-	add(s, (i-1)+(pat[i]-.5)*.8, id="pat[$i]") #Re-center around channel number
+	push!(p3, cons(:wfrm, _scaleshift(pat[i], i), label="pat[$i]"))
 end
-plot.ncolumns = 2
+
+pcoll = push!(cons(:plotcoll, title="Normalized Eye Diagrams (shifted around channel #)"), p1, p2, p3)
+	pcoll.displaylegend = false
+	pcoll.ncolumns = 2
 
 
-#==Display results as a plot
+#==Display results in pcoll
 ===============================================================================#
-display(pdisp, plot)
+display(pdisp, pcoll)
 
 
-#==Return plot to user (call evalfile(...))
+#==Return pcoll to user (call evalfile(...))
 ===============================================================================#
-plot
+pcoll #Will display pcoll a second time if executed from REPL

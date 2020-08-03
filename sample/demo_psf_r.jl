@@ -23,11 +23,10 @@ include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
 
 #==Constants
 ===============================================================================#
-vvst = paxes(ylabel="Amplitude (V)", xlabel="Time (s)")
-ratvst = paxes(ylabel="Ratio (%)", xlabel="Time (s)")
-color1 = line(color=:red)
-color2 = line(color=:blue)
-color3 = line(color=:green)
+vvst = cons(:a, labels = set(yaxis="Amplitude (V)", xaxis="Time (s)"))
+color1 = cons(:a, line = set(color=:red))
+color2 = cons(:a, line = set(color=:blue))
+color3 = cons(:a, line = set(color=:green))
 
 
 #==Input data
@@ -48,19 +47,22 @@ end
 
 #==Generate plot
 ===============================================================================#
-plot=EasyPlot.new(title="EDAData Tests: psf Format")
-s = add(plot, vvst, title="VCO")
-	add(s, inp, color1, id="Vinp")
-	add(s, outp0, color2, id="Voutp<0>")
-	add(s, outp1, color3, id="Voutp<1>")
-plot.ncolumns = 1
+plot1 = push!(cons(:plot, vvst, title="VCO"),
+	cons(:wfrm, inp, color1, label="Vinp"),
+	cons(:wfrm, outp0, color2, label="Voutp<0>"),
+	cons(:wfrm, outp1, color3, label="Voutp<1>"),
+)
+
+pcoll = push!(cons(:plot_collection, title="EDAData Tests: psf Format"), plot1)
+	pcoll.ncolumns = 1
+
 
 
 #==Display results as a plot
 ===============================================================================#
-display(pdisp, plot)
+display(pdisp, pcoll)
 
 
-#==Return plot to user (call evalfile(...))
+#==Return pcoll to user (call evalfile(...))
 ===============================================================================#
-plot #Will display a second time if executed from REPL
+pcoll #Will display pcoll a second time if executed from REPL

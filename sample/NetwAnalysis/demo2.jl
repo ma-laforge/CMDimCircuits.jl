@@ -12,11 +12,12 @@ include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
 
 #==Constants
 ===============================================================================#
-dbvsf = paxes(ylabel="Amplitude (dB)", xlabel="Frequency (Hz)")
-axes_loglin = paxes(xscale = :log, yscale = :lin)
-color1 = line(color=:red, width=2)
-color2 = line(color=:blue, width=2)
-color3 = line(color=:green, width=2)
+dbvsf = cons(:a, labels = set(yaxis="Amplitude (dB)", xaxis="Frequency (Hz)"))
+axes_loglin = cons(:a, xyaxes = set(xscale = :log, yscale = :lin))
+color1 = cons(:a, line = set(color=:red, width=2))
+color2 = cons(:a, line = set(color=:blue, width=2))
+color3 = cons(:a, line = set(color=:green, width=2))
+
 
 #==Input data
 ===============================================================================#
@@ -25,7 +26,7 @@ C = capacitance(2e-12)
 R = 20.0
 #f = (1:10)*1e9
 f = _logspace(log10(1e3), log10(20e9), 100)
-xrange = paxes(xmin=1e6, xmax=100e9)
+xrange = cons(:a, xyaxes = set(xmin=1e6, xmax=100e9))
 
 
 #==Computations
@@ -60,14 +61,16 @@ nplist = [:Y, :Z, :ABCD, :H, :G, :T]
 
 #==Generate plot
 ===============================================================================#
-plot=EasyPlot.new(title="Pi Network Cascade")
-s_s11 = add(plot, axes_loglin, xrange, dbvsf, title="Reflection Coefficient, S11")
-	add(s_s11, dB20(s11), color1, id="s11")
-s_s22 = add(plot, axes_loglin, xrange, dbvsf, title="Reflection Coefficient, S22")
-	add(s_s22, dB20(s22), color1, id="s22")
-strans = add(plot, axes_loglin, xrange, dbvsf, title="Transmission Coefficient")
-	add(strans, dB20(s12), color1, id="s12")
-	add(strans, dB20(s21), color2, id="s21")
+p_s11 = push!(cons(:plot, axes_loglin, xrange, dbvsf, title="Reflection Coefficient, S11"),
+	cons(:wfrm, dB20(s11), color1, label="s11"),
+)
+p_s22 = push!(cons(:plot, axes_loglin, xrange, dbvsf, title="Reflection Coefficient, S22"),
+	cons(:wfrm, dB20(s22), color1, label="s22"),
+)
+p𝛵 = push!(cons(:plot, axes_loglin, xrange, dbvsf, title="Transmission Coefficients"),
+	cons(:wfrm, dB20(s12), color1, label="s12"),
+	cons(:wfrm, dB20(s21), color2, label="s21"),
+)
 
 Sref = S
 
@@ -76,20 +79,22 @@ for np in nplist
 	X = Network(np, Sref)
 	S = Network(:S, X)
 	(s11, s12, s21, s22) = mx2elem(S)
-	add(s_s11, dB20(s11), color1, id="s11 ($np)")
-	add(s_s22, dB20(s22), color1, id="s11 ($np)")
-	add(strans, dB20(s12), color1, id="s12 ($np)")
-	add(strans, dB20(s21), color2, id="s21 ($np)")
+	push!(p_s11, cons(:wfrm, dB20(s11), color1, label="s11 ($np)"))
+	push!(p_s22, cons(:wfrm, dB20(s22), color1, label="s22 ($np)"))
+	push!(p𝛵, cons(:wfrm, dB20(s12), color1, label="s12 ($np)"))
+	push!(p𝛵, cons(:wfrm, dB20(s21), color2, label="s21 ($np)"))
 end
 end
-plot.ncolumns = 1
+
+pcoll = push!(cons(:plotcoll, title="Pi Network Cascade + Param Conversion"), p_s11, p_s22, p𝛵)
+	pcoll.ncolumns = 1
 
 
-#==Display results as a plot
+#==Display results in pcoll
 ===============================================================================#
-display(pdisp, plot)
+display(pdisp, pcoll)
 
 
-#==Return plot to user (call evalfile(...))
+#==Return pcoll to user (call evalfile(...))
 ===============================================================================#
-plot
+pcoll #Will display pcoll a second time if executed from REPL

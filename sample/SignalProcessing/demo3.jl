@@ -12,9 +12,11 @@ include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
 
 #==Constants
 ===============================================================================#
-vvst = paxes(ylabel="Amplitude (V)", xlabel="Time (s)")
-dfltglyph = glyph(shape=:o)
-dfltline = line(style=:solid)
+vvst = cons(:a, labels = set(yaxis="Amplitude (V)", xaxis="Time (s)"))
+dfltwattr = cons(:a,
+	line = set(style=:solid),
+	glyph = set(shape=:o),
+)
 
 
 #==Input data
@@ -30,35 +32,39 @@ d11 = xshift(d1, -2)
 
 #==Generate plot
 ===============================================================================#
-plot=EasyPlot.new(title="Simple MDDatasets")
-s = add(plot, vvst, title="Adding arbitrary datasets")
-	add(s, d1, dfltline, dfltglyph, id = "d1")
-	add(s, d2, dfltline, dfltglyph, id = "d2")
-	add(s, d3, dfltline, dfltglyph, id = "d3")
-	add(s, d4, dfltline, dfltglyph, id = "d4")
-	add(s, d1+d2, dfltline, dfltglyph, id = "d1+d2")
-	add(s, d1+d3, dfltline, dfltglyph, id = "d1+d3")
-	add(s, (d2+1)+d1, dfltline, dfltglyph, id = "(d2+1)+d1")
-	add(s, max(d1,d4), dfltline, dfltglyph, id = "max(d1,d4)")
-s = add(plot, vvst, title="Shifting datasets")
-	add(s, d1, dfltline, dfltglyph, id = "d1")
-	add(s, d10, dfltline, dfltglyph, id = "xshift(d1, 4)")
-	add(s, d11, dfltline, dfltglyph, id = "xshift(d1, -2)")
-s = add(plot, vvst, title="Clipping datasets")
-	add(s, d1, dfltline, dfltglyph, id = "d1")
-	add(s, d2, dfltline, dfltglyph, id = "d2")
-	add(s, d3, dfltline, dfltglyph, id = "d3")
-	add(s, clip(d1, 2.5:8.25), dfltline, dfltglyph, id = "clip(d1, 2.5:8.25)")
-	add(s, clip(d2, xmax=10), dfltline, dfltglyph, id = "clip(d2, xmax=10)")
-	add(s, clip(d3, xmin=5), dfltline, dfltglyph, id = "clip(d3, xmin=5)")
-plot.ncolumns = 1
+p1 = push!(cons(:plot, vvst, title="Adding arbitrary datasets"),
+	cons(:wfrm, d1, dfltwattr, label="d1"),
+	cons(:wfrm, d2, dfltwattr, label="d2"),
+	cons(:wfrm, d3, dfltwattr, label="d3"),
+	cons(:wfrm, d4, dfltwattr, label="d4"),
+	cons(:wfrm, d1+d2, dfltwattr, label="d1+d2"),
+	cons(:wfrm, d1+d3, dfltwattr, label="d1+d3"),
+	cons(:wfrm, (d2+1)+d1, dfltwattr, label="(d2+1)+d1"),
+	cons(:wfrm, max(d1,d4), dfltwattr, label="max(d1,d4)"),
+)
+p2 = push!(cons(:plot, vvst, title="Shifting datasets"),
+	cons(:wfrm, d1, dfltwattr, label="d1"),
+	cons(:wfrm, d10, dfltwattr, label="xshift(d1, 4)"),
+	cons(:wfrm, d11, dfltwattr, label="xshift(d1, -2)"),
+)
+p3 = push!(cons(:plot, vvst, title="Clipping datasets"),
+	cons(:wfrm, d1, dfltwattr, label="d1"),
+	cons(:wfrm, d2, dfltwattr, label="d2"),
+	cons(:wfrm, d3, dfltwattr, label="d3"),
+	cons(:wfrm, clip(d1, 2.5:8.25), dfltwattr, label="clip(d1, 2.5:8.25)"),
+	cons(:wfrm, clip(d2, xmax=10), dfltwattr, label="clip(d2, xmax=10)"),
+	cons(:wfrm, clip(d3, xmin=5), dfltwattr, label="clip(d3, xmin=5)"),
+)
+
+pcoll = push!(cons(:plotcoll, title="Simple MDDatasets"), p1, p2, p3)
+	pcoll.ncolumns = 1
 
 
-#==Display results as a plot
+#==Display results in pcoll
 ===============================================================================#
-display(pdisp, plot)
+display(pdisp, pcoll)
 
 
-#==Return plot to user (call evalfile(...))
+#==Return pcoll to user (call evalfile(...))
 ===============================================================================#
-plot
+pcoll #Will display pcoll a second time if executed from REPL

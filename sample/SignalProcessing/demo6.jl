@@ -12,10 +12,8 @@ include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
 
 #==Constants
 ===============================================================================#
-vvst = paxes(ylabel="Amplitude (V)", xlabel="Time (s)")
-vvsf = paxes(ylabel="Amplitude (V)", xlabel="Frequency (Hz)")
-dbvsf = paxes(ylabel="Amplitude (dB)", xlabel="Frequency (Hz)")
-fvspad = paxes(ylabel="Frequency (Hz)", xlabel="padding")
+vvst = cons(:a, labels = set(yaxis="Amplitude (V)", xaxis="Time (s)"))
+dbvsf = cons(:a, labels = set(yaxis="Amplitude (dB)", xaxis="Frequency (Hz)"))
 
 
 #==Input data
@@ -63,19 +61,22 @@ end
 
 #==Generate plot
 ===============================================================================#
-plot=EasyPlot.new(title="Fourier Transform vs Padding")
-s = add(plot, vvst, title="Time Domain")
-	add(s, DataF1(collect(tvec), sigvec), id="")
-s = add(plot, dbvsf, title="Sampled Frequency Spectrum")
-	add(s, dB20(sigSpec), id="")
-plot.ncolumns = 1
+plot_t = push!(cons(:plot, vvst, title="Time Domain"),
+	cons(:wfrm, DataF1(collect(tvec), sigvec)),
+)
+plot_f = push!(cons(:plot, dbvsf, title="Sampled Frequency Spectrum"),
+	cons(:wfrm, dB20(sigSpec)),
+)
+
+pcoll = push!(cons(:plotcoll, title="Fourier Transform vs Padding"), plot_t, plot_f)
+	pcoll.ncolumns = 1
 
 
-#==Display results as a plot
+#==Display results in pcoll
 ===============================================================================#
-display(pdisp, plot)
+display(pdisp, pcoll)
 
 
-#==Return plot to user (call evalfile(...))
+#==Return pcoll to user (call evalfile(...))
 ===============================================================================#
-plot
+pcoll #Will display pcoll a second time if executed from REPL
