@@ -39,13 +39,12 @@ More specifically, the goal is to provide an analysis framework leading to minim
 
 ## Table of Contents
 
+ 1. [`CMDimCircuits.EDAData`: Accessing EDA data files](doc/EDAData.md)
+ 1. [`CMDimCircuits.CircuitAnalysis`: Circuit Analysis Tools](doc/CircuitAnalysis.md)
+ 1. [`CMDimCircuits.NetwAnalysis`: Network Analysis Tools](doc/NetwAnalysis.md)
+ 1. [`CMDimCircuits.SignalProcessing`: {T&hArr;F}-Domain Analysis Tools](doc/SignalProcessing.md)
  1. [Installation](#Installation)
  1. [Sample Usage](#SampleUsage)
- 1. Provided tools
-    1. [`CMDimCircuits.EDAData`: Accessing EDA files](doc/EDAData.md)
-    1. [`CMDimCircuits.CircuitAnalysis`: Circuit Analysis Tools](doc/CircuitAnalysis.md)
-    1. [`CMDimCircuits.NetwAnalysis`: Network Analysis Tools](doc/NetwAnalysis.md)
-    1. [`CMDimCircuits.SignalProcessing`: {T&hArr;F}-Domain Analysis Tools](doc/SignalProcessing.md)
 
 <a name="Installation"></a>
 ## Installation
