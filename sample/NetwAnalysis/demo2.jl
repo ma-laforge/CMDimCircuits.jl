@@ -12,11 +12,10 @@ include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
 
 #==Constants
 ===============================================================================#
-dbvsf = cons(:a, labels = set(yaxis="Amplitude (dB)", xaxis="Frequency (Hz)"))
-axes_loglin = cons(:a, xyaxes = set(xscale = :log, yscale = :lin))
+LBLAX_MAGDB = "Magnitude (dB)"
+LBLAX_FREQ = "Frequency (Hz)"
 color1 = cons(:a, line = set(color=:red, width=2))
 color2 = cons(:a, line = set(color=:blue, width=2))
-color3 = cons(:a, line = set(color=:green, width=2))
 
 
 #==Input data
@@ -61,15 +60,19 @@ nplist = [:Y, :Z, :ABCD, :H, :G, :T]
 
 #==Generate plot
 ===============================================================================#
-p_s11 = push!(cons(:plot, axes_loglin, xrange, dbvsf, title="Reflection Coefficient, S11"),
-	cons(:wfrm, dB20(s11), color1, label="s11"),
+is11 = 1; is22 = 2; i𝛵 = 3; #Strip indices
+
+plot = cons(:plot, nstrips=3,
+	ystrip1 = set(axislabel=LBLAX_MAGDB, striplabel="Input Reflection (s11)"),
+	ystrip2 = set(axislabel=LBLAX_MAGDB, striplabel="Output Reflection (s22)"),
+	ystrip3 = set(axislabel=LBLAX_MAGDB, striplabel="Transmission Coefficients (𝛵)"),
+	xaxis = set(scale=:log, label=LBLAX_FREQ),
 )
-p_s22 = push!(cons(:plot, axes_loglin, xrange, dbvsf, title="Reflection Coefficient, S22"),
-	cons(:wfrm, dB20(s22), color1, label="s22"),
-)
-p𝛵 = push!(cons(:plot, axes_loglin, xrange, dbvsf, title="Transmission Coefficients"),
-	cons(:wfrm, dB20(s12), color1, label="s12"),
-	cons(:wfrm, dB20(s21), color2, label="s21"),
+push!(plot,
+	cons(:wfrm, dB20(s11), color1, label="s11", strip=is11),
+	cons(:wfrm, dB20(s22), color1, label="s22", strip=is22),
+	cons(:wfrm, dB20(s12), color1, label="s12", strip=i𝛵),
+	cons(:wfrm, dB20(s21), color2, label="s21", strip=i𝛵),
 )
 
 Sref = S
@@ -79,14 +82,16 @@ for np in nplist
 	X = Network(np, Sref)
 	S = Network(:S, X)
 	(s11, s12, s21, s22) = mx2elem(S)
-	push!(p_s11, cons(:wfrm, dB20(s11), color1, label="s11 ($np)"))
-	push!(p_s22, cons(:wfrm, dB20(s22), color1, label="s22 ($np)"))
-	push!(p𝛵, cons(:wfrm, dB20(s12), color1, label="s12 ($np)"))
-	push!(p𝛵, cons(:wfrm, dB20(s21), color2, label="s21 ($np)"))
+	push!(plot,
+		cons(:wfrm, dB20(s11), color1, label="s11 ($np)", strip=is11),
+		cons(:wfrm, dB20(s22), color1, label="s22 ($np)", strip=is22),
+		cons(:wfrm, dB20(s12), color1, label="s12 ($np)", strip=i𝛵),
+		cons(:wfrm, dB20(s21), color2, label="s21 ($np)", strip=i𝛵),
+	)
 end
 end
 
-pcoll = push!(cons(:plotcoll, title="Pi Network Cascade + Param Conversion"), p_s11, p_s22, p𝛵)
+pcoll = push!(cons(:plotcoll, title="Pi Network Cascade + Param Conversion"), plot)
 	pcoll.ncolumns = 1
 
 

@@ -12,8 +12,9 @@ include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
 
 #==Constants
 ===============================================================================#
-vvst = cons(:a, labels = set(yaxis="Amplitude (V)", xaxis="Time (s)"))
-rfpsvst = cons(:a, labels = set(yaxis="Rise/Fall (ps)", xaxis="Time (s)"))
+LBLAX_AMPV = "Amplitude (V)"
+LBLAX_RFTIMEPS = "Rise/Fall (ps)"
+LBLAX_TIME = "Time (s)"
 delayattr = cons(:a,
 	line = set(style=:solid, width=3),
 	glyph = set(shape=:x, size=2),
@@ -48,22 +49,26 @@ pat = (pattern(seq, Π, tbit=tbit)-0.5)*amp #Center data pattern
 
 lthresh = -1+amp*.2 #20%
 hthresh = -1+amp*.8 #80%
+@show lthresh, hthresh
 trise = measrise(pat, lthresh=lthresh, hthresh=hthresh)
 tfall = measfall(pat, lthresh=lthresh, hthresh=hthresh)
 
 
 #==Generate plot
 ===============================================================================#
-axrng = cons(:a, xyaxes=set(xmax=tmax))
-p1 = push!(cons(:plot, axrng, vvst, title="Patterns"),
-	cons(:wfrm, pat, label="pat"),
+plot = cons(:plot, nstrips=2,
+	ystrip1 = set(axislabel=LBLAX_AMPV, striplabel="Patterns"),
+	ystrip2 = set(axislabel=LBLAX_RFTIMEPS, striplabel="20-80 Rise/Fall Times"),
+	xaxis = set(label=LBLAX_TIME, max=tmax),
 )
-p2 = push!(cons(:plot, axrng, rfpsvst, title="20-80 Rise/Fall Times"),
-	cons(:wfrm, trise/1e-12, delayattr, line=set(color=:blue)),
-	cons(:wfrm, tfall/1e-12, delayattr, line=set(color=:red)),
+push!(plot,
+	cons(:wfrm, pat, label="pat", strip=1),
+
+	cons(:wfrm, trise/1e-12, delayattr, line=set(color=:blue), label="rise", strip=2),
+	cons(:wfrm, tfall/1e-12, delayattr, line=set(color=:red), label="fall", strip=2),
 )
 
-pcoll = push!(cons(:plotcoll, title="Rise/Fall Tests"), p1, p2)
+pcoll = push!(cons(:plotcoll, title="Rise/Fall Tests"), plot)
 	pcoll.displaylegend = false
 	pcoll.ncolumns = 1
 

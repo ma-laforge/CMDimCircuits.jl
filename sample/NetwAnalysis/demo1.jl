@@ -12,10 +12,10 @@ include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
 
 #==Constants
 ===============================================================================#
-dbvsf = cons(:a, labels = set(yaxis="Amplitude (dB)", xaxis="Frequency (Hz)"))
+LBLAX_MAGDB = "Magnitude (dB)"
+LBLAX_FREQ = "Frequency (Hz)"
 color1 = cons(:a, line = set(color=:red, width=2))
 color2 = cons(:a, line = set(color=:blue, width=2))
-color3 = cons(:a, line = set(color=:green, width=2))
 
 
 #==Input data
@@ -49,16 +49,19 @@ S = Network(:S, T, z0=z0)
 
 #==Generate plot
 ===============================================================================#
-p𝛤 = push!(cons(:plot, dbvsf, title="Reflection Coefficient (Γ)"),
-	cons(:wfrm, dB20(s11), color1, label="s11"),
-	cons(:wfrm, dB20(s22), color2, label="s22"),
+plot = cons(:plot, nstrips=2,
+	ystrip1 = set(axislabel=LBLAX_MAGDB, striplabel="Reflection Coefficients (𝛤)"),
+	ystrip2 = set(axislabel=LBLAX_MAGDB, striplabel="Transmission Coefficients (𝛵)"),
+	xaxis = set(label=LBLAX_FREQ),
 )
-p𝛵 = push!(cons(:plot, dbvsf, title="Transmission Coefficient (Τ)"),
-	cons(:wfrm, dB20(s12), color1, label="s12"),
-	cons(:wfrm, dB20(s21), color2, label="s21"),
+push!(plot,
+	cons(:wfrm, dB20(s11), color1, label="s11", strip=1),
+	cons(:wfrm, dB20(s22), color2, label="s22", strip=1),
+	cons(:wfrm, dB20(s12), color1, label="s12", strip=2),
+	cons(:wfrm, dB20(s21), color2, label="s21", strip=2),
 )
 
-pcoll = push!(cons(:plotcoll, title="Transmission Line Test"), p𝛤, p𝛵)
+pcoll = push!(cons(:plotcoll, title="Transmission Line Test"), plot)
 	pcoll.ncolumns = 1
 
 

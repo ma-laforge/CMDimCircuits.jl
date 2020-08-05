@@ -23,8 +23,9 @@ include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
 
 #==Constants
 ===============================================================================#
-vvst = cons(:a, labels = set(yaxis="Amplitude (V)", xaxis="Time (s)"))
-ratvst = cons(:a, labels = set(yaxis="Ratio (%)", xaxis="Time (s)"))
+LBLAX_AMPV = "Amplitude (V)"
+LBLAX_TIME = "Time (s)"
+LBLAX_RAT_100 = "Ratio (%)"
 color1 = cons(:a, line = set(color=:red))
 color2 = cons(:a, line = set(color=:blue))
 
@@ -47,15 +48,18 @@ end
 
 #==Generate plot
 ===============================================================================#
-plot1 = push!(cons(:plot, vvst, title="VCO"),
-	cons(:wfrm, out, color2, label="Vout"),
-	cons(:wfrm, vin, color1, label="Vcontrol"),
+plot = cons(:plot, nstrips=2,
+	ystrip1 = set(axislabel=LBLAX_AMPV, striplabel="VCO"),
+	ystrip2 = set(axislabel=LBLAX_RAT_100, striplabel="Divide Ratio"),
+	xaxis = set(label=LBLAX_TIME),
 )
-plot2 = push!(cons(:plot, ratvst, title="Divide Ratio"),
-	cons(:wfrm, div_val, color1),
+push!(plot,
+	cons(:wfrm, out, color2, label="Vout", strip=1),
+	cons(:wfrm, vin, color1, label="Vcontrol", strip=1),
+	cons(:wfrm, div_val, color1, strip=2),
 )
 
-pcoll = push!(cons(:plot_collection, title="EDAData Tests: tr0 Format"), plot1, plot2)
+pcoll = push!(cons(:plot_collection, title="EDAData Tests: tr0 Format"), plot)
 	pcoll.displaylegend = true
 	pcoll.ncolumns = 1
 

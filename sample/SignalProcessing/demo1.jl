@@ -12,7 +12,8 @@ include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
 
 #==Constants
 ===============================================================================#
-vvst = cons(:a, labels = set(yaxis="Amplitude (V)", xaxis="Time (s)"))
+LBLAX_AMPV = "Amplitude (V)"
+LBLAX_TIME = "Time (s)"
 color1 = cons(:a, line = set(color=:red))
 color2 = cons(:a, line = set(color=:blue))
 
@@ -42,19 +43,21 @@ u = step(tCT, Pole(3/pulsewidth,:rad), tdel=tmax/4)
 
 #==Generate plot
 ===============================================================================#
-p1 = push!(cons(:plot, vvst, title="Step Response"),
-	cons(:wfrm, DataF1(uideal), color1, label="DT"),
-	cons(:wfrm, u, color2, label="CT"),
+plot = cons(:plot, nstrips=3,
+	ystrip1 = set(axislabel=LBLAX_AMPV, striplabel="Step Response"),
+	ystrip2 = set(axislabel=LBLAX_AMPV, striplabel="Pulse Response"),
+	ystrip3 = set(axislabel=LBLAX_AMPV, striplabel="Sine wave"),
+	xaxis = set(label=LBLAX_TIME),
 )
-p2 = push!(cons(:plot, vvst, title="Pulse Response"),
-	cons(:wfrm, DataF1(Πideal), color1, label="DT"),
-	cons(:wfrm, Π, color2, label="CT"),
-)
-p3 = push!(cons(:plot, vvst, title="Sine wave"),
-	cons(:wfrm, sin(tCT*(pi*10/tmax)), color2),
+push!(plot,
+	cons(:wfrm, DataF1(uideal), color1, label="DT", strip=1),
+	cons(:wfrm, u, color2, label="CT", strip=1),
+	cons(:wfrm, DataF1(Πideal), color1, label="DT", strip=2),
+	cons(:wfrm, Π, color2, label="CT", strip=2),
+	cons(:wfrm, sin(tCT*(pi*10/tmax)), color2, strip=3),
 )
 
-pcoll = push!(cons(:plotcoll, title="Generating Simple Responses"), p1, p2, p3)
+pcoll = push!(cons(:plotcoll, title="Generating Simple Responses"), plot)
 	pcoll.ncolumns = 1
 
 

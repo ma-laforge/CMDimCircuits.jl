@@ -12,10 +12,17 @@ include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
 
 #==Constants
 ===============================================================================#
-vvst = cons(:a, labels = set(yaxis="Amplitude (V)", xaxis="Time (s)"))
-Tpsvst = cons(:a, labels = set(yaxis="Period (ns)", xaxis="Time (s)"))
-fvst = cons(:a, labels = set(yaxis="Frequency (Hz)", xaxis="Time (s)"))
-solidline = cons(:a, line = set(style=:solid))
+LBLAX_AMPV = "Amplitude (V)"
+LBLAX_PERNS = "Period (ns)"
+LBLAX_FREQ = "Frequency (Hz)"
+LBLAX_TIME = "Time (s)"
+line1 = cons(:a, line = set(style=:solid))
+lshiftattr = cons(:a,
+	line = set(style=:solid, color=2), glyph = set(shape=:+),
+)
+lnoshiftattr = cons(:a,
+	line = set(style=:solid, color=3), glyph = set(shape=:x),
+)
 
 
 #==Input data
@@ -43,19 +50,21 @@ freq_noshift = measfreq(y, xing=xrise, shiftx=false)
 
 #==Generate plot
 ===============================================================================#
-p1 = push!(cons(:plot, vvst, title="Signal"),
-	cons(:wfrm, y, label="y(t)"),
+plot = cons(:plot, nstrips=3,
+	ystrip1 = set(axislabel=LBLAX_AMPV, striplabel="Signal"),
+	ystrip2 = set(axislabel=LBLAX_PERNS, striplabel="Instantaneous Period"),
+	ystrip3 = set(axislabel=LBLAX_FREQ, striplabel="Instantaneous Frequency"),
+	xaxis = set(label=LBLAX_TIME),
 )
-p2 = push!(cons(:plot, Tpsvst, title="Instantaneous Period"),
-	cons(:wfrm, period_shift, solidline, glyph=set(shape=:+), label="shift"),
-	cons(:wfrm, period_noshift, solidline, glyph=set(shape=:x), label="no shift"),
-)
-p3 = push!(cons(:plot, fvst, title="Instantaneous Frequency"),
-	cons(:wfrm, freq_shift, solidline, glyph=set(shape=:+), label="shift"),
-	cons(:wfrm, freq_noshift, solidline, glyph=set(shape=:x), label="no shift"),
+push!(plot,
+	cons(:wfrm, y, label="y(t)", strip=1),
+	cons(:wfrm, period_shift, lshiftattr, label="shift", strip=2),
+	cons(:wfrm, period_noshift, lnoshiftattr, label="no shift", strip=2),
+	cons(:wfrm, freq_shift, lshiftattr, label="shift", strip=3),
+	cons(:wfrm, freq_noshift, lnoshiftattr, label="no shift", strip=3),
 )
 
-pcoll = push!(cons(:plotcoll, title="Period & Frequency Measurements"), p1, p2, p3)
+pcoll = push!(cons(:plotcoll, title="Period & Frequency Measurements"), plot)
 	pcoll.ncolumns = 1
 
 

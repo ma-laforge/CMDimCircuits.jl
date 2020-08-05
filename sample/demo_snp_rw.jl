@@ -12,10 +12,10 @@ include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
 
 #==Constants
 ===============================================================================#
-dbvsf = cons(:a, labels = set(yaxis="Amplitude (dB)", xaxis="Frequency (Hz)"))
+LBLAX_MAGDB = "Magnitude (dB)"
+LBLAX_FREQ = "Frequency (Hz)"
 color1 = cons(:a, line = set(color=:red, width=2))
 color2 = cons(:a, line = set(color=:blue, width=2))
-color3 = cons(:a, line = set(color=:green, width=2))
 
 
 #==Input data
@@ -62,30 +62,32 @@ data = EDAData.read_snp(filepath_S, numports=2)
 
 #==Generate plot
 ===============================================================================#
-plotrefl = push!(cons(:plot, dbvsf, title="Reflection Coefficients"),
-	cons(:wfrm, dB20(s11), color1, label="s11"),
-	cons(:wfrm, dB20(s22), color2, label="s22"),
+i𝛤 = 1; i𝛵 = 2; #Strip indices
+
+plot = cons(:plot, nstrips=2,
+	ystrip1 = set(axislabel=LBLAX_MAGDB, striplabel="Reflection Coefficients (𝛤)"),
+	ystrip2 = set(axislabel=LBLAX_MAGDB, striplabel="Transmission Coefficients (𝛵)"),
+	xaxis = set(label=LBLAX_FREQ),
 )
-plottrans = push!(cons(:plot, dbvsf, title="Transmission Coefficients"),
-	cons(:wfrm, dB20(s12), color1, label="s12"),
-	cons(:wfrm, dB20(s21), color2, label="s21"),
+push!(plot,
+	cons(:wfrm, dB20(s11), color1, label="s11", strip=i𝛤),
+	cons(:wfrm, dB20(s22), color2, label="s22", strip=i𝛤),
+	cons(:wfrm, dB20(s12), color1, label="s12", strip=i𝛵),
+	cons(:wfrm, dB20(s21), color2, label="s21", strip=i𝛵),
 )
 
 #Overlay result of reading/writing Z-parameters:
 data = EDAData.read_snp(filepath_Z, numports=2)
 @show s = Symbol(NPType(data))
 (s11, s12, s21, s22) = mx2elem(Network(:S, data))
-push!(plotrefl,
-	cons(:wfrm, dB20(s11), color1, label="s11 ($(s)P)"),
-	cons(:wfrm, dB20(s22), color2, label="s22 ($(s)P)"),
-)
-push!(plottrans,
-	cons(:wfrm, dB20(s12), color1, label="s12 ($(s)P)"),
-	cons(:wfrm, dB20(s21), color2, label="s21 ($(s)P)"),
+push!(plot,
+	cons(:wfrm, dB20(s11), color1, label="s11 ($(s)P)", strip=i𝛤),
+	cons(:wfrm, dB20(s22), color2, label="s22 ($(s)P)", strip=i𝛤),
+	cons(:wfrm, dB20(s12), color1, label="s12 ($(s)P)", strip=i𝛵),
+	cons(:wfrm, dB20(s21), color2, label="s21 ($(s)P)", strip=i𝛵),
 )
 
-pcoll = cons(:plot_collection, title="EDAData Tests: sNp (Touchstone) Format")
-	push!(pcoll, plotrefl, plottrans)
+pcoll = push!(cons(:plotcoll, title="EDAData Tests: sNp (Touchstone) Format"), plot)
 	pcoll.ncolumns = 1
 
 

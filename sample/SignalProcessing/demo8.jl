@@ -12,7 +12,8 @@ include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
 
 #==Constants
 ===============================================================================#
-vvst = cons(:a, labels = set(yaxis="Amplitude (V)", xaxis="Time (s)"))
+LBLAX_AMPV = "Amplitude (V)"
+LBLAX_TIME = "Time (s)"
 noline = cons(:a, line = set(style=:none))
 
 
@@ -39,18 +40,22 @@ overspat = sample(pat, 0:(tbit/osr/4):maximum(t))
 
 #==Generate plot
 ===============================================================================#
-p1 = push!(cons(:plot, vvst, title="Pattern"),
-	cons(:wfrm, pat, label="pat"),
-	cons(:wfrm, _spat_, noline, glyph=set(shape=:o, color=:red), label="over range"),
-	cons(:wfrm, spat, noline, glyph=set(shape=:+, color=:black), label="full sample"),
-	cons(:wfrm, _spat, noline, glyph=set(shape=:x, color=:blue), label="straddle low"),
-	cons(:wfrm, spat_, noline, glyph=set(shape=:x, color=:green), label="straddle high"),
+plot = cons(:plot, nstrips=2,
+	ystrip1 = set(axislabel=LBLAX_AMPV, striplabel="Pattern"),
+	ystrip2 = set(axislabel=LBLAX_AMPV, striplabel="Oversampling"),
+	xaxis = set(label=LBLAX_TIME),
 )
-p2 = push!(cons(:plot, vvst, title="Oversampling"),
-	cons(:wfrm, overspat, noline, glyph=set(shape=:x, color=:blue)),
+push!(plot,
+	cons(:wfrm, pat, label="pat", strip=1),
+	cons(:wfrm, _spat_, noline, glyph=set(shape=:o, color=:red), label="over range", strip=1),
+	cons(:wfrm, spat, noline, glyph=set(shape=:+, color=:black), label="full sample", strip=1),
+	cons(:wfrm, _spat, noline, glyph=set(shape=:x, color=:blue), label="straddle low", strip=1),
+	cons(:wfrm, spat_, noline, glyph=set(shape=:x, color=:green), label="straddle high", strip=1),
+
+	cons(:wfrm, overspat, noline, glyph=set(shape=:x, color=:blue), strip=2),
 )
 
-pcoll = push!(cons(:plotcoll, title="Sampling tests"), p1, p2)
+pcoll = push!(cons(:plotcoll, title="Sampling tests"), plot)
 	pcoll.ncolumns = 1
 
 
