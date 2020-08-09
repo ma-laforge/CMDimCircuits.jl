@@ -93,5 +93,3 @@ Extensive compatibility testing of the CMDimCircuits.jl package has not been per
 ## Disclaimer
 
 The CMDimCircuits.jl package is not yet mature.  Expect significant changes.
-
-This software is provided "as is", with no guarantee of correctness.  Use at own risk.
