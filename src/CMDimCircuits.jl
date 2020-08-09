@@ -15,6 +15,7 @@ using NumericIO
 const rootpath = realpath(joinpath(@__DIR__, ".."))
 const demoplotcfgscript = joinpath(rootpath, "sample", "cfgplots4demo.jl")
 
+include("physics.jl")
 include("dsvfiles.jl")
 include("CircuitAnalysis/CircuitAnalysis.jl")
 include("NetwAnalysis/NetwAnalysis.jl") #Depends on CircuitAnalysis
