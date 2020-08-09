@@ -2,25 +2,28 @@ using Test, CMDimCircuits
 
 
 function printheader(title)
-	println("\n", title, "\n", repeat("-", 80))
+	println("\n", title, "\n", repeat("=", 80))
 end
 
 function show_testset_section()
 	println()
-	@info "New test section: " * Test.get_testset().description
+	@info "SECTION: " * Test.get_testset().description * "\n" * repeat("=", 80)
 end
 
 function show_testset_description()
-	@info "   Run test: " * Test.get_testset().description
+	@info "Testing: " * Test.get_testset().description
 end
 
-@testset "CMDimCircuits tests" begin
-	testfiles = ["cktanalysis.jl", "netwanalysis.jl", "edadata.jl"]
+testfiles = ["cktanalysis.jl", "netwanalysis.jl", "edadata.jl"]
 
-	for testfile in testfiles
-		include(testfile)
-	end
+for testfile in testfiles
+	include(testfile)
+end
 
-end #testset
+#==List available physics constants (informative)
+===============================================================================#
+printheader("List of available CMDimCircuits.Physics.Constants.*")
+CMDimCircuits.Physics.Constants._show()
+println()
 
 :Test_Complete
