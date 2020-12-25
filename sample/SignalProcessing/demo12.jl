@@ -5,9 +5,9 @@ using CMDimCircuits
 CMDimCircuits.@using_CData()
 
 #Get a demo display:
-include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
+include(CMDimCircuits.demoplotcfgscript)
 #Normally use something like:
-#CMDimData.@includepkg EasyPlotInspect; pdisp = EasyPlotInspect.PlotDisplay()
+#CMDimData.@includepkg EasyPlotInspect
 
 
 #==Constants
@@ -102,29 +102,28 @@ eyeparam(tbit; teye=1.5*tbit, tstart=0) = cons(:a,
 
 #==Generate plot
 ===============================================================================#
-p1 = cons(:plot, vch_vs_ui, title="Initial Undefined Pattern")
+p1 = cons(:plot, vch_vs_ui, title="Initial Undefined Pattern", legend=false)
 for i in 1:nchannels
 	push!(p1, cons(:wfrm, _scaleshift(undefdata[i], i), label="pat[$i]"))
 end
-p2 = cons(:plot, vch_vs_ui, eyeparam(1.0, teye=1.5), title="Eye")
+p2 = cons(:plot, vch_vs_ui, eyeparam(1.0, teye=1.5), title="Eye", legend=false)
 for i in 1:nchannels
 	push!(p2, cons(:wfrm, _scaleshift(eyepat[i], i), label="pat[$i]"))
 end
-p3 = cons(:plot, vch_vs_t, title="Pattern")
+p3 = cons(:plot, vch_vs_t, title="Pattern", legend=false)
 for i in 1:nchannels
 	push!(p3, cons(:wfrm, _scaleshift(pat[i], i), label="pat[$i]"))
 end
 
 pcoll = push!(cons(:plotcoll, title="Normalized Eye Diagrams (shifted around channel #)"), p1, p2, p3)
-	pcoll.displaylegend = false
 	pcoll.ncolumns = 2
 
 
 #==Display results in pcoll
 ===============================================================================#
-display(pdisp, pcoll)
+EasyPlot.displaygui(pcoll)
 
 
 #==Return pcoll to user (call evalfile(...))
 ===============================================================================#
-pcoll #Will display pcoll a second time if executed from REPL
+pcoll

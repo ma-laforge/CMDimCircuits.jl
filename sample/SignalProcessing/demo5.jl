@@ -5,9 +5,9 @@ using CMDimCircuits
 CMDimCircuits.@using_CData()
 
 #Get a demo display:
-include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
+include(CMDimCircuits.demoplotcfgscript)
 #Normally use something like:
-#CMDimData.@includepkg EasyPlotInspect; pdisp = EasyPlotInspect.PlotDisplay()
+#CMDimData.@includepkg EasyPlotInspect
 
 
 #==Constants
@@ -32,11 +32,11 @@ sigSpec = abs2(fcoeff(Fsig)) #Periodic
 
 #==Generate plot
 ===============================================================================#
-plot_t = push!(cons(:plot, vvst, title="Time domain"),
+plot_t = push!(cons(:plot, vvst, title="Time domain", legend=false),
 #	cons(:wfrm, DataF1(sig), glyph=set(shape=:o)),
 	cons(:wfrm, DataF1(sig)),
 )
-plot_f = push!(cons(:plot, magvsf, title="Frequency domain"),
+plot_f = push!(cons(:plot, magvsf, title="Frequency domain", legend=false),
 	cons(:wfrm, sigSpec, glyph=set(shape=:o, size=1.5), line=set(style=:none, color=:red, width=2)),
 )
 
@@ -46,9 +46,9 @@ pcoll = push!(cons(:plotcoll, title="Fourier Transform Tests"), plot_t, plot_f)
 
 #==Display results in pcoll
 ===============================================================================#
-display(pdisp, pcoll)
+EasyPlot.displaygui(pcoll)
 
 
 #==Return pcoll to user (call evalfile(...))
 ===============================================================================#
-pcoll #Will display pcoll a second time if executed from REPL
+pcoll

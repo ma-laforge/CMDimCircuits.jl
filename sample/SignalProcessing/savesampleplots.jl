@@ -3,11 +3,12 @@
 
 using CMDimCircuits
 CMDimCircuits.@using_CData()
-using InspectDR
-
 #Select specific plotting backend to save plots:
 CMDimData.@includepkg EasyPlotInspect
-pdisp = EasyPlotInspect.PlotDisplay()
+
+#Looks better with wider aspect ratio:
+WIDTH_PLOT = 900
+HEIGHT_PLOT = round(Int, WIDTH_PLOT/2)
 
 function printheader(title)
 	println("\n", title, "\n", repeat("-", 80))
@@ -20,10 +21,7 @@ for i in 1:17
 	printheader("Executing $filename...")
 	plot = evalfile(filename)
 
-	rplot = EasyPlot.render(pdisp, plot)
-		#Looks better with wider aspect ratio:
-		rplot.layout[:valloc_plot] = rplot.layout[:halloc_plot] * .3
-		InspectDR.write_png(outfile, rplot)
+	EasyPlot._write(:png, outfile, :InspectDR, plot, plotdim=set(w=WIDTH_PLOT, h=HEIGHT_PLOT))
 end
 
 :SampleCode_Executed

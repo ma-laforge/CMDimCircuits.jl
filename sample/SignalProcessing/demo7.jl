@@ -5,9 +5,9 @@ using CMDimCircuits
 CMDimCircuits.@using_CData()
 
 #Get a demo display:
-include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
+include(CMDimCircuits.demoplotcfgscript)
 #Normally use something like:
-#CMDimData.@includepkg EasyPlotInspect; pdisp = EasyPlotInspect.PlotDisplay()
+#CMDimData.@includepkg EasyPlotInspect
 
 
 #==Constants
@@ -51,26 +51,25 @@ eyeparam(tbit; teye=1.5*tbit, tstart=0) = cons(:a,
 )
 eyeaxis = eyeparam(tbit, teye=1.5*tbit, tstart=-.15*tbit)
 
-p1 = push!(cons(:plot, vvst, eyeaxis, title="Eye (DataHR)"),
+p1 = push!(cons(:plot, vvst, eyeaxis, title="Eye (DataHR)", legend=false),
 	cons(:wfrm, pat, label="eye"),
 )
-p2 = push!(cons(:plot, vvst, title="Pattern"),
+p2 = push!(cons(:plot, vvst, title="Pattern", legend=false),
 	cons(:wfrm, pat, label="pat"),
 )
-p3 = push!(cons(:plot, vvst, eyeaxis, title="Eye (DataRS)"),
+p3 = push!(cons(:plot, vvst, eyeaxis, title="Eye (DataRS)", legend=false),
 	cons(:wfrm, patRS, label="eye"),
 )
 
 pcoll = push!(cons(:plotcoll, title="Eye Diagram Tests"), p1, p2, p3)
-	pcoll.displaylegend = false
 	pcoll.ncolumns = 2
 
 
 #==Display results in pcoll
 ===============================================================================#
-display(pdisp, pcoll)
+EasyPlot.displaygui(pcoll)
 
 
 #==Return pcoll to user (call evalfile(...))
 ===============================================================================#
-pcoll #Will display pcoll a second time if executed from REPL
+pcoll

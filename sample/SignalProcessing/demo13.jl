@@ -5,9 +5,9 @@ using CMDimCircuits
 CMDimCircuits.@using_CData()
 
 #Get a demo display:
-include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
+include(CMDimCircuits.demoplotcfgscript)
 #Normally use something like:
-#CMDimData.@includepkg EasyPlotInspect; pdisp = EasyPlotInspect.PlotDisplay()
+#CMDimData.@includepkg EasyPlotInspect
 
 
 #==Constants
@@ -70,26 +70,25 @@ end
 
 #==Generate plot
 ===============================================================================#
-p1 = push!(cons(:plot, a_yvsx, axrange, title="Slice with planes z=3 & z=60"),
+p1 = push!(cons(:plot, a_yvsx, axrange, title="Slice with planes z=3 & z=60", legend=false),
 	cons(:wfrm, slice_z3, dfltwfrmattr, label="z=3"),
 	cons(:wfrm, slice_z60, dfltwfrmattr, label="z=60"),
 )
-p2 = push!(cons(:plot, a_yvsx, axrange, title="Slice with planes 1 & 2"),
+p2 = push!(cons(:plot, a_yvsx, axrange, title="Slice with planes 1 & 2", legend=false),
 	cons(:wfrm, slice_p1, dfltwfrmattr, label="plane 1"),
 	cons(:wfrm, slice_p2, dfltwfrmattr, label="plane 1"),
 )
 
 pcoll = push!(cons(:plotcoll, title="Sliced Paraboloid"), p1, p2)
 	pcoll.theme.colorscheme = EasyPlot.ColorScheme(EasyPlot.colormap("Blues", 12))
-	pcoll.displaylegend = false
 	pcoll.ncolumns = 1
 
 
 #==Display results in pcoll
 ===============================================================================#
-display(pdisp, pcoll)
+EasyPlot.displaygui(pcoll)
 
 
 #==Return pcoll to user (call evalfile(...))
 ===============================================================================#
-pcoll #Will display pcoll a second time if executed from REPL
+pcoll

@@ -5,9 +5,9 @@ using CMDimCircuits
 CMDimCircuits.@using_CData()
 
 #Get a demo display:
-include(CMDimCircuits.demoplotcfgscript); pdisp = getdemodisplay()
+include(CMDimCircuits.demoplotcfgscript)
 #Normally use something like:
-#CMDimData.@includepkg EasyPlotInspect; pdisp = EasyPlotInspect.PlotDisplay()
+#CMDimData.@includepkg EasyPlotInspect
 
 
 #==Constants
@@ -56,7 +56,7 @@ tfall = measfall(pat, lthresh=lthresh, hthresh=hthresh)
 
 #==Generate plot
 ===============================================================================#
-plot = cons(:plot, nstrips=2,
+plot = cons(:plot, nstrips=2, legend=false,
 	ystrip1 = set(axislabel=LBLAX_AMPV, striplabel="Patterns"),
 	ystrip2 = set(axislabel=LBLAX_RFTIMEPS, striplabel="20-80 Rise/Fall Times"),
 	xaxis = set(label=LBLAX_TIME, max=tmax),
@@ -69,15 +69,14 @@ push!(plot,
 )
 
 pcoll = push!(cons(:plotcoll, title="Rise/Fall Tests"), plot)
-	pcoll.displaylegend = false
 	pcoll.ncolumns = 1
 
 
 #==Display results in pcoll
 ===============================================================================#
-display(pdisp, pcoll)
+EasyPlot.displaygui(pcoll)
 
 
 #==Return pcoll to user (call evalfile(...))
 ===============================================================================#
-pcoll #Will display pcoll a second time if executed from REPL
+pcoll
