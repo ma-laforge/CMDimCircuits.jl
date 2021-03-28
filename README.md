@@ -12,7 +12,7 @@
 
 &mdash; ***"Focus on the analysis itself, not on data manipulation"***
 
-[![Build Status](https://travis-ci.org/ma-laforge/CMDimCircuits.jl.svg?branch=master)](https://travis-ci.org/ma-laforge/CMDimCircuits.jl)
+[![Build Status](https://github.com/ma-laforge/CMDimCircuits.jl/workflows/CI/badge.svg)](https://github.com/ma-laforge/CMDimCircuits.jl/actions?query=workflow%3ACI)
 
 | <img src="https://github.com/ma-laforge/FileRepo/blob/master/InspectDR/sampleplots/demo11.png" width="425"> | <img src="https://github.com/ma-laforge/FileRepo/blob/master/InspectDR/sampleplots/demo2.png" width="425"> |
 | :---: | :---: |
