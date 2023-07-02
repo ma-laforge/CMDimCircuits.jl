@@ -1,4 +1,5 @@
 #CircuitAnalysis: Base tools
+import MDDatasets: DataMD
 
 
 #==Main data structures
@@ -41,10 +42,16 @@ const TCapacitance = DataTag{:C}
 #==Helper functions
 ===============================================================================#
 #multMD: disambiguate multiplication to use
-multMD(a, b) = a*b #DataMD values don't require .*
-multMD(a::AbstractArray, b::AbstractArray) = a .* b
-divMD(a, b) = a/b #DataMD values don't require .*
-divMD(a::AbstractArray, b::AbstractArray) = a ./ b
+multMD(a, b) = a .* b
+divMD(a, b) = a ./ b
+
+#DataMD values don't work with .* (should this be changed?):
+multMD(a::DataMD, b::DataMD) = a*b
+multMD(a::DataMD, b) = a*b
+multMD(a, b::DataMD) = a*b
+divMD(a::DataMD, b::DataMD) = a/b
+divMD(a::DataMD, b) = a/b
+divMD(a, b::DataMD) = a/b
 
 
 #==Operations
@@ -101,7 +108,7 @@ impedance(c::TCapacitance, args...; kwargs...) = impedance(admittance(c, args...
 #TODO: create admittance(:L, value, f=x)??
 
 #Inductor values:
-_Z(l::TInductance, f) = admittance(multMD((2*pi*c.v)im, f))
+_Z(l::TInductance, f) = impedance(multMD((2*pi*l.v)im, f))
 _Z(l::TInductance, ::Nothing) = throw(ArgumentError("Missing kwarg :f"))
 impedance(l::TInductance; f = nothing) = _Z(l, f)
 admittance(l::TInductance, args...; kwargs...) = admittance(impedance(l, args...; kwargs...))

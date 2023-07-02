@@ -331,7 +331,7 @@ end
 
 #==Reference impedance transformation/passthrough
 ===============================================================================#
-z0xfrm(np::Network, z0::Float64) where TP =
+z0xfrm(np::Network, z0::Float64) =
 	error("Unable to perform z0 transformation for $(typeof(np)).")
 #S-parameter impedance transformation:
 z0xfrm(np::SParameters, z0::Float64) =
