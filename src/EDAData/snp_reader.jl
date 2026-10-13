@@ -26,10 +26,10 @@ end
 iscomment(line::AbstractString) = length(line) < 1 || '!' == line[1]
 
 #Read mangitude/angle data
-snp_read_ma(r::SNPReader) = read(r.r, DataFloat) * e^(im*read(r.r, DataFloat))
+snp_read_ma(r::SNPReader) = read(r.r, DataFloat) * cispi(read(r.r, DataFloat) / 180)
 
 #Read dB/angle data
-snp_read_db(r::SNPReader) = 10^(read(r.r, DataFloat)/20) * e^(im*read(r.r, DataFloat))
+snp_read_db(r::SNPReader) = 10^(read(r.r, DataFloat)/20) * cispi(read(r.r, DataFloat) / 180)
 
 #Read real/imaginary data
 snp_read_ri(r::SNPReader) = complex(read(r.r, DataFloat), read(r.r, DataFloat))

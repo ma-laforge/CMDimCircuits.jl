@@ -11,6 +11,18 @@ include("netwanalysis_cmptools.jl")
 ===============================================================================#
 
 
+	@testset ".sNp phase formats" begin show_testset_description()
+		for (format, magnitude) in (("MA", "0.5"), ("DB", "-6.020599913279624"))
+			mktemp() do filepath, io
+				println(io, "# GHz S $format R 50")
+				println(io, "1 $magnitude 90 $magnitude 90 $magnitude 90 $magnitude 90")
+				flush(io)
+
+				data = EDAData.read_snp(filepath, numports=2)
+				@test data[1,1].y[1] ≈ 0.5im atol=1e-8
+			end
+		end
+end
 @testset ".sNp files: Simple write/read/compare" begin show_testset_description()
 	#Input data
 	Z0 = 50 #Ohms (reference impedance)
